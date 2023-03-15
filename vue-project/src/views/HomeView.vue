@@ -1,5 +1,5 @@
 <template>
-home
+hom
 </template>
   
   <script setup>

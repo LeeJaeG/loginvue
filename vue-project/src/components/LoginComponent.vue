@@ -21,18 +21,19 @@
 
             <div class="card">
                 <div class="flex card-container overflow-hidden">
-                    
-                    <div class="flex-grow-0 md:flex-grow-0 flex align-items-center justify-content-center font-bold text-gray-900 m-3 px-2 py-1 border-round">
-                    <Card style="width: 15rem; height: 90%; margin-bottom: 1em" class="text-gray-900 bg-blue-500">
-                        <template #title>
-                            Simple Card
-                        </template>
-                        <template #content>
-                            <p>Management</p>
-                            <p> platform </p>
-                            <p> Sign up</p>
-                        </template>
-                    </Card>
+
+                    <div
+                        class="flex-grow-0 md:flex-grow-0 flex align-items-center justify-content-center font-bold text-gray-900 m-3 px-2 py-1 border-round">
+                        <Card style="width: 15rem; height: 90%; margin-bottom: 1em" class="text-gray-900 bg-blue-500">
+                            <template #title>
+                                Simple Card
+                            </template>
+                            <template #content>
+                                <p>Management</p>
+                                <p> platform </p>
+                                <p> Sign up</p>
+                            </template>
+                        </Card>
                     </div>
 
                     <form @submit.prevent="handleSubmit(!v$.$invalid)" class="p-fluid">
@@ -81,13 +82,14 @@
                         </div>
 
                         <Button type="submit" label="Submit" class="mt-2" />
-                        <br><br>
+                        <br/>
+                        <br/>
 
-                        <div class="field-checkbox">
+                    <!-- <div class="field-checkbox">
                             <Checkbox id="accept" name="accept" value="Accept" v-model="v$.accept.$model"
                                 :class="{ 'p-invalid': v$.accept.$invalid && submitted }" />
-                            <label for="accept" :class="{ 'p-error': v$.accept.$invalid && submitted} ">자동로그인</label>
-                        </div>
+                            <label for="accept" :class="{ 'p-error': v$.accept.$invalid && submitted }">자동로그인</label>
+                                    </div> -->
                     </form>
                 </div>
             </div>
@@ -96,32 +98,39 @@
 </template>
 
 <script>
-import { reactive, ref} from 'vue';
+import { reactive, ref } from 'vue';
 import { email, required } from "@vuelidate/validators";
 import { useVuelidate } from "@vuelidate/core";
+import axios from 'axios'
+
+import { useUserStore } from '@/stores/user'
+import { storeToRefs } from 'pinia';
+import { useCookies } from "vue3-cookies";
+import { useRouter } from 'vue-router'
+
+
 
 export default {
     setup() {
-
         const state = reactive({
-            name: '',
             email: '',
             password: '',
-            accept: null
+            // accept: null
         });
 
         const rules = {
-            name: { required },
             email: { required, email },
             password: { required },
-            accept: { required }
+            // accept: { required }
         };
 
         const submitted = ref(false);
-        const countries = ref();
         const showMessage = ref(false);
-        const date = ref();
-        const country = ref();
+
+        const user = useUserStore();
+        const { info } = storeToRefs(user);
+        const { cookies } = useCookies();
+        const router = useRouter();
 
         const v$ = useVuelidate(rules, state);
 
@@ -132,8 +141,41 @@ export default {
                 return;
             }
 
-            toggleDialog();
+            const res = axios.post('/user/user/token', {
+                "username": state.email,
+                "password": state.password,
+            })
+                .then(function (response) {
+                    console.log(response);
+                    // get token from server's 200 response result data
+                    // const access_token = atob(response.data.access_token); // string to binary 변환 
+                    // const parsedAccess_Token = JSON.parse(access_token) // 이를 parse
+
+                    // const refresh_token = atob(response.data.refresh_token); // string to binary 변환 
+                    // const parsedRefresh_Token = JSON.parse(refresh_token) // 이를 parse
+
+
+                    // save token as cookies
+                    cookies.set('accessToken', response.data.access_token);
+                    cookies.set('accessRefresh', response.data.refresh_token);
+                    // change pinia user info value
+                    info.value.checkLogin = 'login'
+
+                    // save user data(game server, user info) all
+                    // 구현 안 됨
+
+                    // redirect to dashboard
+
+                    router.push({ path: '/dashboard' });
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+            console.log(res)
+
+
         }
+
         const toggleDialog = () => {
             showMessage.value = !showMessage.value;
 
@@ -142,16 +184,13 @@ export default {
             }
         }
         const resetForm = () => {
-            state.name = '';
             state.email = '';
             state.password = '';
-            state.date = null;
-            state.country = null;
-            state.accept = null;
+            // state.accept = null;
             submitted.value = false;
         }
 
-        return { state, v$, handleSubmit, toggleDialog, submitted, countries, showMessage, date, country }
+        return { state, v$, handleSubmit, toggleDialog, submitted, showMessage }
     }
 }
 </script>

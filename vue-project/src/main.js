@@ -1,9 +1,16 @@
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+
+
+
+import axios from 'axios'
+import VueAxios from 'vue-axios'
+
 import PrimeVue from 'primevue/config';
 import App from './App.vue'
 import router from './router'
+
 import AutoComplete from 'primevue/autocomplete';
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
@@ -114,6 +121,8 @@ library.add(far);
 const app = createApp(App);
 
 app.component('font-awesome-icon', FontAwesomeIcon);
+
+app.use(VueAxios, axios)
 
 app.use(createPinia());
 app.use(router);

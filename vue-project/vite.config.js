@@ -11,7 +11,22 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  devServer: {
-    proxy: 'http://192.168.15.47:8000'
-  },
+  server: {
+    proxy: {
+      '/user': {
+        target: 'http://192.168.15.47:8000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/user/, ''),
+        // secure: false,
+        // ws: true
+      },
+      '/open': {
+        target: 'http://192.168.15.47:8000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/open/, ''),
+        // secure: false,
+        // ws: true
+      }
+    }
+  }
 })

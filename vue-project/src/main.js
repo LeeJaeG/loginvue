@@ -101,12 +101,22 @@ import TreeTable from 'primevue/treetable';
 import TriStateCheckbox from 'primevue/tristatecheckbox';
 import VirtualScroller from 'primevue/virtualscroller';
 
-import './assets/main.css'
+/* import the fontawesome core */
+import { library } from '@fortawesome/fontawesome-svg-core';
+/* import font awesome icon component */
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+/* import specific icons */
+import { fas } from '@fortawesome/free-solid-svg-icons';
+library.add(fas);
+import { far } from '@fortawesome/free-regular-svg-icons';
+library.add(far);
+// library.add();
+const app = createApp(App);
 
-const app = createApp(App)
+app.component('font-awesome-icon', FontAwesomeIcon);
 
-app.use(createPinia())
-app.use(router)
+app.use(createPinia());
+app.use(router);
 app.use(PrimeVue, { ripple: true });
 app.use(ConfirmationService);
 app.use(ToastService);

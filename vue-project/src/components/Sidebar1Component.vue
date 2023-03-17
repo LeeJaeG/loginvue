@@ -8,17 +8,17 @@
             Main
         </div>
 
-        <div class="w-full flex justify-content-center align-items-center mt-3 font-bold hovercolor" style="height: 3.5rem;">
+        <router-link to="/" class="w-full flex justify-content-center align-items-center mt-3 font-bold hovercolor" style="height: 3.5rem; text-decoration: none; color: inherit;">
             <div>
                 <i class="pi pi-home " style="font-size: 1.2rem"></i>
             </div>    
-        </div>
+        </router-link>
 
-        <div class="w-full flex justify-content-center align-items-center mb-6 font-bold hovercolor" style="height: 3.5rem;">
+        <router-link to="/setting" class="w-full flex justify-content-center align-items-center mb-6 font-bold hovercolor" style="height: 3.5rem; text-decoration: none; color: inherit;">
             <div>
                 <font-awesome-icon icon="fa-solid fa-gear" style="font-size: 1.2rem"/>
             </div>
-        </div>
+        </router-link>
         
         <div class="font-bold mb-2 mt-6 text-sm">
             Cloud
@@ -47,23 +47,23 @@
             Metrics
         </div>
 
-        <div class="w-full flex justify-content-center align-items-center mt-4  font-bold hovercolor" style="height: 3.5rem;">
+        <router-link to="/int" class="w-full flex justify-content-center align-items-center mt-4  font-bold hovercolor" style="height: 3.5rem; text-decoration: none; color: inherit;">
             <div>
                 <font-awesome-icon icon="fa-solid fa-globe" style="font-size: 1.2rem"/>
             </div>
-        </div>
+        </router-link>
 
-        <div class="w-full flex justify-content-center align-items-center font-bold hovercolor" style="height: 3.5rem;">
+        <router-link to="/metric" class="w-full flex justify-content-center align-items-center font-bold hovercolor" style="height: 3.5rem; text-decoration: none; color: inherit;">
             <div>
                 <i class="pi pi-chart-bar" style="font-size: 1.2rem"></i>
             </div>
-        </div>
+        </router-link>
 
-        <div class="w-full flex justify-content-center align-items-center mb-4 font-bold hovercolor" style="height: 3.5rem;">
+        <router-link to="/alarm" class="w-full flex justify-content-center align-items-center mb-4 font-bold hovercolor" style="height: 3.5rem; text-decoration: none; color: inherit;">
             <div>
                 <font-awesome-icon icon="fa-regular fa-bell" style="font-size: 1.2rem"/>
             </div>
-        </div>
+        </router-link>
 
     </div>
 </template>

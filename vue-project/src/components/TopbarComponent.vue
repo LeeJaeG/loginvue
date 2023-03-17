@@ -4,7 +4,7 @@
             <div class="flex align-items-center mr-3">
                 <img src="../assets/logo.svg"/>
             </div>
-            <div class="flex align-items-center mr-2 text-2xl text-bold namu" style="color : #0fd977">
+            <div class="flex align-items-center mr-2 text-2xl namu" style="color : #0fd977">
                 Management platform
             </div>
         </div>

@@ -1,114 +1,146 @@
-
 <template>
-    <div class="form-demo">
-        <Dialog v-model:visible="showMessage" :breakpoints="{ '960px': '80vw' }" :style="{ width: '30vw' }" position="top">
-            <div class="flex align-items-center flex-column pt-6 px-3">
-                <i class="pi pi-check-circle" :style="{ fontSize: '5rem', color: 'var(--green-500)' }"></i>
-                <h5>Registration Successful!</h5>
-                <p :style="{ lineHeight: 1.5, textIndent: '1rem' }">
-                    Your account is registered under name <b>{{ state.name }}</b> ; it'll be valid next 30 days without
-                    activation. Please check <b>{{ state.email }}</b> for activation instructions.
-                </p>
+<div class="">
+
+    <Dialog v-model:visible="showMessage" :breakpoints="{ '960px': '80vw' }" :style="{ width: '30vw' }" position="top">
+        <div class="flex align-items-center flex-column pt-6 px-3">
+            <i class="pi pi-check-circle" :style="{ fontSize: '5rem', color: 'var(--green-500)' }"></i>
+            <h5>Registration Successful!</h5>
+            <p :style="{ lineHeight: 1.5, textIndent: '1rem' }">
+                Your account is registered under name <b>{{ state.name }}</b> ; it'll be valid next 30 days without
+                activation. Please check <b>{{ state.email }}</b> for activation instructions.
+            </p>
+        </div>
+        <template #footer>
+            <div class="flex justify-content-center">
+                <Button label="OK" @click="toggleDialog" class="p-button-text" />
             </div>
-            <template #footer>
-                <div class="flex justify-content-center">
-                    <Button label="OK" @click="toggleDialog" class="p-button-text" />
-                </div>
-            </template>
-        </Dialog>
+        </template>
+    </Dialog>
 
-        <div class="flex justify-content-center">
+    <div class="flex justify-content-center">
+        <div class="">
+            <div class="flex card-container overflow-hidden">
+                <div class="flex-grow-0 md:flex-grow-0 flex align-items-center justify-content-center flex-column  font-bold text-gray-900 m-3 px-2 py-1 border-round">
 
-            <div class="card">
-                <div class="flex card-container overflow-hidden">
-
-                    <div
-                        class="flex-grow-0 md:flex-grow-0 flex align-items-center justify-content-center font-bold text-gray-900 m-3 px-2 py-1 border-round">
-                        <Card style="width: 15rem; height: 90%; margin-bottom: 1em" class="text-gray-900 bg-blue-500">
-                            <template #title>
-                                Simple Card
-                            </template>
-                            <template #content>
-                                <p>Management</p>
-                                <p> platform </p>
-                                <p> Sign up</p>
-                            </template>
-                        </Card>
+                    <!-- logo + Management platform  -->
+                    <div class="flex  align-content-center  flex-column w-auto">
+                        <div class="flex align-items-center justify-content-center mr-3">
+                            <img src="../assets/logo.svg" />
+                        </div>
+                        <div class="flex align-items-center justify-content-center w-auto mr-2 py-3 text-4xl namu" style=" color : #0fd977">
+                            Management platform
+                        </div>
                     </div>
 
-                    <form @submit.prevent="handleSubmit(!v$.$invalid)" class="p-fluid">
-                        <h5 class="text-center text-gray-900 font-bold">로그인하세요</h5>
-                        <div class="field">
-                            <div class="p-float-label p-input-icon-right">
-                                <i class="pi pi-envelope" />
-                                <InputText id="email" v-model="v$.email.$model"
-                                    :class="{ 'p-invalid': v$.email.$invalid && submitted }"
-                                    aria-describedby="email-error" />
-                                <label for="email" :class="{ 'p-error': v$.email.$invalid && submitted }"> <i
-                                        class="pi pi-user"></i> 아이디를 입력하세요</label>
+                    <!-- login card -->
+                    <Card style="width: 22rem; height: 27rem;" class=" text-gray-900 bg-white-500">
+                        <template #content>
+                            <div class="flex align-items-center justify-content-center font-bold text-2xl mb-5" style="height: 5rem;">
+                                로그인 하세요
                             </div>
-                            <span v-if="v$.email.$error && submitted">
-                                <span id="email-error" v-for="(error, index) of v$.email.$errors" :key="index">
-                                    <small class="p-error">{{ error.$message }}</small>
-                                </span>
-                            </span>
-                            <small v-else-if="(v$.email.$invalid && submitted) || v$.email.$pending.$response"
-                                class="p-error">{{ v$.email.required.$message.replace('Value', 'Email') }}</small>
-                        </div>
-                        <div class="field">
-                            <div class="p-float-label">
-                                <Password id="password" v-model="v$.password.$model"
-                                    :class="{ 'p-invalid': v$.password.$invalid && submitted }" toggleMask>
-                                    <template #header>
-                                        <h6>Pick a password</h6>
-                                    </template>
-                                    <template #footer="sp">
-                                        {{ sp.level }}
-                                        <Divider />
-                                        <p class="mt-2">Suggestions</p>
-                                        <ul class="pl-2 ml-2 mt-0" style="line-height: 1.5">
-                                            <li>At least one lowercase</li>
-                                            <li>At least one uppercase</li>
-                                            <li>At least one numeric</li>
-                                            <li>Minimum 8 characters</li>
-                                        </ul>
-                                    </template>
-                                </Password>
-                                <label for="password" :class="{ 'p-error': v$.password.$invalid && submitted }"> <i
-                                        class="pi pi-lock"></i> 패스워드를 입력하세요</label>
-                            </div>
-                            <small v-if="(v$.password.$invalid && submitted) || v$.password.$pending.$response"
-                                class="p-error">{{ v$.password.required.$message.replace('Value', 'Password') }}</small>
-                        </div>
 
-                        <Button type="submit" label="Submit" class="mt-2" />
-                        <br/>
-                        <br/>
+                            <form @submit.prevent="handleSubmit(!v$.$invalid)" class="flex flex-column justify-content-between p-fluid">
+                                <div>
+                                    <div class="" style="height: 4rem;">
+                                        <div class="p-float-label p-input-icon-right">
+                                            <i class="pi pi-envelope" />
+                                            <InputText id="email" v-model="v$.email.$model" :class="{ 'p-invalid': v$.email.$invalid && submitted }" aria-describedby="email-error" />
+                                            <label for="email" :class="{ 'p-error': v$.email.$invalid && submitted }"> <i class="pi pi-user"></i> 아이디를 입력하세요</label>
+                                        </div>
+                                        <span v-if="v$.email.$error && submitted">
+                                            <span id="email-error" v-for="(error, index) of v$.email.$errors" :key="index">
+                                                <small class="p-error">{{ error.$message }}</small>
+                                            </span>
+                                        </span>
+                                        <small v-else-if="(v$.email.$invalid && submitted) || v$.email.$pending.$response" class="p-error">{{ v$.email.required.$message.replace('Value', 'Email')
+                                            }}</small>
+                                    </div>
+                                    
+                                    <div class="mt-1" style="height: 4rem;">
+                                        <div class="p-float-label">
+                                            <Password id="password" v-model="v$.password.$model" :class="{ 'p-invalid': v$.password.$invalid && submitted }" toggleMask>
+                                                <template #header>
+                                                    <h6>비밀번호를 입력하세요</h6>
+                                                </template>
+                                                <template #footer="sp">
+                                                    {{ sp.level }}
+                                                    <Divider />
+                                                    <p class="mt-2">추천 비밀 번호</p>
+                                                    <ul class="pl-2 ml-2 mt-0" style="line-height: 1.5">
+                                                        <li>최소 한 글자 이상의 소문자</li>
+                                                        <li>최소 한 글자 이상의 대문자</li>
+                                                        <li>최소 하나 이상의 숫자</li>
+                                                        <li>최소 8글자</li>
+                                                    </ul>
+                                                </template>
+                                            </Password>
+                                            <label for="password" :class="{ 'p-error': v$.password.$invalid && submitted }">
+                                                <i class="pi pi-lock"></i> 비밀번호를 입력하세요</label>
+                                        </div>
+                                        <small v-if="(v$.password.$invalid && submitted) || v$.password.$pending.$response" class="p-error">{{ v$.password.required.$message.replace('Value', 'Password')
+                                            }}</small>
+                                    </div>
+                                    <div>
+                                        <Checkbox id="accept" v-model="checked" value="true" class="mx-2" />
+                                        <label for="accept"> 아이디 기억하기 </label>
+                                    </div>
+                                </div>
+                                <!-- <div class="">
+                                    <Checkbox id="accept" name="accept" value="Accept" v-model="v$.accept.$model" :class="{ 'p-invalid': v$.accept.$invalid && submitted }" />
+                                    <label for="accept" :class="{ 'p-error': v$.accept.$invalid && submitted }">자동로그인</label>
+                                </div> -->
+                                <div>
+                                    <Button type="submit" label="로그인" class="mt-4 logincolor" />
+                                </div>
+                            </form>
 
-                    <!-- <div class="field-checkbox">
-                            <Checkbox id="accept" name="accept" value="Accept" v-model="v$.accept.$model"
-                                :class="{ 'p-invalid': v$.accept.$invalid && submitted }" />
-                            <label for="accept" :class="{ 'p-error': v$.accept.$invalid && submitted }">자동로그인</label>
-                                    </div> -->
-                    </form>
+                        </template>
+                    </Card>
+
+                    <!-- Forwiz system -->
+                    <div class="flex flex-column justify-content-center align-items-center text-white mt-5">
+                        <div class="flex text-2xl font-bold">
+                            Forwiz System
+                        </div>
+                        <div class="flex mt-1">
+                            Copyright 2023. Forwiz System. All rights reserved
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
     </div>
+</div>
 </template>
 
 <script>
-import { reactive, ref } from 'vue';
-import { email, required } from "@vuelidate/validators";
-import { useVuelidate } from "@vuelidate/core";
+import {
+    reactive,
+    ref,
+    onMounted,
+} from 'vue';
+import {
+    email,
+    required
+} from "@vuelidate/validators";
+import {
+    useVuelidate
+} from "@vuelidate/core";
 import axios from 'axios'
 
-import { useUserStore } from '@/stores/user'
-import { storeToRefs } from 'pinia';
-import { useCookies } from "vue3-cookies";
-import { useRouter } from 'vue-router'
-
-
+import {
+    useUserStore
+} from '@/stores/user'
+import {
+    storeToRefs
+} from 'pinia';
+import {
+    useCookies
+} from "vue3-cookies";
+import {
+    useRouter
+} from 'vue-router'
 
 export default {
     setup() {
@@ -119,17 +151,38 @@ export default {
         });
 
         const rules = {
-            email: { required, email },
-            password: { required },
+            email: {
+                required,
+                email
+            },
+            password: {
+                required
+            },
             // accept: { required }
         };
 
+        onMounted(()=>{
+           const autoLogin = localStorage.getItem('autoLogin');
+            if (autoLogin){
+                // console.log(state.email);
+                state.email = autoLogin;
+                checked.value=  ['true']
+            } else {
+                console.log("no email remembered");
+            }
+        })
+
+        const checked = ref(['false']);
         const submitted = ref(false);
         const showMessage = ref(false);
 
         const user = useUserStore();
-        const { info } = storeToRefs(user);
-        const { cookies } = useCookies();
+        const {
+            info
+        } = storeToRefs(user);
+        const {
+            cookies
+        } = useCookies();
         const router = useRouter();
 
         const v$ = useVuelidate(rules, state);
@@ -142,9 +195,9 @@ export default {
             }
 
             const res = axios.post('/user/user/token', {
-                "username": state.email,
-                "password": state.password,
-            })
+                    "username": state.email,
+                    "password": state.password,
+                })
                 .then(function (response) {
                     console.log(response);
                     // get token from server's 200 response result data
@@ -154,25 +207,32 @@ export default {
                     // const refresh_token = atob(response.data.refresh_token); // string to binary 변환 
                     // const parsedRefresh_Token = JSON.parse(refresh_token) // 이를 parse
 
-
                     // save token as cookies
                     cookies.set('accessToken', response.data.access_token);
                     cookies.set('accessRefresh', response.data.refresh_token);
                     // change pinia user info value
                     info.value.checkLogin = 'login'
 
+                    if (checked.value == 'true'){
+                        localStorage.setItem("autoLogin", state.email);
+                    } else {
+                        localStorage.removeItem("autoLogin");
+                    }
+
                     // save user data(game server, user info) all
                     // 구현 안 됨
-
                     // redirect to dashboard
 
-                    router.push({ path: '/dashboard' });
+                    router.push({
+                        path: '/dashboard'
+                    });
                 })
                 .catch(function (error) {
                     console.log(error);
+
+
                 });
             console.log(res)
-
 
         }
 
@@ -190,29 +250,22 @@ export default {
             submitted.value = false;
         }
 
-        return { state, v$, handleSubmit, toggleDialog, submitted, showMessage }
+        return {
+            onMounted,
+            state,
+            v$,
+            handleSubmit,
+            toggleDialog,
+            submitted,
+            showMessage,
+            checked,
+        }
     }
 }
 </script>
 
 <style lang="scss" scoped>
-.form-demo {
-    .card {
-        min-width: 450px;
-
-        form {
-            margin-top: 2rem;
-        }
-
-        .field {
-            margin-bottom: 1.5rem;
-        }
-    }
-
-    @media screen and (max-width: 960px) {
-        .card {
-            width: 80%;
-        }
-    }
+.logincolor {
+    background-color: #014751;
 }
 </style>

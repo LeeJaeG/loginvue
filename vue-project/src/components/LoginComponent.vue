@@ -206,7 +206,7 @@ export default {
                 return;
             }
 
-            const res = axios.post('/user/user/token', {
+            const res = axios.post('/api/user/token', {
                 "username": state.email,
                 "password": state.password,
             })

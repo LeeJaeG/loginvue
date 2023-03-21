@@ -28,8 +28,8 @@
                             <div class="flex align-items-center justify-content-center mr-3">
                                 <img src="../assets/logo.svg" />
                             </div>
-                            <div class="flex align-items-center justify-content-center w-auto mr-2 py-3 text-4xl namu"
-                                style=" color : #0fd977">
+                            <div class="flex align-items-center justify-content-center w-auto mr-2 py-3 text-4xl namu "
+                                style=" color : #0fd977; -webkit-text-stroke: 1px #014751;">
                                 Management platform
                             </div>
                         </div>
@@ -272,6 +272,8 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>.logincolor {
+<style lang="scss" scoped>
+.logincolor {
     background-color: #014751;
-}</style>
+}
+</style>

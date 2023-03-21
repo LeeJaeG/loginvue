@@ -221,7 +221,7 @@ export default {
 
                     // save token as cookies
                     cookies.set('accessToken', response.data.access_token);
-                    cookies.set('refreshToken', response.data.refresh_token);
+                    cookies.set('accessRefresh', response.data.refresh_token);
                     // change pinia user info value
                     info.value.checkLogin = 'login'
 

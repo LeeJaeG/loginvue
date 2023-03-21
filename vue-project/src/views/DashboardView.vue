@@ -75,7 +75,6 @@ const expandNode = (node) => {
 
 const toggleShowCard = () => {
     showCard.value = !showCard.value;
-    console.log(cookies.get('refreshToken'))
     // console.log(VueJwtDecode.decode(cookies.get('accessToken')))
     const res = axios.post('/api/openstack/openstack', {
         "access_token": cookies.get('accessToken'),
@@ -87,13 +86,13 @@ const toggleShowCard = () => {
             if (error.response.data.detail === "Token has expired") {
                 axios.post('/user/user/refresh_token', {
                     "access_token": cookies.get('accessToken'),
-                    "refresh_token": cookies.get('refreshToken'),
+                    "refresh_token": cookies.get('accessRefresh'),
                     "token_type": "bearer"
                 })
                     .then(function (response) {
                         console.log(response);
                         cookies.set('accessToken', response.data.access_token);
-                        cookies.set('refreshToken', response.data.refresh_token);
+                        cookies.set('accessRefresh', response.data.refresh_token);
                         // change pinia user info value
                         // info.value.checkLogin = 'login'
                     })

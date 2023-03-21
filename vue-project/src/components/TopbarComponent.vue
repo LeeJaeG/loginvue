@@ -100,11 +100,11 @@ const {
 const logout = () => {
     const accessToken = cookies.get('accessToken')
     const refreshToken = cookies.get('accessRefresh')
-    console.log(accessToken, refreshToken);
-    axios.post('/user/user/logout', {
+    console.log(accessToken, "+++++++",refreshToken);
+    axios.post('/api/user/logout', {
         "access_token": accessToken,
         "refresh_token": refreshToken,
-        "token_type": "string"
+        "token_type": "bearer"
     }).then((result) => {
         console.log(result);
         cookies.remove('accessToken');
@@ -113,6 +113,8 @@ const logout = () => {
         info.value.checkCloud = 'notSelected'
     }).catch((error) => {
         console.log(error);
+        
+        
     })
 }
 </script>

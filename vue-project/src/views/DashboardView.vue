@@ -26,6 +26,8 @@
 import { ref } from "vue";
 import { useCookies } from "vue3-cookies";
 import axios from 'axios'
+import VueJwtDecode from 'vue-jwt-decode'
+
 const { cookies } = useCookies();
 
 const expandedKeys = ref({});
@@ -73,16 +75,35 @@ const expandNode = (node) => {
 
 const toggleShowCard = () => {
     showCard.value = !showCard.value;
-    console.log(cookies.get('accessToken'))
-
-    const res = axios.post('/openstack/open/openstack', {
-        "cookie": cookies.get('accessToken'),
+    console.log(cookies.get('refreshToken'))
+    // console.log(VueJwtDecode.decode(cookies.get('accessToken')))
+    const res = axios.post('/api/openstack/openstack', {
+        "access_token": cookies.get('accessToken'),
     })
         .then(function (response) {
             console.log(response);
         })
         .catch(function (error) {
-            console.log(error);
+            if (error.response.data.detail === "Token has expired") {
+                axios.post('/user/user/refresh_token', {
+                    "access_token": cookies.get('accessToken'),
+                    "refresh_token": cookies.get('refreshToken'),
+                    "token_type": "bearer"
+                })
+                    .then(function (response) {
+                        console.log(response);
+                        cookies.set('accessToken', response.data.access_token);
+                        cookies.set('refreshToken', response.data.refresh_token);
+                        // change pinia user info value
+                        // info.value.checkLogin = 'login'
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                        // info.value.checkLogin = 'logout'
+                    });
+            } else {
+                console.log(error.response.data.detail);
+            }
         });
     console.log(res)
 

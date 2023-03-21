@@ -187,7 +187,7 @@ const toggleShowCard = () => {
     }
     // console.log(cookies.get('accessToken'))
 
-    // const res = axios.post('/open/open/openstack', {
+    // const res = axios.post('/openstack/open/openstack', {
     //     "cookie": cookies.get('accessToken'),
     // })
     //     .then((response) => {

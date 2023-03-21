@@ -13,20 +13,12 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/user': {
+      '/api': {
         target: 'http://192.168.15.47:8000',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/user/, ''),
         // secure: false,
         // ws: true
       },
-      '/open': {
-        target: 'http://192.168.15.47:8000',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/open/, ''),
-        // secure: false,
-        // ws: true
-      }
     }
   }
 })

@@ -59,10 +59,10 @@
                     </router-link>
                 </li>
                 <li>
-                    <router-link style="text-decoration: none; color: inherit;" to="/userinfo" v-ripple
+                    <router-link style="text-decoration: none; color: inherit;" to="/users" v-ripple
                         class="flex p-3 align-items-center text-600 hover:text-900 hover:surface-100 transition-colors transition-duration-150 p-ripple">
                         <i class="pi pi-user mr-2"></i>
-                        <span class="font-medium">UserInfo</span>
+                        <span class="font-medium">Users</span>
                     </router-link>
                 </li>
                 <li>
@@ -100,7 +100,7 @@ const {
 const logout = () => {
     const accessToken = cookies.get('accessToken')
     const refreshToken = cookies.get('accessRefresh')
-    console.log(accessToken, "+++++++",refreshToken);
+    console.log(accessToken, "+++++++", refreshToken);
     axios.post('/api/user/logout', {
         "access_token": accessToken,
         "refresh_token": refreshToken,
@@ -108,13 +108,13 @@ const logout = () => {
     }).then((result) => {
         console.log(result);
         cookies.remove('accessToken');
-        cookies.remove('accessRefresh');
+        cookies.remove('refreshToken');
         info.value.checkLogin = 'logout'
         info.value.checkCloud = 'notSelected'
     }).catch((error) => {
         console.log(error);
-        
-        
+
+
     })
 }
 </script>

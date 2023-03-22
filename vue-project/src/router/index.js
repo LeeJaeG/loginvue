@@ -42,6 +42,11 @@ const router = createRouter({
       name: 'alarm',
       component: () => import('../views/AlarmView.vue')
     },
+    {
+      path: '/users',
+      name: 'userManagement',
+      component: () => import('../views/UserManagement.vue')
+    },
   ]
 })
 

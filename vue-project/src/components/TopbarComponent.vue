@@ -1,15 +1,15 @@
 <template>
-    <div class="flex justify-content-between backcolor text-white py-2 px-3 w-full shadow-2 border-bottom-1 surface-border"
+    <div class="flex flex-nowrap justify-content-between backcolor text-white py-2 px-3 w-full surface-border"
         style="height:7vh">
-        <div class="flex align-content-center w-3">
+        <div class="flex flex-shrink-0 align-content-center w-4">
             <div class="flex align-items-center mr-3">
                 <img src="../assets/logo.svg" />
             </div>
-            <div class="flex align-items-center mr-2 text-2xl namu" style="color : #0fd977">
-                Management platform
+            <div class="flex flex-shrink-0 flex-grow-1 align-items-center mr-2 text-2xl namu" style="color : #0fd977">
+                Echo-e Management platform
             </div>
         </div>
-        <div class="flex align-items-center w-4 justify-content-between">
+        <div class="flex flex-shrink-0 align-items-center w-4 justify-content-between">
             <div class="w-4 text-center text-xl">
                 Openstack
             </div>
@@ -20,7 +20,7 @@
                 Cluster
             </div>
         </div>
-        <div class="flex w-3 justify-content-between">
+        <div class="flex flex-grow-1 flex-nowrap flex-shrink-0 justify-content-between">
             <div class="flex w-7 align-items-center justify-content-end pr-3">
                 <div class="p-input-icon-left w-9  text-white">
                     <i class="pi pi-search  text-white"></i>
@@ -28,7 +28,8 @@
                         placeholder="Search" style="background-color: #414653;" />
                 </div>
             </div>
-            <a class="flex justify-content-center w-1 align-items-center text-xl relative hover:surface-800  v-ripple"
+            <a class="flex justify-content-center w-1 align-items-center text-xl relative hover:surface-800 p-ripple"
+                v-ripple
                 v-styleclass="{ selector: '@next', enterClass: 'hidden', enterActiveClass: 'scalein', leaveToClass: 'hidden', leaveActiveClass: 'fadeout', hideOnOutsideClick: true }">
                 <font-awesome-icon v-badge.danger class="p-overlay-badge" icon="fa-solid fa-bell text-white"
                     style="font-size: 1.5rem" />
@@ -45,7 +46,8 @@
                 </li>
             </ul>
 
-            <a class="flex w-4 justify-content-center align-items-center text-lg hover:surface-800  v-ripple"
+            <a class="flex flex-shrink-0 flex-grow-1 justify-content-center align-items-center text-lg hover:surface-800"
+                v-ripple
                 v-styleclass="{ selector: '@next', enterClass: 'hidden', enterActiveClass: 'scalein', leaveToClass: 'hidden', leaveActiveClass: 'fadeout', hideOnOutsideClick: true }">
                 Admin : Cloud A
             </a>

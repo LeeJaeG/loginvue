@@ -1,6 +1,5 @@
 <template>
     <div class="">
-
         <Dialog v-model:visible="showMessage" :breakpoints="{ '960px': '80vw' }" :style="{ width: '30vw' }" position="top">
             <div class="flex align-items-center flex-column pt-6 px-3">
                 <i class="pi pi-check-circle" :style="{ fontSize: '5rem', color: 'var(--green-500)' }"></i>
@@ -25,9 +24,6 @@
 
                         <!-- logo + Management platform  -->
                         <div class="flex  align-content-center  flex-column w-auto">
-                            <div class="flex align-items-center justify-content-center mr-3">
-                                <img src="../assets/logo.svg" />
-                            </div>
                             <div class="flex align-items-center justify-content-center w-auto mr-2 py-3 text-4xl namu "
                                 style=" color : #0fd977; -webkit-text-stroke: 1px #014751;">
                                 Management platform
@@ -130,29 +126,14 @@
 </template>
 
 <script>
-import {
-    reactive,
-    ref,
-    onMounted,
-} from 'vue';
-import {
-    email,
-    required
-} from "@vuelidate/validators";
-import {
-    useVuelidate
-} from "@vuelidate/core";
+import { reactive, ref, onMounted } from 'vue';
+import { email, required } from "@vuelidate/validators";
+import { useVuelidate } from "@vuelidate/core";
 import axios from 'axios'
 
-import {
-    useUserStore
-} from '@/stores/user'
-import {
-    storeToRefs
-} from 'pinia';
-import {
-    useCookies
-} from "vue3-cookies";
+import { useUserStore } from '@/stores/user'
+import { storeToRefs } from 'pinia';
+import { useCookies } from "vue3-cookies";
 
 export default {
     setup() {
@@ -189,12 +170,8 @@ export default {
         const showMessage = ref(false);
 
         const user = useUserStore();
-        const {
-            info
-        } = storeToRefs(user);
-        const {
-            cookies
-        } = useCookies();
+        const { info } = storeToRefs(user);
+        const { cookies } = useCookies();
 
 
         const v$ = useVuelidate(rules, state);
@@ -237,11 +214,8 @@ export default {
                 })
                 .catch(function (error) {
                     console.log(error);
-
-
                 });
             console.log(res)
-
         }
 
         const toggleDialog = () => {

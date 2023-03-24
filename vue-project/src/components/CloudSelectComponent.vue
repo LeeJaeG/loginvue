@@ -1,6 +1,7 @@
 <!-- eslint-disable vue/require-v-for-key -->
 <template>
     <Toast />
+
     <Card style="width: 60rem; height: 35rem;">
         <template #header>
             <div class="flex align-items-center px-6 text-white text-2xl namu bgcolor" style="height: 3.7rem;">
@@ -64,8 +65,8 @@
 
                     <div class="w-full flex-grow-1 p-2">
                         <!-- tableStyle="min-width: 50rem" -->
-                        <DataTable :value="mocks" class="shadow-1" v-model:selection="selectedCloud" scrollable
-                            scrollHeight="400px" selectionMode="single" @click="toggleShowCard">
+                        <DataTable v-ripple :value="mocks" class="shadow-1 p-ripple" v-model:selection="selectedCloud"
+                            scrollable scrollHeight="400px" selectionMode="single" @click="toggleShowCard">
                             <Column field="no" header="No."></Column>
                             <Column field="name" header="Name"></Column>
                             <Column field="authority" header="Authority"></Column>

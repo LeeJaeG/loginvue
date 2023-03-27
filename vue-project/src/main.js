@@ -1,8 +1,8 @@
+/* eslint-disable vue/multi-word-component-names */
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-
-
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
 import axios from 'axios'
 import VueAxios from 'vue-axios'
@@ -108,6 +108,11 @@ import TreeTable from 'primevue/treetable';
 import TriStateCheckbox from 'primevue/tristatecheckbox';
 import VirtualScroller from 'primevue/virtualscroller';
 
+import "primeflex/primeflex.css";
+import "primevue/resources/themes/lara-light-blue/theme.css";
+import "primevue/resources/primevue.min.css";
+import "primeicons/primeicons.css";
+
 /* import the fontawesome core */
 import { library } from '@fortawesome/fontawesome-svg-core';
 /* import font awesome icon component */
@@ -118,14 +123,16 @@ library.add(fas);
 import { far } from '@fortawesome/free-regular-svg-icons';
 library.add(far);
 // library.add();
+
 const app = createApp(App);
 
-app.component('font-awesome-icon', FontAwesomeIcon);
+const pinia = createPinia()
+pinia.use(piniaPluginPersistedstate)
 
 app.use(VueAxios, axios)
-
-app.use(createPinia());
+app.use(pinia);
 app.use(router);
+// app.use(PrimeVue);
 app.use(PrimeVue, { ripple: true });
 app.use(ConfirmationService);
 app.use(ToastService);
@@ -137,6 +144,7 @@ app.directive('ripple', Ripple);
 app.directive('styleclass', StyleClass);
 app.directive('focustrap', FocusTrap);
 
+app.component('font-awesome-icon', FontAwesomeIcon);
 app.component('Accordion', Accordion);
 app.component('AccordionTab', AccordionTab);
 app.component('AutoComplete', AutoComplete);
@@ -225,8 +233,5 @@ app.component('TreeSelect', TreeSelect);
 app.component('TreeTable', TreeTable);
 app.component('TriStateCheckbox', TriStateCheckbox);
 app.component('VirtualScroller', VirtualScroller);
-
-
-
 
 app.mount('#app')

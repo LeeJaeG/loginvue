@@ -76,7 +76,7 @@ const expandNode = (node) => {
 const toggleShowCard = () => {
     showCard.value = !showCard.value;
     // console.log(VueJwtDecode.decode(cookies.get('accessToken')))
-    const res = axios.post('/api/openstack/openstack', {
+    const res = axios.post('/api/openstack/openstack_projects', {
         "access_token": cookies.get('accessToken'),
     })
         .then(function (response) {
@@ -84,7 +84,7 @@ const toggleShowCard = () => {
         })
         .catch(function (error) {
             if (error.response.data.detail === "Token has expired") {
-                axios.post('/user/user/refresh_token', {
+                axios.post('/api/user/refresh_token', {
                     "access_token": cookies.get('accessToken'),
                     "refresh_token": cookies.get('accessRefresh'),
                     "token_type": "bearer"

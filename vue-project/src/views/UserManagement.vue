@@ -55,6 +55,7 @@
 <script setup>
 import { ref } from "vue"
 import { usePrimeVue } from "primevue/config";
+import axios from 'axios'
 const $primevue = usePrimeVue();
 defineExpose({
     $primevue
@@ -111,6 +112,35 @@ const mocks = ref([
         etc: "This is user account"
     },
 ]);
+
+const res = axios.get('/api/user/')
+        .then(function (response) {
+            ref(response.data.data)
+            console.log(response.data.data)
+        })
+        .catch(function (error) {
+            if (error.response.data.detail === "Token has expired") {
+                axios.post('/api/user/refresh_token', {
+                    "access_token": cookies.get('accessToken'),
+                    "refresh_token": cookies.get('accessRefresh'),
+                    "token_type": "bearer"
+                })
+                    .then(function (response) {
+                        console.log(response);
+                        cookies.set('accessToken', response.data.access_token);
+                        cookies.set('accessRefresh', response.data.refresh_token);
+                        // change pinia user info value
+                        // info.value.checkLogin = 'login'
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                        // info.value.checkLogin = 'logout'
+                    });
+            } else {
+                console.log(error.response.data.detail);
+            }
+        });
+
 const projectMocks = ref([
     {
         name: "project1",
@@ -129,6 +159,26 @@ const projectMocks = ref([
         etc: "This is user project4"
     },
 ]);
+
+const admin_projects = ref([
+    {
+        name: "project1",
+        etc: "This is project1"
+    },
+    {
+        name: "project2",
+        etc: "This is user project2"
+    },
+    {
+        name: "project3",
+        etc: "This is project3"
+    },
+    {
+        name: "project4",
+        etc: "This is user project4"
+    },
+]);
+
 const items = ref([
     {
         label: 'Options',
@@ -164,6 +214,8 @@ const showUser = (user) => {
     else {
         selectedUser.value = ''
     }
+
+    
 }
 
 </script>

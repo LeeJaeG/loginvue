@@ -102,7 +102,7 @@ const {
 const logout = () => {
     const accessToken = cookies.get('accessToken')
     const refreshToken = cookies.get('accessRefresh')
-    console.log(accessToken, "+++++++", refreshToken);
+
     axios.post('/api/user/logout', {
         "access_token": accessToken,
         "refresh_token": refreshToken,

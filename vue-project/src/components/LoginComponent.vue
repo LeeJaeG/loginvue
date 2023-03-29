@@ -25,7 +25,7 @@
                         <!-- logo + Management platform  -->
                         <div class="flex  align-content-center  flex-column w-auto">
                             <div class="flex align-items-center justify-content-center w-auto mr-2 py-3 text-4xl namu "
-                                style=" color : #0fd977; -webkit-text-stroke: 1px #014751;">
+                                style=" color : #fff; -webkit-text-stroke: 1px #014751;">
                                 Management platform
                             </div>
                         </div>

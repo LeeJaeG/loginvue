@@ -46,10 +46,10 @@ const changeSidebar = () => {
 }
 
 onMounted(() => {
-  console.log("onMounted")
-  if (cookies.get('refreshToken')) {
+  if (cookies.get('refreshToken') != null) {
+    console.log(cookies.get('refreshToken'));
     info.value.checkLogin = 'login'
-    console.log("onMounted")
+    // console.log("onMounted", info.value.checkLogin)
   }
 })
 
@@ -74,24 +74,18 @@ onMounted(() => {
     <!-- Top bar -->
     <topbar></topbar>
     <!-- below Top bar -->
-    <div>
+    <div class="flex relative static surface-ground" style="height:93vh">
       <!-- without sidebar 2 -->
-      <div v-if="offSidebar1 == false && offSidebar2 == true" class="flex relative lg:static surface-ground"
-        style="height:93vh">
-        <sidebar1 @touch="changeSidebar"></sidebar1>
-        <div class="flex flex-column relative flex-auto">
-          <contentbar></contentbar>
-          <content></content>
-        </div>
+      <div v-if="offSidebar1 == false && offSidebar2 == true">
+        <sidebar1 class="min-h-full" @touch="changeSidebar"></sidebar1>
       </div>
       <!-- without sidebar 1 -->
-      <div v-else-if="offSidebar1 == true && offSidebar2 == false" class="flex relative lg:static surface-ground"
-        style="height:93vh">
-        <sidebar2 @touch="changeSidebar"></sidebar2>
-        <div class="flex flex-column relative flex-auto">
-          <contentbar></contentbar>
-          <content></content>
-        </div>
+      <div v-else-if="offSidebar1 == true && offSidebar2 == false">
+        <sidebar2 class="min-h-full" @touch="changeSidebar"></sidebar2>
+      </div>
+      <div class="flex flex-column relative flex-auto">
+        <contentbar></contentbar>
+        <content></content>
       </div>
     </div>
   </div>

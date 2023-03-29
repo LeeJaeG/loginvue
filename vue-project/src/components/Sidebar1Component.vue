@@ -1,6 +1,6 @@
 <template>
     <div id="app-sidebar-1"
-        class="py-2 align-content-center text-white backcolor lg:block flex-shrink-0 absolute lg:static left-0 top-0 z-1 shadow-3 text-center w-4rem select-none"
+        class="py-2 align-content-center text-white backcolor block flex-shrink-0 static left-0 top-0 z-1 shadow-3 text-center w-4rem select-none"
         style="overflow: auto">
         <div class="flex justify-content-end align-items-center pr-3 mb-2 font-bold hover:text-teal-500"
             style="height: 2rem;" @click="$emit('touch')">

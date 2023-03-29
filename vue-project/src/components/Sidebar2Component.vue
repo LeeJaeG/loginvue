@@ -19,7 +19,7 @@ const changeBracket = (name) => {
 
 <template>
     <div id="app-sidebar-2"
-        class="text-white backcolor py-2 lg:block flex-shrink-0 absolute lg:static left-0 top-0 z-1 shadow-3 w-16rem  select-none"
+        class="text-white backcolor py-2 block flex-shrink-0  lg:static left-0 top-0 z-1 shadow-3 w-16rem  select-none"
         style="overflow: auto">
 
         <div class="flex justify-content-start align-items-center mb-2 pl-3 font-bold hover:text-teal-500"
@@ -244,4 +244,5 @@ const changeBracket = (name) => {
 
 .hovercolor:hover {
     background-color: #0bc279;
-}</style>
+}
+</style>

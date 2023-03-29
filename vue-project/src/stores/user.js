@@ -1,16 +1,31 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
+import axios from 'axios'
+import { useCookies } from "vue3-cookies";
+const { cookies } = useCookies();
 
 export const useUserStore = defineStore('user', () => {
   const info = ref({ checkLogin: 'logout', checkCloud:'notSelected'})
   const auth = ref({ accessToken: '', refreshToken: '' })
-  // function tokenErrorHandler(error, func_name ) {
-  // if (error.code == 403 && error.body == 'please refresh access token'){
-  //  // call func for api 
-  //   console.log(error);
-  // } 
-  // }
-  return { info, auth }
+  function tokenErrorHandler(error, func,retry) {
+    if (error.response.data.detail === "Token has expired") {
+      axios.post('/api/user/refresh_token', {
+          "access_token": cookies.get('accessToken'),
+          "refresh_token": cookies.get('accessRefresh'),
+          "token_type": "bearer"
+      })
+          .then((response) => {
+              console.log(response);
+              cookies.set('accessToken', response.data.access_token);
+              cookies.set('accessRefresh', response.data.refresh_token);
+              retry += 1
+              func(retry);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+  }}
+  return { info, auth, tokenErrorHandler }
 }, {
   persist: {
     key: 'user-key',

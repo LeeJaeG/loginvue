@@ -2,9 +2,9 @@
     <div class="flex flex-nowrap justify-content-between backcolor text-white py-2 px-3 w-full surface-border"
         style="height:7vh">
         <div class="flex flex-shrink-0 align-content-center w-4">
-            <div class="flex align-items-center mr-3">
+            <router-link style="text-decoration: none; color: inherit;" to="/" class="flex align-items-center mr-3">
                 <img src="../assets/logo.svg" />
-            </div>
+            </router-link>
             <div class="flex flex-shrink-0 flex-grow-1 align-items-center mr-2 text-2xl namu" style="color : #0fd977">
                 Echo-e Management platform
             </div>
@@ -20,7 +20,7 @@
                 Cluster
             </div>
         </div>
-        <div class="flex flex-grow-1 flex-nowrap flex-shrink-0 justify-content-between">
+        <div class="flex flex-grow-1 flex-nowrap flex-shrink-0 justify-content-between relative">
             <div class="flex w-7 align-items-center justify-content-end pr-3">
                 <div class="p-input-icon-left w-9  text-white">
                     <i class="pi pi-search  text-white"></i>
@@ -28,58 +28,76 @@
                         placeholder="Search" style="background-color: #414653;" />
                 </div>
             </div>
-            <a class="flex justify-content-center w-1 align-items-center text-xl relative hover:surface-800 p-ripple"
-                v-ripple
-                v-styleclass="{ selector: '@next', enterClass: 'hidden', enterActiveClass: 'scalein', leaveToClass: 'hidden', leaveActiveClass: 'fadeout', hideOnOutsideClick: true }">
-                <font-awesome-icon v-badge.danger class="p-overlay-badge" icon="fa-solid fa-bell text-white"
-                    style="font-size: 1.5rem" />
-                <!-- <i v-badge.danger class="pi pi-bell p-overlay-badge" style="font-size: 1.5rem" /> -->
-                <span class="flex align-items-center justify-content-center note-num"> 5+ </span>
-            </a>
-            <ul class="list-none py-3 px-6 m-0 lg:px-0 lg:py-0 border-round shadow-0 lg:shadow-2 lg:border-1 border-50 lg:absolute hidden surface-overlay origin-top w-full lg:w-15rem  cursor-pointer z-5"
-                style="left:calc( 100% - 26rem); top:6vh">
-                <li>
-                    <router-link style="text-decoration: none; color: inherit;" to="/" v-ripple
-                        class="flex p-3 align-items-center text-600 hover:text-900 hover:surface-100 transition-colors transition-duration-150 p-ripple">
-                        <span class="font-medium">누군가의 알람</span>
-                    </router-link>
-                </li>
-            </ul>
 
             <a class="flex flex-shrink-0 flex-grow-1 justify-content-center align-items-center text-lg hover:surface-800"
                 v-ripple
                 v-styleclass="{ selector: '@next', enterClass: 'hidden', enterActiveClass: 'scalein', leaveToClass: 'hidden', leaveActiveClass: 'fadeout', hideOnOutsideClick: true }">
                 Admin : Cloud A
             </a>
-            <ul class="list-none py-3 px-6 m-0 lg:px-0 lg:py-0 border-round shadow-0 lg:shadow-2 lg:border-1 border-50 lg:absolute hidden surface-overlay origin-top w-full lg:w-15rem  cursor-pointer z-5"
-                style="left:calc( 100% - 15rem); top:6vh">
+            <ul class="list-none m-0 px-0 py-0 border-round shadow-2 backcolor absolute hidden text-white origin-top w-15rem cursor-pointer z-5"
+                style="right: 1vh; top:8vh">
                 <li>
                     <router-link style="text-decoration: none; color: inherit;" to="/dashboard" v-ripple
-                        class="flex p-3 align-items-center text-600 hover:text-900 hover:surface-100 transition-colors transition-duration-150 p-ripple">
+                        class="flex p-3 align-items-center  hover:bg-teal-400 transition-colors transition-duration-150 p-ripple">
                         <i class="pi pi-home mr-2"></i>
                         <span class="font-medium">Dashboard</span>
                     </router-link>
                 </li>
                 <li>
                     <router-link style="text-decoration: none; color: inherit;" to="/users" v-ripple
-                        class="flex p-3 align-items-center text-600 hover:text-900 hover:surface-100 transition-colors transition-duration-150 p-ripple">
+                        class="flex p-3 align-items-center hover:bg-teal-400 transition-colors transition-duration-150 p-ripple">
                         <i class="pi pi-user mr-2"></i>
                         <span class="font-medium">Users</span>
                     </router-link>
                 </li>
                 <li>
                     <a style="text-decoration: none; color: inherit;" v-ripple @click="logout"
-                        class="flex p-3 align-items-center text-600 hover:text-900 hover:surface-100 transition-colors transition-duration-150 p-ripple">
+                        class="flex p-3 align-items-center hover:bg-teal-400 transition-colors transition-duration-150 p-ripple">
                         <i class="pi pi-user-minus mr-2"></i>
                         <span class="font-medium">Log out</span>
                     </a>
                 </li>
             </ul>
+
+            <a class="flex justify-content-center w-1 align-items-center text-xl  hover:surface-800 p-ripple" v-ripple
+                v-styleclass="{ selector: '@next', enterClass: 'hidden', enterActiveClass: 'scalein', leaveToClass: 'hidden', leaveActiveClass: 'fadeout', hideOnOutsideClick: true }">
+                <font-awesome-icon v-badge.danger class="p-overlay-badge" icon="fa-solid fa-bell text-white"
+                    style="font-size: 1.5rem" />
+                <!-- <i v-badge.danger class="pi pi-bell p-overlay-badge" style="font-size: 1.5rem" /> -->
+                <span class="flex align-items-center justify-content-center note-num"> 5+ </span>
+            </a>
+            <div class="m-0 px-0 py-0 backcolor border-round shadow-2 absolute hidden origin-top w-20rem  cursor-pointer z-5"
+                style="right: 1vh;; top:8vh">
+                <div class="">
+                    <div class="mt-4 mb-2 mx-3 text-2xl">
+                        Notifications
+                    </div>
+                    <ul class="list-none py-0 px-3 m-0 mb-3">
+                        <li v-for="error in errors" :key="error"
+                            class="flex justify-content-between my-2 align-items-center  text-white hover:bg-teal-400 transition-colors transition-duration-150 p-ripple"
+                            style="height: 7vh; background-color: #414859;">
+                            <!-- router-link style="text-decoration: none; color: inherit;" to="/" v-ripple -->
+                            <div
+                                :class="'w-5 px-1 flex align-items-center text-' + NotificationColors[error.kind] + '-400'">
+                                <div :class="'circle mx-2 bg-' + NotificationColors[error.kind] + '-400'"></div>
+                                {{ error.kind }}
+                            </div>
+                            <div class="w-4">
+                                {{ error.content }}
+                            </div>
+                            <div class="w-3 flex justify-content-center px-2">
+                                {{ error.duration }}
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import axios from 'axios';
 import {
     useUserStore
@@ -99,6 +117,12 @@ const {
     info
 } = storeToRefs(user);
 
+const NotificationColors = {
+    'ERROR': 'red',
+    'WARNING': 'yellow',
+    'NORMAL': 'green'
+}
+
 const logout = () => {
     const accessToken = cookies.get('accessToken')
     const refreshToken = cookies.get('accessRefresh')
@@ -115,10 +139,42 @@ const logout = () => {
         info.value.checkCloud = 'notSelected'
     }).catch((error) => {
         console.log(error);
-
-
     })
 }
+
+const errors = ref([
+    {
+        "kind": "WARNING",
+        "content": "Notification",
+        "duration": "1min"
+    },
+    {
+        "kind": "ERROR",
+        "content": "Notification",
+        "duration": "2min"
+    },
+    {
+        "kind": "WARNING",
+        "content": "Notification",
+        "duration": "3min"
+    },
+    {
+        "kind": "NORMAL",
+        "content": "Notification",
+        "duration": "4min"
+    },
+    {
+        "kind": "ERROR",
+        "content": "Notification",
+        "duration": "5min"
+    },
+    {
+        "kind": "NORMAL",
+        "content": "Notification",
+        "duration": "6min"
+    },
+])
+
 </script>
 
 <style scoped>
@@ -152,5 +208,11 @@ const logout = () => {
 
 .selected-color {
     color: #0fd977;
+}
+
+.circle {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
 }
 </style>

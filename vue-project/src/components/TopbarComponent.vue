@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-nowrap justify-content-between backcolor text-white py-2 px-3 w-full surface-border"
-        style="height:7vh">
+        style="height:54px">
         <div class="flex flex-shrink-0 align-content-center w-4">
             <router-link style="text-decoration: none; color: inherit;" to="/" class="flex align-items-center mr-3">
                 <img src="../assets/logo.svg" />

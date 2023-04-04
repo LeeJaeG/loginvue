@@ -146,7 +146,7 @@ export default {
         const rules = {
             email: {
                 required,
-                email
+                // email
             },
             password: {
                 required

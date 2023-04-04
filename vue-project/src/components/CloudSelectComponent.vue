@@ -99,7 +99,6 @@
                         </ul>
                     </div>
                 </div>
-
             </div>
         </template>
     </Card>
@@ -182,7 +181,7 @@ const mocks = ref([
 
 const showCard = ref(false);
 const toggleShowCard = () => {
-    console.log("test print")
+    // console.log("test print")
     if (!showCard.value) {
         showCard.value = true;
     }

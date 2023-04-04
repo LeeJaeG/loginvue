@@ -7,7 +7,7 @@ const { cookies } = useCookies();
 export const useUserStore = defineStore('user', () => {
   const info = ref({ checkLogin: 'logout', checkCloud:'notSelected'})
   const auth = ref({ accessToken: '', refreshToken: '' })
-  function tokenErrorHandler(error, func,retry) {
+  function tokenErrorHandler(error, func,retry, theArgs) {
     if (error.response.data.detail === "Token has expired") {
       axios.post('/api/user/refresh_token', {
           "access_token": cookies.get('accessToken'),
@@ -19,12 +19,15 @@ export const useUserStore = defineStore('user', () => {
               cookies.set('accessToken', response.data.access_token);
               cookies.set('accessRefresh', response.data.refresh_token);
               retry += 1
-              func(retry);
+              func(retry, theArgs);
           })
           .catch((error) => {
             console.log(error);
           });
-  }}
+  } else {
+    alert(error);
+  }
+}
   return { info, auth, tokenErrorHandler }
 }, {
   persist: {

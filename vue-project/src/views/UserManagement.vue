@@ -1,3 +1,5 @@
+<!-- eslint-disable vue/no-ref-as-operand -->
+<!-- eslint-disable vue/no-ref-as-operand -->
 <template>
     <div class="surface-card shadow-2 border-round p-4">
         <div class="flex justify-content-between align-items-center">
@@ -83,7 +85,6 @@
         <Dialog v-model:visible="editUserVisible" modal header="Edit User Setting" :style="{ width: '50vw' }">
             <div>
                 <!-- {{ selectedUser }} -->
-
                 <div class="text-900 font-semibold text-lg mt-3">Profile</div>
                 <Divider></Divider>
                 <div class="flex gap-5 flex-column-reverse md:flex-row">
@@ -100,8 +101,7 @@
                             <label for="editEmail" class="block font-medium text-900 mb-2">Email</label>
                             <div class="p-inputgroup">
                                 <InputText id="editEmail" type="email" v-model="selectedUser.email" />
-                                <!-- <span class="p-inputgroup-addon">@</span>
-                                <InputText type="text" /> -->
+                                <!-- <span class="p-inputgroup-addon">@</span>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     <InputText type="text" /> -->
                             </div>
                         </div>
                         <div class="mb-4">
@@ -122,14 +122,72 @@
                             severity="success"></Button>
                     </div>
                 </div>
-
             </div>
         </Dialog>
     </div>
     <div v-if="!showUserList" class="surface-card shadow-2 border-round mt-4 p-4">
-        <div class="flex justify-content-between align-items-center mb-3">
-            <span class="text-xl text-900 font-medium"> {{ selectedUser.full_name }}'s Projects</span>
+        <div class="flex justify-content-between align-items-center mb-3 ">
+            <div>
+                <span class="text-xl font-medium bg-green-50 text-green-400 border-round"> {{ selectedUser.full_name
+                }}</span>
+                <span class="text-xl text-900 font-medium"> 's Projects</span>
+            </div>
+            <Button icon="pi pi-fw pi-plus" class="p-button-text p-button-plain p-button-rounded"
+                @click="addProjectToUser()"></Button>
         </div>
+        <Dialog v-model:visible="addProjectToUserVisible" modal header="Add Project to user"
+            style="width: 50vw; max-height: 800px;">
+            <div class="flex justify-content-between">
+                <div class="w-5">
+                    <Panel header="Available projects" style="height: 600px; overflow: scroll;">
+                        <ul class="p-0 m-0">
+                            <li v-ripple v-for="list in allProjectListForUser[0]" :key="list" tabindex="1"
+                                @focus="addFocusEvent(list.project_id, $event)" @blur="addBlurEvent"
+                                class="p-ripple list-none hover:bg-green-100 addList">
+                                <div class=" flex flex-wrap px-4 align-items-center gap-3" style="height: 60px;">
+                                    <div class="flex-1 flex flex-column gap-2">
+                                        <span class="font-bold">{{ list.project_name }}</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </Panel>
+                </div>
+
+                <div v-if="!working" class="flex flex-column justify-content-center align-items-center w-2 ">
+                    <Button v-if="!working && (projectIdForAddToUser != null) && (isFocusedForAdd == true)"
+                        class="flex justify-content-center align-items-center m-1" style="width: 50px; height: 50px;"
+                        @click="addProjectFromAvailableListToUser(0)">Add</Button>
+                    <Button v-else disabled class="flex justify-content-center align-items-center m-1"
+                        style="width: 50px; height: 50px;">Add</Button>
+
+                    <Button v-if="(projectIdForDeleteFromUser != null) && (isFocusedForDelete == true)"
+                        class="flex justify-content-center align-items-center m-1" style="width: 50px; height: 50px;"
+                        @click="deleteProjectFromUser(0)">Delete</Button>
+                    <Button v-else disabled class="flex justify-content-center align-items-center m-1"
+                        style="width: 50px; height: 50px;">Delete</Button>
+                </div>
+                <div v-else class="flex flex-column justify-content-center align-items-center w-2 ">
+                    <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+                </div>
+
+                <div class="w-5">
+                    <Panel header="User's project" style="height: 600px; overflow: scroll;">
+                        <ul class="p-0 m-0">
+                            <li v-ripple v-for="list in allProjectListForUser[1]" :key="list" tabindex="1"
+                                @focus="deleteFocusEvent(list.project_id, $event)"
+                                class="p-ripple list-none  hover:bg-green-100 addList">
+                                <div class=" flex flex-wrap px-4 align-items-center gap-3" style="height: 60px;">
+                                    <div class="flex-1 flex flex-column gap-2">
+                                        <span class="font-bold">{{ list.project_name }}</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </Panel>
+                </div>
+            </div>
+        </Dialog>
         <div class="grid">
             <div v-for="project in userProjects" :key="project" class="col-12 md:col-6 xl:col-3 p-3">
                 <div class="surface-card shadow-2 border-round p-4">
@@ -142,7 +200,8 @@
                         <Button type="button" label="Details" class="flex-auto mr-2 p-button-outlined p-button-plain"
                             @click="showProjectDetail(project.project_id)" style="border-radius: 30px"></Button>
                         <Button type="button" label="Delete" class="flex-auto ml-2 p-button-outlined p-button-plain"
-                            style="border-radius: 30px"></Button>
+                            style="border-radius: 30px"
+                            @click="deleteProjectFromUserInSimple(0, project.project_id, project.project_user_role)"></Button>
                     </div>
                 </div>
             </div>
@@ -239,7 +298,7 @@ import { useUserStore } from '@/stores/user'
 const user = useUserStore();
 // import { useCookies } from "vue3-cookies";
 // const { cookies } = useCookies();
-
+const working = ref(false);
 const $primevue = usePrimeVue();
 defineExpose({
     $primevue
@@ -247,7 +306,6 @@ defineExpose({
 
 onMounted(() => {
     getUserList(0);
-    // projectDetails(0, 'ea2e56ef07f141cb9d86338d42822687');
 })
 
 const addUserVisible = ref(false);
@@ -274,18 +332,18 @@ const showProjectDetail = ((projectID) => {
     getProjectDetails(0, projectID);
 })
 
-const getProjectDetails = ((retry, projectID) => {
+const getProjectDetails = ((retry, ...theArgs) => {
     axios.post('/api/openstack/openstack_project_find', {
-        "project_id": projectID,
+        "project_id": theArgs[0], // projectID,
     })
         .then((response) => {
             projectDetails.value = response.data.data
             projectDetailsVisible.value = true;
-            console.log(projectDetails.value);
+            // console.log(projectDetails.value);
         })
         .catch((error) => {
             if (retry <= 2) {
-                user.tokenErrorHandler(error, getUserList, retry);
+                user.tokenErrorHandler(error, getUserList, retry, theArgs); // 이 부분 수정 필요, 함수에 추가 인자가 붙을 경우 처리 고민 ...
             }
         });
 })
@@ -298,8 +356,14 @@ const items = ref([
                 label: 'New',
                 icon: 'pi pi-fw pi-plus',
                 command: () => {
-                    console.log("New button");
-                    getAllProject(0);
+                    // console.log("New button");
+                    getAllProject(0).then(() => {
+                        allProjectList.value.push({
+                            "project_name": "None",
+                            "project_id": 'null',
+                        })
+                        addUserVisible.value = true;
+                    });
                 }
             },
             // {
@@ -365,6 +429,26 @@ const addUser = ref(
     }
 )
 
+const addProjectToUserVisible = ref(false)
+const allProjectListForUser = ref([[], []])
+const addProjectToUser = (async () => {
+    await getAllProject(0);
+
+    const dataX = JSON.parse(JSON.stringify(allProjectList.value));
+    const dataY = selectedUser.value.projects;
+
+    const availableProjects = dataX.filter((x) => {
+        // !selectedUser._rawValue.projects.project_id.includes(x.project_id);
+        return !dataY.some((y) => {
+            if (y.project_id == x.project_id) {
+                return true
+            }
+        });
+    })
+    allProjectListForUser.value = [availableProjects, selectedUser.value.projects]
+    addProjectToUserVisible.value = true;
+})
+
 const cancelAddUser = (() => {
     addUserVisible.value = false;
     addUser.value = {
@@ -418,28 +502,149 @@ const deleteUser = ((retry, userID) => {
 })
 
 const allProjectList = ref('');
-const getAllProject = ((retry) => {
-    axios.get('/api/openstack/openstack_projects')
-        .then((response) => {
-            allProjectList.value = response.data.data[0];
-            allProjectList.value.push({
-                "project_name": "None",
-                "project_id": 'null',
-            })
-            console.log(allProjectList.value);
-            addUserVisible.value = true;
+const getAllProject = (async (retry) => {
+    try {
+        const response = await axios.get('/api/openstack/openstack_projects')
+        allProjectList.value = response.data.data[0];
+    } catch (error) {
+        if (retry <= 2) {
+            user.tokenErrorHandler(error, getAllProject, retry);
+        }
+    }
+})
+
+
+const addProjectFromAvailableListToUser = (async (retry) => {
+    working.value = true;
+    console.log({
+        "username": selectedUser.value.username,
+        "project_id": projectIdForAddToUser,
+        "project_role": "member",
+    })
+    try {
+        await axios.post('/api/user/add_project_user', {
+            "username": selectedUser.value.username,
+            "project_id": projectIdForAddToUser.value,
+            "project_role": "member",
         })
-        .catch((error) => {
-            // It is recurisive action. If error occurs continuously, It should have a circuit breaker.
-            if (retry <= 2) {
-                user.tokenErrorHandler(error, getAllProject, retry);
+        const newList = ref(JSON.parse(JSON.stringify(allProjectListForUser.value[0].filter((x) => {
+            if (x.project_id == projectIdForAddToUser.value) {
+                return true
             }
-        });
+        }))))
+        selectedUser.value.projects.push(newList.value[0]); // newList must have only one object
+        await addProjectToUser();
+        projectIdForAddToUser.value = null;
+        isFocusedForAdd.value = false;
+        working.value = false;
+    } catch (error) {
+        working.value = false;
+        if (retry <= 2) {
+            user.tokenErrorHandler(error, addProjectFromAvailableListToUser, retry);
+        }
+    }
+})
+
+const deleteProjectFromUserInSimple = (async (retry, ...theArgs) => {
+    console.log(theArgs);
+    working.value = true;
+    try {
+        await axios.post('/api/user/delete_project_user', {
+            "username": selectedUser.value.username,
+            "project_id": theArgs[0], // project_id
+            "project_role": theArgs[1] // project_role
+        })
+        const idx = selectedUser.value.projects.findIndex((item) => { return item.project_id === theArgs[0] });
+        if (idx > -1) selectedUser.value.projects.splice(idx, 1);
+    } catch (error) {
+        working.value = false;
+        if (retry <= 2) {
+            user.tokenErrorHandler(error, deleteProjectFromUserInSimple, retry, theArgs);
+        }
+    }
+})
+
+const deleteProjectFromUser = (async (retry) => {
+    working.value = true;
+    try {
+        await axios.post('/api/user/delete_project_user', {
+            "username": selectedUser.value.username,
+            "project_id": projectIdForDeleteFromUser.value,
+            "project_role": "member",
+        })
+        const newList = ref(JSON.parse(JSON.stringify(allProjectListForUser.value[1].filter((x) => {
+            if (x.project_id == projectIdForDeleteFromUser.value) {
+                return true
+            }
+        }))))
+        const idx = selectedUser.value.projects.findIndex((item) => { return item.project_id === newList.value[0].project_id });
+        if (idx > -1) selectedUser.value.projects.splice(idx, 1);
+        await addProjectToUser();
+        projectIdForDeleteFromUser.value = null;
+        isFocusedForDelete.value = false;
+        working.value = false;
+    } catch (error) {
+        working.value = false;
+        if (retry <= 2) {
+            user.tokenErrorHandler(error, deleteProjectFromUser, retry);
+        }
+    }
+})
+
+const isFocusedForAdd = ref(false)
+const isFocusedForDelete = ref(false)
+const projectIdForAddToUser = ref(null)
+const addFocusEvent = ((id, event) => {
+    projectIdForDeleteFromUser.value = null;
+    isFocusedForDelete.value = false;
+    var buttons = document.getElementsByClassName("addList");
+    for (var i = 0; i < buttons.length; i++) {
+        buttons[i].classList.remove("list-focus");
+    }
+    const targetId = event.currentTarget;
+    targetId.classList.add('list-focus');
+    projectIdForAddToUser.value = id;
+    isFocusedForAdd.value = true;
+})
+
+const projectIdForDeleteFromUser = ref(null)
+const deleteFocusEvent = ((id, event) => {
+    projectIdForAddToUser.value = null;
+    isFocusedForAdd.value = false;
+    var buttons = document.getElementsByClassName("addList");
+    for (var i = 0; i < buttons.length; i++) {
+        buttons[i].classList.remove("list-focus");
+    }
+    const targetId = event.currentTarget;
+    targetId.classList.add('list-focus');
+    projectIdForDeleteFromUser.value = id
+    isFocusedForDelete.value = true;
 })
 </script>
 
 <style scoped>
 .logincolor {
     background-color: #014751;
+}
+
+:deep(.p-panel .p-panel-content) {
+    min-height: 538px;
+    padding: 0%;
+}
+
+/* .list-focus:focus {
+    background-color: #e8f6ed;
+    border: thin solid #01c445;
+    border-radius: 5px;
+    font-style: bold;
+    color: black;
+} */
+
+.list-focus {
+    background-color: #e8f6ed;
+    border: thin solid #01c445;
+    border-radius: 5px;
+    font-style: bold;
+    color: black;
 }
 </style>

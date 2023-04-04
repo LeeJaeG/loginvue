@@ -54,7 +54,7 @@
                                         :options="roles" optionLabel="role" placeholder="Select a Project role"
                                         id="projectRole" />
                                     <Dropdown v-else v-model="addUser.projectRole" :options="roles" optionLabel="role"
-                                        placeholder="Select a Project role" id="projectRole" />
+                                        optionValue="role" placeholder="Select a Project role" id="projectRole" />
                                 </div>
                             </div>
                         </div>
@@ -110,7 +110,8 @@
                                 optionLabel="role" optionValue="role" placeholder="Select a Role" />
                         </div>
                         <div class="flex justify-content-end">
-                            <Button label="Update Profile" class="w-auto mr-2" severity="success"></Button>
+                            <Button label="Update Profile" class="w-auto mr-2" severity="success"
+                                @click="PostEditUser(0)"></Button>
                             <Button label="Delete Profile" class="w-auto " severity="danger"
                                 @click="deleteUser(0, selectedUser.id)"></Button>
                         </div>
@@ -295,6 +296,8 @@ import { ref, onMounted } from "vue"
 import { usePrimeVue } from "primevue/config";
 import axios from 'axios'
 import { useUserStore } from '@/stores/user'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 const user = useUserStore();
 // import { useCookies } from "vue3-cookies";
 // const { cookies } = useCookies();
@@ -385,7 +388,7 @@ const editUserDetail = ((user) => {
     if (selectedUser.value == '') {
         selectedUser.value = user;
         editUserVisible.value = true;
-        console.log(selectedUser.value);
+        // console.log(selectedUser.value);
     }
     else {
         selectedUser.value = ''
@@ -465,8 +468,10 @@ const cancelAddUser = (() => {
 
 const postAddUser = ((retry) => {
     if (addUser.value.projectID == 'null') {
-        addUser.value.projectID = null
+        addUser.value.projectID = null;
+        addUser.value.projectRole = null;
     }
+    // console.log(addUser.value);
     axios.post('/api/user/add', {
         "username": addUser.value.username,
         "password": addUser.value.password,
@@ -474,11 +479,13 @@ const postAddUser = ((retry) => {
         "full_name": addUser.value.fullName,
         "role": addUser.value.role,
         "projects": addUser.value.projectID,
+        "project_role": addUser.value.projectRole
     })
         .then((response) => {
             console.log(response.data);
             addUserVisible.value = false;
             cancelAddUser;
+            router.go(0);
         })
         .catch((error) => {
             // It is recurisive action. If error occurs continuously, It should have a circuit breaker.
@@ -488,10 +495,33 @@ const postAddUser = ((retry) => {
         });
 })
 
+const PostEditUser = (async (retry) => {
+    working.value = true;
+    console.log(selectedUser.value);
+    try {
+        await axios.post('/api/user/update_user', {
+            "user_id": selectedUser.value.id,
+            "username": selectedUser.value.username,
+            "email": selectedUser.value.email,
+            "full_name": selectedUser.value.full_name,
+            "role": selectedUser.value.role,
+        })
+        working.value = false;
+        router.go(0);
+    }
+    catch (error) {
+        working.value = false;
+        if (retry <= 2) {
+            user.tokenErrorHandler(error, PostEditUser, retry);
+        }
+    }
+})
+
 const deleteUser = ((retry, userID) => {
     axios.delete('/api/user/delete/' + userID,)
         .then((response) => {
             console.log(response.data);
+            router.go(0);
         })
         .catch((error) => {
             // It is recurisive action. If error occurs continuously, It should have a circuit breaker.
@@ -532,6 +562,7 @@ const addProjectFromAvailableListToUser = (async (retry) => {
                 return true
             }
         }))))
+        newList.value[0].project_user_role = "member"
         selectedUser.value.projects.push(newList.value[0]); // newList must have only one object
         await addProjectToUser();
         projectIdForAddToUser.value = null;

@@ -1,5 +1,4 @@
 <!-- eslint-disable vue/no-ref-as-operand -->
-<!-- eslint-disable vue/no-ref-as-operand -->
 <template>
     <div class="surface-card shadow-2 border-round p-4">
         <div class="flex justify-content-between align-items-center">
@@ -296,18 +295,23 @@ import { ref, onMounted } from "vue"
 import { usePrimeVue } from "primevue/config";
 import axios from 'axios'
 import { useUserStore } from '@/stores/user'
+import { usePathStore } from '@/stores/path'
 import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia';
 const router = useRouter()
 const user = useUserStore();
+const path = usePathStore();
+const { contentBarName } = storeToRefs(path);
 // import { useCookies } from "vue3-cookies";
 // const { cookies } = useCookies();
 const working = ref(false);
 const $primevue = usePrimeVue();
 defineExpose({
-    $primevue
+    $primevue,
 })
 
 onMounted(() => {
+    contentBarName.value = 'User Management';
     getUserList(0);
 })
 
@@ -360,7 +364,7 @@ const items = ref([
                 icon: 'pi pi-fw pi-plus',
                 command: () => {
                     // console.log("New button");
-                    getAllProject(0).then(() => {
+                    getAllProject(0, allProjectList).then(() => {
                         allProjectList.value.push({
                             "project_name": "None",
                             "project_id": 'null',
@@ -435,7 +439,7 @@ const addUser = ref(
 const addProjectToUserVisible = ref(false)
 const allProjectListForUser = ref([[], []])
 const addProjectToUser = (async () => {
-    await getAllProject(0);
+    await getAllProject(0, allProjectList);
 
     const dataX = JSON.parse(JSON.stringify(allProjectList.value));
     const dataY = selectedUser.value.projects;
@@ -517,8 +521,8 @@ const PostEditUser = (async (retry) => {
     }
 })
 
-const deleteUser = ((retry, userID) => {
-    axios.delete('/api/user/delete/' + userID,)
+const deleteUser = ((retry, ...theArgs) => {
+    axios.delete('/api/user/delete/' + theArgs[0],)
         .then((response) => {
             console.log(response.data);
             router.go(0);
@@ -526,19 +530,20 @@ const deleteUser = ((retry, userID) => {
         .catch((error) => {
             // It is recurisive action. If error occurs continuously, It should have a circuit breaker.
             if (retry <= 2) {
-                user.tokenErrorHandler(error, deleteUser, retry);
+                user.tokenErrorHandler(error, deleteUser, retry, theArgs);
             }
         });
 })
 
 const allProjectList = ref('');
-const getAllProject = (async (retry) => {
+const getAllProject = (async (retry, ...theArgs) => {
+    console.log("getAllProject")
     try {
         const response = await axios.get('/api/openstack/openstack_projects')
-        allProjectList.value = response.data.data[0];
+        theArgs[0].value = response.data.data[0];
     } catch (error) {
         if (retry <= 2) {
-            user.tokenErrorHandler(error, getAllProject, retry);
+            user.tokenErrorHandler(error, getAllProject, retry, theArgs);
         }
     }
 })

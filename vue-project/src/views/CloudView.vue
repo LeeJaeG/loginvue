@@ -1,9 +1,8 @@
 <template>
-  <div>
-    <h1>This is an Alarm page</h1>
-  </div>
+    This is Cloud view page
+    We will show cloud's (project) information like a Virtual Machine or Network list.
 </template>
-  
+
 <script setup>
 import { onMounted } from 'vue'
 import { usePathStore } from '@/stores/path'
@@ -13,9 +12,6 @@ const path = usePathStore();
 const { contentBarName } = storeToRefs(path);
 
 onMounted(() => {
-  contentBarName.value = 'Alarm'
+    contentBarName.value = 'Openstack Cloud'
 })
 </script>
-  
-<style></style>
-  

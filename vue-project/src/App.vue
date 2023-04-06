@@ -74,7 +74,7 @@ onMounted(() => {
     <!-- Top bar -->
     <topbar></topbar>
     <!-- below Top bar -->
-    <div class="flex relative static surface-ground">
+    <div class="flex relative static surface-ground" style="min-height: calc(100vh - 50px);">
       <!-- without sidebar 2 -->
       <div v-if="offSidebar1 == false && offSidebar2 == true">
         <sidebar1 class="min-h-full" @touch="changeSidebar"></sidebar1>

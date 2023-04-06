@@ -5,6 +5,13 @@ import axios from "axios";
 import { useRouter } from 'vue-router'
 import { useConfirm } from "primevue/useconfirm";
 
+import { storeToRefs } from 'pinia';
+import { usePathStore } from '@/stores/path'
+
+
+const path = usePathStore();
+const { contentBarName } = storeToRefs(path);
+
 const router = useRouter()
 // const route = useRoute()
 const confirm = useConfirm();
@@ -22,6 +29,7 @@ let fCollector = ref([]);
 let fFlow = ref([]);
 let fEnabled = ref();
 onMounted(async () => {
+  contentBarName.value = 'INT';
   await axios.get('http://192.168.15.131:8000/api/ksdf/telemetry/info').then((result) => {
     json.value = result.data;
 

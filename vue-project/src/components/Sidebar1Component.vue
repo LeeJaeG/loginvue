@@ -30,25 +30,27 @@
         </div>
 
 
-        <div class="w-full flex justify-content-center align-items-center mt-4 font-bold hovercolor"
-            style="height: 3.5rem;">
+        <router-link to="/cloud" class="w-full flex justify-content-center align-items-center mt-4 font-bold hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit;">
             <div>
                 <font-awesome-icon icon="fa-solid fa-layer-group" style="font-size: 1.2rem" />
             </div>
-        </div>
+        </router-link>
 
-        <div class="w-full flex justify-content-center align-items-center font-bold hovercolor" style="height: 3.5rem;">
+        <router-link to="/cloud-topology" class="w-full flex justify-content-center align-items-center font-bold hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit;">
             <div>
                 <i class="pi pi-th-large" style="font-size: 1.2rem"></i>
             </div>
-        </div>
+        </router-link>
 
-        <div class="w-full flex justify-content-center align-items-center mb-6 font-bold hovercolor"
-            style="height: 3.5rem;">
+        <router-link to="/kaloom-topology"
+            class="w-full flex justify-content-center align-items-center mb-6 font-bold hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit;">
             <div>
                 <font-awesome-icon icon="fa-solid fa-circle-nodes" style="font-size: 1.2rem" />
             </div>
-        </div>
+        </router-link>
 
         <div class="font-bold mb-2 mt-6 text-sm">
             Metrics

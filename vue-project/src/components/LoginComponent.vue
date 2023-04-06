@@ -127,7 +127,7 @@
 
 <script>
 import { reactive, ref, onMounted } from 'vue';
-import { email, required } from "@vuelidate/validators";
+import { required } from "@vuelidate/validators";
 import { useVuelidate } from "@vuelidate/core";
 import axios from 'axios'
 
@@ -170,53 +170,62 @@ export default {
         const showMessage = ref(false);
 
         const user = useUserStore();
-        const { info } = storeToRefs(user);
+        const { info, userdata } = storeToRefs(user);
         const { cookies } = useCookies();
 
 
         const v$ = useVuelidate(rules, state);
 
-        const handleSubmit = (isFormValid) => {
+        const handleSubmit = (async (isFormValid) => {
             submitted.value = true;
 
             if (!isFormValid) {
                 return;
             }
 
-            const res = axios.post('/api/user/token', {
-                "username": state.email,
-                "password": state.password,
-            })
-                .then(function (response) {
-                    console.log(response);
-                    // get token from server's 200 response result data
-                    // const access_token = atob(response.data.access_token); // string to binary 변환 
-                    // const parsedAccess_Token = JSON.parse(access_token) // 이를 parse
+            try {
+                const result = await getToken()
+                userdata.value = await getUserData(0, state.email)  // email = username ...
+                // console.log('after get login : ', userdata.value);
+                cookies.set('accessToken', result.data.access_token);
+                cookies.set('accessRefresh', result.data.refresh_token);
+                // change pinia user info value
+                info.value.checkLogin = 'login'
+                if (checked.value == 'true') {
+                    localStorage.setItem("autoLogin", state.email);
+                } else {
+                    localStorage.removeItem("autoLogin");
+                }
+            }
+            catch {
+                console.log("login is not completed")
+            }
+        })
 
-                    // const refresh_token = atob(response.data.refresh_token); // string to binary 변환 
-                    // const parsedRefresh_Token = JSON.parse(refresh_token) // 이를 parse
-
-                    // save token as cookies
-                    cookies.set('accessToken', response.data.access_token);
-                    cookies.set('accessRefresh', response.data.refresh_token);
-                    // change pinia user info value
-                    info.value.checkLogin = 'login'
-
-                    if (checked.value == 'true') {
-                        localStorage.setItem("autoLogin", state.email);
-                    } else {
-                        localStorage.removeItem("autoLogin");
-                    }
-
-                    // save user data(game server, user info) all
-                    // 구현 안 됨
-                    // redirect to dashboard
+        const getToken = (async () => {
+            try {
+                const result = await axios.post('/api/user/token', {
+                    "username": state.email,
+                    "password": state.password,
                 })
-                .catch(function (error) {
-                    console.log(error);
-                });
-            console.log(res)
-        }
+                return result
+            }
+            catch (error) {
+                console.log(error)
+            }
+        })
+
+        const getUserData = (async (retry, ...theArgs) => {
+            try {
+                const result = await axios.get('/api/user/find_user/{id}?username=' + theArgs[0],)
+                return result.data.data[0]
+            }
+            catch (error) {
+                if (retry <= 2) {
+                    user.tokenErrorHandler(error, getUserData, retry, theArgs);
+                }
+            }
+        })
 
         const toggleDialog = () => {
             showMessage.value = !showMessage.value;

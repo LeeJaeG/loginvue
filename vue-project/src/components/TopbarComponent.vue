@@ -1,14 +1,15 @@
 <template>
     <div class="flex flex-nowrap justify-content-between backcolor text-white py-2 px-3 w-full surface-border"
         style="height:54px">
-        <div class="flex flex-shrink-0 align-content-center w-4">
-            <router-link style="text-decoration: none; color: inherit;" to="/" class="flex align-items-center mr-3">
+        <router-link to="/" style="text-decoration: none; color: inherit;"
+            class="flex flex-shrink-0 align-content-center w-4">
+            <div class="flex align-items-center mr-3">
                 <img src="../assets/logo.svg" />
-            </router-link>
+            </div>
             <div class="flex flex-shrink-0 flex-grow-1 align-items-center mr-2 text-2xl namu" style="color : #0fd977">
                 Echo-e Management platform
             </div>
-        </div>
+        </router-link>
         <div class="flex flex-shrink-0 align-items-center w-4 justify-content-between">
             <div class="w-4 text-center text-xl">
                 Openstack
@@ -32,18 +33,19 @@
             <a class="flex flex-shrink-0 flex-grow-1 justify-content-center align-items-center text-lg hover:surface-800"
                 v-ripple
                 v-styleclass="{ selector: '@next', enterClass: 'hidden', enterActiveClass: 'scalein', leaveToClass: 'hidden', leaveActiveClass: 'fadeout', hideOnOutsideClick: true }">
-                Admin : Cloud A
+                {{ userdata.username }} : {{ userdata.selectedProject.project_name }}
             </a>
             <ul class="list-none m-0 px-0 py-0 border-round shadow-2 backcolor absolute hidden text-white origin-top w-15rem cursor-pointer z-5"
                 style="right: 1vh; top:8vh">
                 <li>
-                    <router-link style="text-decoration: none; color: inherit;" to="/dashboard" v-ripple
+                    <router-link style="text-decoration: none; color: inherit;" to="/cloud" v-ripple
+                        @click="info.checkCloud = 'notSelected'"
                         class="flex p-3 align-items-center  hover:bg-teal-400 transition-colors transition-duration-150 p-ripple">
-                        <i class="pi pi-home mr-2"></i>
-                        <span class="font-medium">Dashboard</span>
+                        <i class="pi pi-align-justify mr-2"></i>
+                        <span class="font-medium">Projects</span>
                     </router-link>
                 </li>
-                <li>
+                <li v-if="userdata.role == 'admin'">
                     <router-link style="text-decoration: none; color: inherit;" to="/users" v-ripple
                         class="flex p-3 align-items-center hover:bg-teal-400 transition-colors transition-duration-150 p-ripple">
                         <i class="pi pi-user mr-2"></i>
@@ -99,23 +101,19 @@
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
-import {
-    useUserStore
-} from '@/stores/user'
-import {
-    storeToRefs
-} from 'pinia';
-import {
-    useCookies
-} from "vue3-cookies";
+import { useUserStore } from '@/stores/user'
+import { storeToRefs } from 'pinia';
+import { useCookies } from "vue3-cookies";
+// import router from '../router';
+
+import { useRouter } from 'vue-router'
+const router = useRouter()
 
 const {
     cookies
 } = useCookies();
 const user = useUserStore();
-const {
-    info
-} = storeToRefs(user);
+const { info, userdata, } = storeToRefs(user);
 
 const NotificationColors = {
     'ERROR': 'red',
@@ -137,6 +135,7 @@ const logout = () => {
         cookies.remove('refreshToken');
         info.value.checkLogin = 'logout'
         info.value.checkCloud = 'notSelected'
+        router.push('/');
     }).catch((error) => {
         console.log(error);
     })

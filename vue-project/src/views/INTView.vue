@@ -107,11 +107,6 @@ const removeConfirm = (flowName, password) => {
     <DashSidebar></DashSidebar>
 
     <div class="min-h-screen flex flex-column relative flex-auto">
-      <div
-        class="flex justify-content-between align-items-center px-5 surface-section shadow-2 relative lg:static border-bottom-1 surface-border"
-        style="height:60px">
-        INT Setting
-      </div>
       <div class="p-5 flex flex-column flex-auto">
         <div class="border-2 border-dashed surface-border border-round surface-section flex-auto">
 

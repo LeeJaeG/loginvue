@@ -125,6 +125,13 @@ const logout = () => {
     const accessToken = cookies.get('accessToken')
     const refreshToken = cookies.get('accessRefresh')
 
+    if (accessToken == null && refreshToken == null) {
+        info.value.checkLogin = 'logout'
+        info.value.checkCloud = 'notSelected'
+        router.push('/');
+        return
+    }
+
     axios.post('/api/user/logout', {
         "access_token": accessToken,
         "refresh_token": refreshToken,

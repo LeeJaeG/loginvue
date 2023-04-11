@@ -1,129 +1,132 @@
 <!-- eslint-disable vue/no-ref-as-operand -->
 <template>
-    <div class="surface-card shadow-2 border-round p-4">
-        <div class="flex justify-content-between align-items-center">
-            <span class="text-xl text-900 font-medium">Members</span>
-            <div>
-                <Button v-if="showUserList" icon="pi pi-ellipsis-v" class="p-button-text p-button-plain p-button-rounded"
-                    @click="$refs.menu1.toggle($event)"></Button>
-                <Button v-else icon="pi pi-chevron-down" class="p-button-text p-button-plain p-button-rounded"
-                    @click="showUser" />
-                <Menu ref="menu1" :popup="true" :model="items"></Menu>
-            </div>
-            <Dialog v-model:visible="addUserVisible" modal header="Add User" :style="{ width: '50vw' }">
+    <div class="surface-ground p-4">
+        <div class="surface-card shadow-2 border-round p-4">
+            <div class="flex justify-content-between align-items-center">
+                <span class="text-xl text-900 font-medium">Members</span>
                 <div>
-                    <Panel header="User Info">
-                        <div class="m-0">
-                            <div class="grid formgrid p-fluid">
-                                <div class="field mb-4 col-12 md:col-6">
-                                    <label for="username" class="font-medium text-900">Username</label>
-                                    <InputText id="username" type="text" v-model="addUser.username" />
-                                </div>
-                                <div class="field mb-4 col-12 md:col-6">
-                                    <label for="password" class="font-medium text-900">Password</label>
-                                    <InputText id="password" type="password" v-model="addUser.password" />
-                                </div>
-                                <div class="field mb-4 col-12 md:col-6">
-                                    <label for="email" class="font-medium text-900">Email</label>
-                                    <InputText id="email" type="text" v-model="addUser.email" />
-                                </div>
-                                <div class="field mb-4 col-12 md:col-6">
-                                    <label for="fullName" class="font-medium text-900">Name</label>
-                                    <InputText id="fullName" type="text" v-model="addUser.fullName" />
-                                </div>
-                                <div class="field mb-4 col-12 md:col-6">
-                                    <label for="role" class="font-medium text-900">Role</label>
-                                    <Dropdown v-model="addUser.role" :options="roles" optionLabel="role" optionValue="role"
-                                        placeholder="Select a Role" id="role" />
-                                </div>
-                            </div>
-                        </div>
-                    </Panel>
-                    <Panel header="Add Project" class="mt-3">
-                        <div class="m-0 ">
-                            <div class="grid formgrid p-fluid">
-                                <div class="field mb-4 col-12 md:col-6">
-                                    <label for="project" class="font-medium text-900">Default Project</label>
-                                    <Dropdown v-model="addUser.projectID" :options="allProjectList" optionValue="project_id"
-                                        optionLabel="project_name" placeholder="Select a Project" id="project" />
-                                </div>
-                                <div class="field mb-4 col-12 md:col-6">
-                                    <label for="projectRole" class="font-medium text-900">Project Role</label>
-                                    <Dropdown v-if="addUser.projectID == 'null'" disabled v-model="addUser.projectRole"
-                                        :options="roles" optionLabel="role" placeholder="Select a Project role"
-                                        id="projectRole" />
-                                    <Dropdown v-else v-model="addUser.projectRole" :options="roles" optionLabel="role"
-                                        optionValue="role" placeholder="Select a Project role" id="projectRole" />
-                                </div>
-                            </div>
-                        </div>
-                    </Panel>
+                    <Button v-if="showUserList" icon="pi pi-ellipsis-v"
+                        class="p-button-text p-button-plain p-button-rounded" @click="$refs.menu1.toggle($event)"></Button>
+                    <Button v-else icon="pi pi-chevron-down" class="p-button-text p-button-plain p-button-rounded"
+                        @click="showUser" />
+                    <Menu ref="menu1" :popup="true" :model="items"></Menu>
                 </div>
-                <template #footer>
-                    <Button label="No" icon="pi pi-times" @click="cancelAddUser" text />
-                    <Button label="Yes" icon="pi pi-check" @click="postAddUser(0)" autofocus />
-                </template>
+                <Dialog v-model:visible="addUserVisible" modal header="Add User" :style="{ width: '50vw' }">
+                    <div>
+                        <Panel header="User Info">
+                            <div class="m-0">
+                                <div class="grid formgrid p-fluid">
+                                    <div class="field mb-4 col-12 md:col-6">
+                                        <label for="username" class="font-medium text-900">Username</label>
+                                        <InputText id="username" type="text" v-model="addUser.username" />
+                                    </div>
+                                    <div class="field mb-4 col-12 md:col-6">
+                                        <label for="password" class="font-medium text-900">Password</label>
+                                        <InputText id="password" type="password" v-model="addUser.password" />
+                                    </div>
+                                    <div class="field mb-4 col-12 md:col-6">
+                                        <label for="email" class="font-medium text-900">Email</label>
+                                        <InputText id="email" type="text" v-model="addUser.email" />
+                                    </div>
+                                    <div class="field mb-4 col-12 md:col-6">
+                                        <label for="fullName" class="font-medium text-900">Name</label>
+                                        <InputText id="fullName" type="text" v-model="addUser.fullName" />
+                                    </div>
+                                    <div class="field mb-4 col-12 md:col-6">
+                                        <label for="role" class="font-medium text-900">Role</label>
+                                        <Dropdown v-model="addUser.role" :options="roles" optionLabel="role"
+                                            optionValue="role" placeholder="Select a Role" id="role" />
+                                    </div>
+                                </div>
+                            </div>
+                        </Panel>
+                        <Panel header="Add Project" class="mt-3">
+                            <div class="m-0 ">
+                                <div class="grid formgrid p-fluid">
+                                    <div class="field mb-4 col-12 md:col-6">
+                                        <label for="project" class="font-medium text-900">Default Project</label>
+                                        <Dropdown v-model="addUser.projectID" :options="allProjectList"
+                                            optionValue="project_id" optionLabel="project_name"
+                                            placeholder="Select a Project" id="project" />
+                                    </div>
+                                    <div class="field mb-4 col-12 md:col-6">
+                                        <label for="projectRole" class="font-medium text-900">Project Role</label>
+                                        <Dropdown v-if="addUser.projectID == 'null'" disabled v-model="addUser.projectRole"
+                                            :options="roles" optionLabel="role" placeholder="Select a Project role"
+                                            id="projectRole" />
+                                        <Dropdown v-else v-model="addUser.projectRole" :options="roles" optionLabel="role"
+                                            optionValue="role" placeholder="Select a Project role" id="projectRole" />
+                                    </div>
+                                </div>
+                            </div>
+                        </Panel>
+                    </div>
+                    <template #footer>
+                        <Button label="No" icon="pi pi-times" @click="cancelAddUser" text />
+                        <Button label="Yes" icon="pi pi-check" @click="postAddUser(0)" autofocus />
+                    </template>
+                </Dialog>
+            </div>
+            <ul v-if="showUserList" class="list-none p-0 m-0 mt-5">
+                <li v-for="list in tenantUserList[0]" :key="list"
+                    class="flex flex-column md:flex-row md:align-items-center cursor-pointer md:justify-content-between p-3 hover:bg-green-100 pointer-events-auto">
+                    <div class="flex w-full p-ripple" @click="showUser(list)" v-ripple>
+                        <Avatar label="O" class="mr-2 bg-teal-100 text-white" style="width: 45px; height: 45px" />
+                        <div class="mr-0 md:mr-8">
+                            <span class="block text-900 font-medium mb-1">{{ list.username }}</span>
+                            <div class="text-600">{{ list.role }} : {{ list.email }} </div>
+                        </div>
+                    </div>
+                    <div class="mt-2 md:mt-0 flex flex-nowrap">
+                        <Button class="p-button-text p-button-plain p-button-rounded mr-1" icon="pi pi-pencil"
+                            @click="editUserDetail(list)"></Button>
+                    </div>
+                </li>
+            </ul>
+            <Dialog v-model:visible="editUserVisible" modal header="Edit User Setting" :style="{ width: '50vw' }">
+                <div>
+                    <!-- {{ selectedUser }} -->
+                    <div class="text-900 font-semibold text-lg mt-3">Profile</div>
+                    <Divider></Divider>
+                    <div class="flex gap-5 flex-column-reverse md:flex-row">
+                        <div class="flex-auto p-fluid">
+                            <div class="mb-4">
+                                <label for="editUsername" class="block font-medium text-900 mb-2">Username</label>
+                                <InputText id="editUsername" v-model="selectedUser.username" type="text" />
+                            </div>
+                            <div class="mb-4">
+                                <label for="editFullname" class="block font-medium text-900 mb-2">Name</label>
+                                <InputText id="editFullname" v-model="selectedUser.full_name" type="text"></InputText>
+                            </div>
+                            <div class="mb-4">
+                                <label for="editEmail" class="block font-medium text-900 mb-2">Email</label>
+                                <div class="p-inputgroup">
+                                    <InputText id="editEmail" type="email" v-model="selectedUser.email" />
+                                    <!-- <span class="p-inputgroup-addon">@</span>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     <InputText type="text" /> -->
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label for="editRole" class="block font-medium text-900 mb-2">Role</label>
+                                <Dropdown id="editRole" type="text" v-model="selectedUser.role" :options="roles"
+                                    optionLabel="role" optionValue="role" placeholder="Select a Role" />
+                            </div>
+                            <div class="flex justify-content-end">
+                                <Button label="Update Profile" class="w-auto mr-2" severity="success"
+                                    @click="PostEditUser(0)"></Button>
+                                <Button label="Delete Profile" class="w-auto " severity="danger"
+                                    @click="deleteUser(0, selectedUser.id)"></Button>
+                            </div>
+                        </div>
+                        <div class="flex flex-column align-items-center flex-or">
+                            <span class="font-medium text-900 mb-2">Profile Picture</span>
+                            <img src="profile.png" class="h-10rem w-10rem" />
+                            <Button type="button" icon="pi pi-pencil" class="p-button-rounded -mt-4"
+                                severity="success"></Button>
+                        </div>
+                    </div>
+                </div>
             </Dialog>
         </div>
-        <ul v-if="showUserList" class="list-none p-0 m-0 mt-5">
-            <li v-for="list in tenantUserList[0]" :key="list"
-                class="flex flex-column md:flex-row md:align-items-center cursor-pointer md:justify-content-between p-3 hover:bg-green-100 pointer-events-auto">
-                <div class="flex w-full p-ripple" @click="showUser(list)" v-ripple>
-                    <Avatar label="O" class="mr-2 bg-teal-100 text-white" style="width: 45px; height: 45px" />
-                    <div class="mr-0 md:mr-8">
-                        <span class="block text-900 font-medium mb-1">{{ list.username }}</span>
-                        <div class="text-600">{{ list.role }} : {{ list.email }} </div>
-                    </div>
-                </div>
-                <div class="mt-2 md:mt-0 flex flex-nowrap">
-                    <Button class="p-button-text p-button-plain p-button-rounded mr-1" icon="pi pi-pencil"
-                        @click="editUserDetail(list)"></Button>
-                </div>
-            </li>
-        </ul>
-        <Dialog v-model:visible="editUserVisible" modal header="Edit User Setting" :style="{ width: '50vw' }">
-            <div>
-                <!-- {{ selectedUser }} -->
-                <div class="text-900 font-semibold text-lg mt-3">Profile</div>
-                <Divider></Divider>
-                <div class="flex gap-5 flex-column-reverse md:flex-row">
-                    <div class="flex-auto p-fluid">
-                        <div class="mb-4">
-                            <label for="editUsername" class="block font-medium text-900 mb-2">Username</label>
-                            <InputText id="editUsername" v-model="selectedUser.username" type="text" />
-                        </div>
-                        <div class="mb-4">
-                            <label for="editFullname" class="block font-medium text-900 mb-2">Name</label>
-                            <InputText id="editFullname" v-model="selectedUser.full_name" type="text"></InputText>
-                        </div>
-                        <div class="mb-4">
-                            <label for="editEmail" class="block font-medium text-900 mb-2">Email</label>
-                            <div class="p-inputgroup">
-                                <InputText id="editEmail" type="email" v-model="selectedUser.email" />
-                                <!-- <span class="p-inputgroup-addon">@</span>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     <InputText type="text" /> -->
-                            </div>
-                        </div>
-                        <div class="mb-4">
-                            <label for="editRole" class="block font-medium text-900 mb-2">Role</label>
-                            <Dropdown id="editRole" type="text" v-model="selectedUser.role" :options="roles"
-                                optionLabel="role" optionValue="role" placeholder="Select a Role" />
-                        </div>
-                        <div class="flex justify-content-end">
-                            <Button label="Update Profile" class="w-auto mr-2" severity="success"
-                                @click="PostEditUser(0)"></Button>
-                            <Button label="Delete Profile" class="w-auto " severity="danger"
-                                @click="deleteUser(0, selectedUser.id)"></Button>
-                        </div>
-                    </div>
-                    <div class="flex flex-column align-items-center flex-or">
-                        <span class="font-medium text-900 mb-2">Profile Picture</span>
-                        <img src="profile.png" class="h-10rem w-10rem" />
-                        <Button type="button" icon="pi pi-pencil" class="p-button-rounded -mt-4"
-                            severity="success"></Button>
-                    </div>
-                </div>
-            </div>
-        </Dialog>
     </div>
     <div v-if="!showUserList" class="surface-card shadow-2 border-round mt-4 p-4">
         <div class="flex justify-content-between align-items-center mb-3 ">
@@ -302,8 +305,6 @@ const router = useRouter()
 const user = useUserStore();
 const path = usePathStore();
 const { contentBarName } = storeToRefs(path);
-// import { useCookies } from "vue3-cookies";
-// const { cookies } = useCookies();
 const working = ref(false);
 const $primevue = usePrimeVue();
 defineExpose({

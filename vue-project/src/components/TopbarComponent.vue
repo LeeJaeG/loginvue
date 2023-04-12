@@ -68,8 +68,8 @@
                 <!-- <i v-badge.danger class="pi pi-bell p-overlay-badge" style="font-size: 1.5rem" /> -->
                 <span class="flex align-items-center justify-content-center note-num"> 5+ </span>
             </a>
-            <div class="m-0 px-0 py-0 backcolor border-round shadow-2 absolute hidden origin-top w-20rem  cursor-pointer z-5"
-                style="right: 1vh;; top:8vh">
+            <div class="m-0 px-0 py-0 backcolor border-round shadow-2 absolute hidden origin-top cursor-pointer z-5"
+                style="right: 1vh; top:8vh; width: 26rem;">
                 <div class="">
                     <div class="mt-4 mb-2 mx-3 text-2xl">
                         Notifications
@@ -80,15 +80,17 @@
                             style="height: 7vh; background-color: #414859;">
                             <!-- router-link style="text-decoration: none; color: inherit;" to="/" v-ripple -->
                             <div
-                                :class="'w-5 px-1 flex align-items-center text-' + NotificationColors[error.kind] + '-400'">
-                                <div :class="'circle mx-2 bg-' + NotificationColors[error.kind] + '-400'"></div>
-                                {{ error.kind }}
+                                :class="'w-5 px-1 flex align-items-center text-' + NotificationColors[error.subject.toUpperCase()] + '-400'">
+                                <div :class="'circle mx-2 bg-' + NotificationColors[error.subject.toUpperCase()] + '-400'">
+                                </div>
+                                {{ error.subject.toUpperCase() }}
                             </div>
                             <div class="w-4">
-                                {{ error.content }}
+                                {{ error.shortData }}
                             </div>
                             <div class="w-3 flex justify-content-center px-2">
-                                {{ error.duration }}
+                                <!-- {{ changeTime(error.timestamp) }} -->
+                                {{ error.countedTime }}
                             </div>
                         </li>
                     </ul>
@@ -99,7 +101,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia';
@@ -108,6 +110,47 @@ import { useCookies } from "vue3-cookies";
 
 import { useRouter } from 'vue-router'
 const router = useRouter()
+
+const intervalId = ref(null);
+onMounted(() => {
+    getErrorsForAlarm(0, errors);
+
+    var ws = new WebSocket("ws://192.168.15.47:8000/api/nats/ws");
+    ws.addEventListener('open', (event) => { onWebsocketOpen(event) });
+    ws.addEventListener('close', () => {
+        console.log('The connection has been closed');
+        router.go(0);
+    })
+
+    ws.onmessage = function (event) {
+        const json = (event.data);
+        var data = JSON.parse(json);
+        const newAlarm = {
+            'subject': data['subject'],
+            'data': data.data,
+            'shortData': (data.data.length > 10) ? data.data.slice(0, 10) + '...' : data.data,
+            'id': data._id,
+            'read_mark': data.read_mark,
+            'timestamp': data.timestamp,
+        }
+        clearInterval(intervalId.value);
+        errors.value.pop();
+        errors.value.unshift(newAlarm);
+        intervalId.value = setInterval(() => { updateTime(errors) }, 1000);
+    };
+})
+
+const updateTime = (data) => {
+    data.value.forEach(obj => {
+        obj.countedTime = changeTime(obj.timestamp)
+    })
+}
+
+const onWebsocketOpen = function () {
+    console.log("connected to WS in topbar !");
+}
+
+const errors = ref();
 
 const {
     cookies
@@ -148,39 +191,43 @@ const logout = () => {
     })
 }
 
-const errors = ref([
-    {
-        "kind": "WARNING",
-        "content": "Notification",
-        "duration": "1min"
-    },
-    {
-        "kind": "ERROR",
-        "content": "Notification",
-        "duration": "2min"
-    },
-    {
-        "kind": "WARNING",
-        "content": "Notification",
-        "duration": "3min"
-    },
-    {
-        "kind": "NORMAL",
-        "content": "Notification",
-        "duration": "4min"
-    },
-    {
-        "kind": "ERROR",
-        "content": "Notification",
-        "duration": "5min"
-    },
-    {
-        "kind": "NORMAL",
-        "content": "Notification",
-        "duration": "6min"
-    },
-])
+const getErrorsForAlarm = (async (retry, ...theArgs) => {
+    console.log("getErrorsForAlarm")
+    try {
+        const response = await axios.get('/api/nats/errors/limit ')
+        // console.log(response.data)
+        theArgs[0].value = response.data;
+        const maxLength = 10
+        console.log(errors.value);
+        theArgs[0].value.forEach(obj => {
+            if (obj.data.length > maxLength) {
+                obj.shortData = obj.data.slice(0, maxLength) + '...'
+            }
+        })
+        intervalId.value = setInterval(() => { updateTime(errors) }, 1000);
+    } catch (error) {
+        if (retry <= 2) {
+            user.tokenErrorHandler(error, getErrorsForAlarm, retry, theArgs);
+        }
+    }
+})
 
+const changeTime = ((time) => {
+    const old = Date.parse(time)
+    const now = Date.now();
+    var timestamp = now - old
+
+    const min = parseInt(timestamp / (60 * 1000))
+    timestamp = timestamp % (60 * 1000)
+    const sec = parseInt(timestamp / (1000))
+
+    if (min >= 10) {
+        return '10분 이상'
+    }
+    else {
+        return min + '분 ' + sec + '초 ' + '전'
+    }
+})
 </script>
 
 <style scoped>

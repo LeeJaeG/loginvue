@@ -104,8 +104,6 @@ const removeConfirm = (flowName, password) => {
 
 <template>
   <div class="min-h-screen flex relative lg:static surface-ground">
-    <DashSidebar></DashSidebar>
-
     <div class="min-h-screen flex flex-column relative flex-auto">
       <div class="p-5 flex flex-column flex-auto">
         <div class="border-2 border-dashed surface-border border-round surface-section flex-auto">

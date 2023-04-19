@@ -11,7 +11,7 @@ const { contentBarName } = storeToRefs(path);
 const router = useRouter()
 const route = useRoute()
 const confirm = useConfirm();
-const baseUrl = 'http://192.168.15.129:8000'
+const baseUrl = 'http://192.168.15.129:7000'
 const hostPath = '/metric/host/'
 const vmPath = '/metric/vm/'
 //host api 요청 목록 인덱스 상수화

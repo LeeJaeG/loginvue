@@ -1,24 +1,3 @@
-<!-- <template>
-    <div>
-        <h1>This is an Openstack Topology page</h1>
-    </div>
-</template>
-    
-<script setup>
-import { onMounted } from 'vue'
-import { usePathStore } from '@/stores/path'
-import { storeToRefs } from 'pinia';
-
-const path = usePathStore();
-const { contentBarName } = storeToRefs(path);
-
-onMounted(() => {
-    contentBarName.value = 'Openstack Topology'
-})
-</script>
-    
-<style></style> -->
-  
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from "axios";
@@ -169,7 +148,7 @@ const liveMigration = async (node) => {
     // post request
     var config = {
         method: 'post',
-        url: 'http://192.168.15.131:9000/ostck/topology/live_migrate',
+        url: 'http://192.168.15.129:9000/ostck/topology/live_migrate',
         headers: {
             'Content-Type': 'application/json'
         },
@@ -201,7 +180,7 @@ const getRxTxRate = async (Mounted) => {
     // api config
     var config = {
         method: 'get',
-        url: 'http://192.168.15.135:8000/metric/vm/network_all_proejct',    //
+        url: 'http://192.168.15.129:7000/metric/vm/network_all_proejct',    //
         // url: 'http://192.168.15.135:8000/metric/vm/network_all',
         headers: {}
     };
@@ -395,7 +374,7 @@ const callServersOnHosts = (result) => {
             var name = json.value[node][vmNum].name;
             if (name.length >= 15) {
                 name = name.substr(0, 15) + ' ... ';
-            };
+            }
             var id = idx + String.fromCharCode(97 + Number(vmNum))
             vmToID.value[json.value[node][vmNum].vm_id] = { 'id': id, 'count': 0 }
             var locationID = json.value[node][vmNum].location.project.id
@@ -432,11 +411,10 @@ const callServersOnHosts = (result) => {
     }
 }
 const callCluster = (result) => {
-    console.log('callCluster')
-
     json1.value = result.data;
+    console.log('callCluster', json1.value)
     for (var cluster in json1.value) {
-        // console.log(cluster, json1.value[cluster].nodes);
+        console.log(cluster, json1.value[cluster].nodes);
         // var clusterCount = 1;
         var checkList = [];
         var clusterName = json1.value[cluster].main.name;
@@ -471,7 +449,7 @@ const callCluster = (result) => {
     console.log(elements.value);
 }
 const callSubNet = (result) => {
-    console.log('callSubNet')
+    console.log('callSubNet');
     json2.value = result.data;
     // console.log("test3");
     let idx = 0;
@@ -530,12 +508,12 @@ const callSubNet = (result) => {
     elements.value[0].position = { x: 100, y: vmTotalHeight.value / 2 - (250 * (idx) + 50) / 2 };
 }
 const callPort = (result) => {
-    console.log('callPort')
+    console.log('callPort');
     json3.value = result.data;
-    let idx = 0;
+    // let idx = 0;
     for (var vm in json3.value) {
         // edge source & target
-        idx += 1;
+        // idx += 1;
         for (var port in json3.value[vm].ports) {
             const target = vmToID.value[vm].id;
             const source = subnetToID.value[json3.value[vm].ports[port].subnet_id].id;
@@ -562,26 +540,27 @@ const callPort = (result) => {
             })
         }
     }
-    loading.value = true;
     getRxTxRate(Mounted).then(() => {
         Mounted.value = true;
         element.value = elements.value;
         fitView();
+    }).then(() => {
+        loading.value = true;
     });
 }
 const reqHandler = async () => {
-    var config_server_on_host = 'http://192.168.15.131:9000/ostck/topology/servers_on_hosts'
-    var config_cluster = 'http://192.168.15.135:8000/metric/vm/cluster_all'
+    var config_server_on_host = 'http://192.168.15.129:9000/ostck/topology/servers_on_hosts'
+    var config_cluster = 'http://192.168.15.129:7000/metric/vm/cluster_all'
     var config_port = {
         method: 'get',
-        url: 'http://192.168.15.131:9000/ostck/network/ports_on_servers',
+        url: 'http://192.168.15.129:9000/ostck/network/ports_on_servers',
         headers: {
             'Content-Type': 'application/json'
         },
     };
     var config_subnet = {
         method: 'get',
-        url: 'http://192.168.15.131:9000/ostck/network/subnets_on_networks',
+        url: 'http://192.168.15.129:9000/ostck/network/subnets_on_networks',
         headers: {
             'Content-Type': 'application/json'
         },
@@ -596,32 +575,28 @@ const reqHandler = async () => {
         .all(getList)
         .then(
             axios.spread((res_server_on_host, res_cluster, res_port, res_subnet) => {
-                console.log(res_server_on_host)
-                console.log(res_cluster)
-                console.log(res_port)
-                console.log(res_subnet)
+                console.log(res_server_on_host);
+                console.log(res_cluster);
+                console.log(res_port);
+                console.log(res_subnet);
 
-                callServersOnHosts(res_server_on_host)
-                callCluster(res_cluster)
-                callSubNet(res_subnet)
-                callPort(res_port)
+                callServersOnHosts(res_server_on_host);
+                callCluster(res_cluster);
+                callSubNet(res_subnet);
+                callPort(res_port);
             })
         )
         .catch(() => { });
 };
 onMounted(async () => {
-    contentBarName.value = 'Openstack Topology',
-        reqHandler()
-    // console.log("test4");
-
+    contentBarName.value = 'Openstack Topology';
+    reqHandler();
 });
 </script>
  
 
 <template>
     <div class="min-h-screen flex relative lg:static surface-ground">
-        <DashSidebar></DashSidebar>
-
         <div class="min-h-screen flex flex-column relative flex-auto">
             <div class="p-5 flex flex-column flex-auto">
                 <!-- this is main page -->

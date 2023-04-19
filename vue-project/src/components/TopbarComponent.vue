@@ -80,10 +80,10 @@
                             style="height: 7vh; background-color: #414859;">
                             <!-- router-link style="text-decoration: none; color: inherit;" to="/" v-ripple -->
                             <div
-                                :class="'w-5 px-1 flex align-items-center text-' + NotificationColors[error.subject.toUpperCase()] + '-400'">
-                                <div :class="'circle mx-2 bg-' + NotificationColors[error.subject.toUpperCase()] + '-400'">
+                                :class="'w-5 px-1 flex align-items-center text-' + NotificationColors[error.level.toUpperCase()] + '-400'">
+                                <div :class="'circle mx-2 bg-' + NotificationColors[error.level.toUpperCase()] + '-400'">
                                 </div>
-                                {{ error.subject.toUpperCase() }}
+                                {{ error.level.toUpperCase() }}
                             </div>
                             <div class="w-4">
                                 {{ error.shortData }}
@@ -114,8 +114,7 @@ const router = useRouter()
 const intervalId = ref(null);
 onMounted(() => {
     getErrorsForAlarm(0, errors);
-
-    var ws = new WebSocket("ws://192.168.15.47:8000/api/nats/ws");
+    var ws = new WebSocket("ws://192.168.15.47:8000/api/nats/ws/"+userdata.value.id);
     ws.addEventListener('open', (event) => { onWebsocketOpen(event) });
     ws.addEventListener('close', () => {
         console.log('The connection has been closed');
@@ -127,12 +126,13 @@ onMounted(() => {
         var data = JSON.parse(json);
         const newAlarm = {
             'subject': data['subject'],
-            'data': data.data,
-            'shortData': (data.data.length > 10) ? data.data.slice(0, 10) + '...' : data.data,
+            'data': data.message,
+            'shortData': (data.message.length > 10) ? data.message.slice(0, 10) + '...' : data.message,
             'id': data._id,
             'read_mark': data.read_mark,
             'timestamp': data.timestamp,
         }
+        // console.log(newAlarm);
         clearInterval(intervalId.value);
         errors.value.pop();
         errors.value.unshift(newAlarm);
@@ -198,10 +198,10 @@ const getErrorsForAlarm = (async (retry, ...theArgs) => {
         // console.log(response.data)
         theArgs[0].value = response.data;
         const maxLength = 10
-        console.log(errors.value);
+        // console.log(errors.value);
         theArgs[0].value.forEach(obj => {
-            if (obj.data.length > maxLength) {
-                obj.shortData = obj.data.slice(0, maxLength) + '...'
+            if (obj.message.length > maxLength) {
+                obj.shortData = obj.message.slice(0, maxLength) + '...'
             }
         })
         intervalId.value = setInterval(() => { updateTime(errors) }, 1000);

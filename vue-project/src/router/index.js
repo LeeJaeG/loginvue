@@ -60,6 +60,11 @@ const router = createRouter({
       component: () => import('../views/CloudTopologyView.vue')
     },
     {
+      path: '/cloud-topology-test',
+      name: 'cloudTopologyTest',
+      component: () => import('../views/CloudTopologyViewTMP.vue')
+    },
+    {
       path: '/kaloom-topology',
       name: 'kaloomTopology',
       component: () => import('../views/KaloomTopologyView.vue')

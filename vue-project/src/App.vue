@@ -70,11 +70,11 @@ onMounted(() => {
     </div>
   </div>
   <!-- After login -->
-  <div v-else class="border-round-xl surface-border overflow-x-scroll" style="min-width: 1800px;">
+  <div v-else class="border-round-xl surface-border" style="min-width: 1800px;">
     <!-- Top bar -->
     <topbar></topbar>
     <!-- below Top bar -->
-    <div class="flex relative static surface-ground" style="min-height: calc(100vh - 50px);">
+    <div class="flex relative static surface-ground" style="height: calc(970px - 54px);">
       <!-- without sidebar 2 -->
       <div v-if="offSidebar1 == false && offSidebar2 == true">
         <sidebar1 class="min-h-full" @touch="changeSidebar"></sidebar1>
@@ -83,7 +83,7 @@ onMounted(() => {
       <div v-else-if="offSidebar1 == true && offSidebar2 == false">
         <sidebar2 class="min-h-full" @touch="changeSidebar"></sidebar2>
       </div>
-      <div class="flex flex-column relative flex-auto">
+      <div class="flex flex-column flex-auto relative">
         <contentbar></contentbar>
         <content></content>
       </div>

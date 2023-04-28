@@ -1,6 +1,6 @@
 <template>
     <!-- content bar-->
-    <div class="flex flex-column flex-auto" style="overflow: auto;">
+    <div class="flex flex-column flex-none" style="height: calc(100% - 50px)">
         <RouterView />
     </div>
 </template>

@@ -17,7 +17,7 @@ const user = useUserStore();
 const { contentBarName } = storeToRefs(path);
 const { userdata } = storeToRefs(user);
 
-const { onPaneReady, onNodeDoubleClick } = useVueFlow()
+const { onPaneReady, onNodeDoubleClick, findNode } = useVueFlow()
 
 onPaneReady(({ fitView }) => {
     fitView()
@@ -70,13 +70,45 @@ const getLiveByteMetricForAllEdge = (async (retry, ...theArgs) => {
 })
 
 const live = ref(false)
+const timeForLiveUpdate = ref(20)
+const intervalID = ref(null);
+const timer = (() => {
+    intervalID.value = setInterval(async () => {
+        timeForLiveUpdate.value -= 1;
+        if (timeForLiveUpdate.value < 0) {
+            timeForLiveUpdate.value = 20;
+            httpWorking.value = true;
+            clearInterval(intervalID.value);
+            await getLiveByteMetricForAllEdge(0);
+            if (!displayLiveInfoForChosenVM.value) {
+                changeColorOfEdges();
+            } else {
+                changeColorOfEdgeForVM(selectedNodeInfo.value.vm_id);
+            }
+            timer()
+            httpWorking.value = false;
+        }
+    }, 1000)
+})
 const liveByte = (async () => {
     httpWorking.value = true
     if (live.value == false) {
-        await getLiveByteMetricForAllEdge(0)
-        changeColorOfEdges()
+        if (selectedNodeInfo.value) {
+            getServerMetrics(0, selectedNodeInfo.value.vm_id);
+        }
+        await getLiveByteMetricForAllEdge(0);
+        if (!displayLiveInfoForChosenVM.value) {
+            changeColorOfEdges();
+        } else {
+            changeColorOfEdgeForVM(selectedNodeInfo.value.vm_id)
+        }
+        timer()
     } else {
-        changeBackColorOfEdges()
+        if (!displayLiveInfoForChosenVM.value) {
+            changeBackColorOfEdges();
+        }
+        clearInterval(intervalID.value);
+        timeForLiveUpdate.value = 20;
     }
     httpWorking.value = false
     live.value = !live.value
@@ -84,23 +116,52 @@ const liveByte = (async () => {
 
 const changeColorOfEdges = (() => {
     const EdgeObjects = onlyEdgeInVueFlow(vueFlow.value)
-    console.log(EdgeObjects)
+    // console.log(EdgeObjects)
     for (var edgeIndex in EdgeObjects) {
-        EdgeObjects[edgeIndex].animated = true;
-        EdgeObjects[edgeIndex].style = { stroke: EdgeObjects[edgeIndex].data.colorObject.color, strokeWidth: 4 };
-        // EdgeObjects[edgeIndex].label = EdgeObjects[edgeIndex].data.colorObject.value
-        EdgeObjects[edgeIndex].labelBgPadding = [8, 4];
-        EdgeObjects[edgeIndex].labelBgBorderRadius = 4;
-        EdgeObjects[edgeIndex].labelBgStyle = { fill: EdgeObjects[edgeIndex].data.colorObject.color, color: '#fff', fillOpacity: 1.0 };
+        var edge = EdgeObjects[edgeIndex]
+        edge.animated = true;
+        edge.style = { stroke: edge.data.colorObject.color, strokeWidth: 4 };
+        // edge.label = edge.data.colorObject.value
+        edge.labelBgPadding = [8, 4];
+        edge.labelBgBorderRadius = 4;
+        edge.labelBgStyle = { fill: edge.data.colorObject.color, color: '#fff', fillOpacity: 1.0 };
+    }
+})
+
+const changeColorOfEdgeForVM = ((vm_id) => {
+    // console.log(vm_id)
+    const EdgeObjects = vueFlow.value.filter(item => {
+        return item.target === vm_id;
+    });
+    // console.log(EdgeObjects, vueFlow.value)
+    for (var edgeIndex in EdgeObjects) {
+        var edge = EdgeObjects[edgeIndex]
+        edge.animated = true;
+        edge.style = { stroke: edge.data.colorObject.color, strokeWidth: 4 };
+        edge.label = edge.data.colorObject.value
+        edge.labelBgPadding = [8, 4];
+        edge.labelBgBorderRadius = 4;
+        edge.labelBgStyle = { fill: edge.data.colorObject.color, color: '#fff', fillOpacity: 1.0 };
     }
 })
 
 const changeBackColorOfEdges = (() => {
     const EdgeObjects = onlyEdgeInVueFlow(vueFlow.value)
     for (var edgeIndex in EdgeObjects) {
-        EdgeObjects[edgeIndex].animated = false;
-        EdgeObjects[edgeIndex].style = { strokeWidth: 2 };
-        // delete EdgeObjects[edgeIndex].label
+        var edge = EdgeObjects[edgeIndex]
+        edge.animated = false;
+        edge.style = { strokeWidth: 2 };
+        delete edge.label
+    }
+})
+
+const changeBackColorOfEdgeForVM = ((vm_id) => {
+    const EdgeObjects = vueFlow.value.filter(item => {
+        return item.target === vm_id;
+    });
+    for (var edgeIndex in EdgeObjects) {
+        var edge = EdgeObjects[edgeIndex]
+        delete edge.label
     }
 })
 
@@ -109,7 +170,30 @@ const getServerMetrics = (async (retry, ...theArgs) => {
     try {
         const response = await axios.get('/api/openstack-metric/server_detail/' + theArgs[0]) // theArgs[0] = server_id
         selectedNodeMetric.value = response.data.data[0]
-        // console.log(selectedNodeMetric.value)
+
+        for (var name in selectedNodeMetric.value) {
+            const splitName = name.split('-')
+            let edgeID = '';
+            for (let i = 2; i <= 8; i++) {
+                edgeID += splitName[i];
+                if (i < 8) {
+                    edgeID += '-';
+                }
+            }
+            const incomingByte = parseInt(selectedNodeMetric.value[name]["network.incoming.bytes"]["datasets"][0]["data"].at(-1))
+            const outgoingByte = parseInt(selectedNodeMetric.value[name]["network.outgoing.bytes"]["datasets"][0]["data"].at(-1))
+            const value = (incomingByte + outgoingByte)
+            var colorObject = pickColorbyValue(value);
+            const objectForAddColorInfo = vueFlow.value.find((item) => {
+                if (item.id.trim() == edgeID.trim()) { //vmID.trim()
+                    // console.log(item)
+                    return item
+                }
+            })
+            if (objectForAddColorInfo) {
+                objectForAddColorInfo.data["colorObject"] = colorObject
+            }
+        }
     } catch (error) {
         if (retry <= 2) {
             user.tokenErrorHandler(error, getServerMetrics, retry, theArgs);
@@ -117,11 +201,14 @@ const getServerMetrics = (async (retry, ...theArgs) => {
     }
 })
 
+const getServerDetailsLoading = ref(false)
 const getServerDetails = (async (retry, ...theArgs) => {
     console.log("get Server's detail infomation ")
     try {
+        getServerDetailsLoading.value = true
         const response = await axios.get('/api/openstack-server/vm_details/' + userdata.value.id + '/' + userdata.value.selectedProject.project_id + '/' + theArgs[0]) // theArgs[0] = server_id
         selectedNodeInfo.value = response.data.data[0][0]
+        getServerDetailsLoading.value = false
         // console.log(selectedNodeInfo.value)
     } catch (error) {
         if (retry <= 2) {
@@ -183,7 +270,9 @@ const selectedNodeMetric = ref()
 const openNodeInfo = (async (id) => {
     try {
         httpWorking.value = true
-        await Promise.all([getServerDetails(0, id), getServerMetrics(0, id)]);
+        // await Promise.all([getServerDetails(0, id), getServerMetrics(0, id)]);
+        getServerDetails(0, id)
+        await getServerMetrics(0, id)
         // displayNodeInfo.value = true;
         httpWorking.value = false
     } catch (error) {
@@ -192,6 +281,7 @@ const openNodeInfo = (async (id) => {
 });
 
 onNodeDoubleClick(({ node }) => {
+    console.log(node)
     if (node.type == 'vm') {
         displayNodeInfoName.value = node.label;
         openNodeInfo(node.id);
@@ -248,8 +338,80 @@ const onlyVMInVueFlow = ((list) => {
 const onlyEdgeInVueFlow = ((list) => {
     return list.filter(item => item.data.type === 'edge')
 })
-const selectedObject = ref();
+
 const httpWorking = ref(false);
+
+const displayNodeInfoToggle = (() => {
+    if (selectedNodeInfo.value && displayNodeInfo.value == false) {
+        displayNodeInfo.value = true
+    } else if (displayNodeInfo.value == true) {
+        displayNodeInfo.value = false
+    } else {
+        alert("인스턴스를 선택 해주세요")
+    }
+})
+
+const clickRadioButtonForVM = ((id) => {
+    const node = findNode(id)
+    if (node.type == 'vm') {
+        displayNodeInfoName.value = node.label;
+        openNodeInfo(node.id);
+    }
+})
+
+const displayLiveInfoForChosenVM = ref(false)
+const displayLiveInfoForChosenVMToggle = (() => {
+    if (selectedNodeInfo.value && displayLiveInfoForChosenVM.value == false && live.value == false) {
+        displayLiveInfoForChosenVM.value = true
+        changeColorOfEdgeForVM(selectedNodeInfo.value.vm_id)
+    } else if (selectedNodeInfo.value && displayLiveInfoForChosenVM.value == false && live.value == true) {
+        displayLiveInfoForChosenVM.value = true
+        changeBackColorOfEdges()
+        changeColorOfEdgeForVM(selectedNodeInfo.value.vm_id)
+    } else if (displayLiveInfoForChosenVM.value == true && live.value == false) {
+        displayLiveInfoForChosenVM.value = false
+        changeBackColorOfEdges()
+    } else if (displayLiveInfoForChosenVM.value == true && live.value == true) {
+        displayLiveInfoForChosenVM.value = false
+        changeBackColorOfEdgeForVM(selectedNodeInfo.value.vm_id)
+        changeColorOfEdges()
+    } else {
+        alert("인스턴스를 선택 해주세요")
+    }
+})
+
+const displayLiveInfoPanel = ref(false)
+const displayLiveInfoPanelToggle = (() => {
+    if (selectedNodeInfo.value && displayLiveInfoPanel.value == false) {
+        displayLiveInfoPanel.value = true
+    } else if (displayLiveInfoPanel.value == true) {
+        displayLiveInfoPanel.value = false
+    } else {
+        alert("인스턴스를 선택 해주세요")
+    }
+})
+
+const ProgressBarRate = ((incoming, outgoing) => {
+    if ((incoming + outgoing) != 0) {
+        const rate = (incoming) / (incoming + outgoing) * 100
+        return rate
+    }
+    else {
+        return 50
+    }
+})
+
+const url = ref();
+const checkELS = ref(true)
+const showELS = (vmID) => {
+    checkELS.value = false;
+    // vmID = 'c1fca4a0-6930-11ed-9d97-373723c9a1cb'; 
+    url.value = "http://192.168.15.140:5601/app/dashboards#/view/c1fca4a0-6930-11ed-9d97-373723c9a1cb?embed=true&_g=(filters:!(),refreshInterval:(pause:!f,value:10000),time:(from:now-30m,to:now))&_a=(description:'',filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'6a4bde80-68c0-11ed-9d97-373723c9a1cb',key:vm_id.keyword,negate:!f,params:(query:'" + vmID + "'),type:phrase),query:(match_phrase:(vm_id.keyword:'" + vmID + "')))),fullScreenMode:!f,options:(hidePanelTitles:!f,syncColors:!f,useMargins:!t),panels:!((embeddableConfig:(enhancements:(),savedVis:(data:(aggs:!((enabled:!t,id:'1',params:(customLabel:rx_byte,field:rx_byte),schema:metric,type:avg),(enabled:!t,id:'2',params:(drop_partials:!f,extended_bounds:(),field:'@timestamp',interval:'20s',min_doc_count:1,scaleMetricValues:!f,timeRange:(from:now-60m,to:now),useNormalizedEsInterval:!t,used_interval:'30s'),schema:segment,type:date_histogram),(enabled:!t,id:'3',params:(customLabel:tx_byte,field:tx_byte),schema:metric,type:avg),(enabled:!t,id:'4',params:(field:port_id.keyword,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:_key,otherBucket:!f,otherBucketLabel:Other,size:5),schema:split,type:terms)),searchSource:(filter:!(),index:'6a4bde80-68c0-11ed-9d97-373723c9a1cb',query:(language:kuery,query:''))),description:'',params:(addLegend:!t,addTimeMarker:!f,addTooltip:!t,categoryAxes:!((id:CategoryAxis-1,labels:(filter:!t,show:!t,truncate:100),position:bottom,scale:(type:linear),show:!t,style:(),title:(),type:category)),detailedTooltip:!t,grid:(categoryLines:!f),labels:(show:!f),legendPosition:top,maxLegendLines:1,palette:(name:kibana_palette,type:palette),radiusRatio:0,row:!t,seriesParams:!((circlesRadius:3,data:(id:'1',label:rx_byte),drawLinesBetweenPoints:!t,interpolate:linear,lineWidth:2,mode:stacked,show:!t,showCircles:!t,type:histogram,valueAxis:ValueAxis-1),(circlesRadius:3,data:(id:'3',label:tx_byte),drawLinesBetweenPoints:!t,interpolate:linear,lineWidth:2,mode:stacked,show:!t,showCircles:!t,type:histogram,valueAxis:ValueAxis-1)),thresholdLine:(color:%23E7664C,show:!f,style:full,value:10,width:1),times:!(),truncateLegend:!t,type:histogram,valueAxes:!((id:ValueAxis-1,labels:(filter:!f,rotate:0,show:!t,truncate:100),name:LeftAxis-1,position:left,scale:(mode:normal,type:linear),show:!t,style:(),title:(text:'Average%20rx_byte'),type:value))),title:vm_rx_tx_bytes,type:histogram,uiState:())),gridData:(h:24,i:a491ab0b-6f8a-44e7-8a18-1bfe6e8db1e3,w:24,x:0,y:0),panelIndex:a491ab0b-6f8a-44e7-8a18-1bfe6e8db1e3,type:visualization,version:'7.15.0'),(embeddableConfig:(enhancements:(),hidePanelTitles:!f,savedVis:(data:(aggs:!((enabled:!t,id:'1',params:(customLabel:drop_rx,field:rx_drop),schema:metric,type:avg),(enabled:!t,id:'2',params:(drop_partials:!f,extended_bounds:(),field:'@timestamp',interval:auto,min_doc_count:1,scaleMetricValues:!f,timeRange:(from:now-30m,to:now),useNormalizedEsInterval:!t,used_interval:'30s'),schema:segment,type:date_histogram),(enabled:!t,id:'3',params:(customLabel:drop_tx,field:tx_drop),schema:metric,type:avg),(enabled:!t,id:'4',params:(field:port_id.keyword,missingBucket:!f,missingBucketLabel:Missing,order:desc,orderBy:_key,otherBucket:!f,otherBucketLabel:Other,size:5),schema:split,type:terms)),searchSource:(filter:!(),index:'6a4bde80-68c0-11ed-9d97-373723c9a1cb',query:(language:kuery,query:''))),description:'',params:(addLegend:!t,addTimeMarker:!f,addTooltip:!t,categoryAxes:!((id:CategoryAxis-1,labels:(filter:!t,show:!t,truncate:100),position:bottom,scale:(type:linear),show:!t,style:(),title:(),type:category)),detailedTooltip:!t,grid:(categoryLines:!f),labels:(show:!f),legendPosition:top,maxLegendLines:1,palette:(name:kibana_palette,type:palette),radiusRatio:0,row:!t,seriesParams:!((circlesRadius:3,data:(id:'1',label:drop_rx),drawLinesBetweenPoints:!t,interpolate:linear,lineWidth:2,mode:stacked,show:!t,showCircles:!t,type:line,valueAxis:ValueAxis-1),(circlesRadius:3,data:(id:'3',label:drop_tx),drawLinesBetweenPoints:!t,interpolate:linear,lineWidth:2,mode:stacked,show:!t,showCircles:!t,type:line,valueAxis:ValueAxis-1)),thresholdLine:(color:%23E7664C,show:!f,style:full,value:10,width:1),times:!(),truncateLegend:!t,type:histogram,valueAxes:!((id:ValueAxis-1,labels:(filter:!f,rotate:0,show:!t,truncate:100),name:LeftAxis-1,position:left,scale:(mode:normal,type:linear),show:!t,style:(),title:(text:'Average%20rx_byte'),type:value))),title:vm_rx_tx_bytes,type:histogram,uiState:())),gridData:(h:24,i:f5a13833-a6d3-4f6c-b174-bba9834dd87a,w:24,x:24,y:0),panelIndex:f5a13833-a6d3-4f6c-b174-bba9834dd87a,title:drop_rx_tx_bytes,type:visualization,version:'7.15.0')),query:(language:kuery,query:''),tags:!(),timeRestore:!f,title:vm_resources_basic,viewMode:edit)&show-time-filter=true"
+    // console.log(url.value);
+}
+const closeELS = () => {
+    checkELS.value = true;
+}
 </script>
 
 <template>
@@ -263,8 +425,9 @@ const httpWorking = ref(false);
             <div class="flex flex-none text-2xl font-bold mb-1 p-4">
                 Detail Info
             </div>
-            <div class="flex flex-column flex-grow-1" style="overflow-y: scroll;">
-                <div v-for="value, key in selectedNodeInfo" class="flex flex-column list-none pl-2" :key='value'>
+            <Skeleton v-if="getServerDetailsLoading" class="flex flex-grow-1" />
+            <div v-else class="flex flex-column flex-grow-1" style="overflow-y: scroll;">
+                <div v-for="value, key in selectedNodeInfo" class="flex flex-column pl-2" :key='value'>
                     <div class="text-800 border-round font-semibold text-lg mb-1">
                         [ {{ key }} ] :
                     </div>
@@ -277,9 +440,36 @@ const httpWorking = ref(false);
                 View Toggler
             </div>
             <div class="flex justify-content-between pb-4 px-6">
-                <Button class="border-noround bg-teal-500 border-teal-500 hover:bg-teal-800 hover:border-teal-800"></Button>
-                <Button class="border-noround"></Button>
-                <Button class="border-noround"></Button>
+                <Button v-if="!displayNodeInfo"
+                    class="px-3 border-noround bg-teal-500 border-teal-500 hover:bg-teal-800 hover:border-teal-800"
+                    @click="displayNodeInfoToggle">
+                    <font-awesome-icon icon="fa-solid fa-chart-line" style="font-size: 1.2rem" />
+                </Button>
+                <Button v-else
+                    class="px-3 border-noround bg-teal-800 border-teal-800 hover:bg-teal-500 hover:border-teal-500"
+                    @click="displayNodeInfoToggle">
+                    <font-awesome-icon icon="fa-solid fa-chart-line" style="font-size: 1.2rem" />
+                </Button>
+                <Button v-if="!displayLiveInfoForChosenVM"
+                    class="border-noround px-3 border-noround bg-teal-500 border-teal-500 hover:bg-teal-800 hover:border-teal-800"
+                    @click="displayLiveInfoForChosenVMToggle">
+                    <font-awesome-icon icon="fa-solid fa-magnifying-glass" style="font-size: 1.2rem" />
+                </Button>
+                <Button v-else
+                    class="px-3 border-noround bg-teal-800 border-teal-800 hover:bg-teal-500 hover:border-teal-500"
+                    @click="displayLiveInfoForChosenVMToggle">
+                    <font-awesome-icon icon="fa-solid fa-magnifying-glass" style="font-size: 1.2rem" />
+                </Button>
+                <Button v-if="!displayLiveInfoPanel"
+                    class="border-noround px-3 border-noround bg-teal-500 border-teal-500 hover:bg-teal-800 hover:border-teal-800"
+                    @click="displayLiveInfoPanelToggle">
+                    <font-awesome-icon icon="fa-solid fa-sitemap" style="font-size: 1.2rem" />
+                </Button>
+                <Button v-else
+                    class="px-3 border-noround bg-teal-800 border-teal-800 hover:bg-teal-500 hover:border-teal-500"
+                    @click="displayLiveInfoPanelToggle">
+                    <font-awesome-icon icon="fa-solid fa-sitemap" style="font-size: 1.2rem" />
+                </Button>
             </div>
         </div>
         <div class="flex flex-column relative flex-auto">
@@ -293,19 +483,19 @@ const httpWorking = ref(false);
                         <Background gap="50" bg-color="rgba(255, 255, 255, 0.1)" variant="lines" />
 
                         <div class="controls">
-                            <button style="background-color: #113285; color: white" @click="liveByte()">실시간 패킷 레이트
-                                (20초)</button>
+                            <button style="background-color: #113285; color: white" @click="liveByte()">실시간 통신량
+                                ({{ timeForLiveUpdate }}초)</button>
                         </div>
 
-                        <Dialog v-bind:header="displayNodeInfoName" v-model:visible="displayNodeInfo" class="w-8">
-                            <!-- <div class="flex justify-content-center">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <div class="w-11 border-400 border-bottom-1 "></div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </div> -->
-                            <!-- <div class="py-3 px-6 flex justify-content-between">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <Dropdown v-model="selectedNode" :options="parentNodesName" optionLabel="name"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                placeholder="Select a node (Optional)" class="w-7" />
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <Button label="실시간 마이그레이션" @click="liveMigration(displayNodeInfoDetail)" />
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </div> -->
+                        <Dialog v-bind:header="displayNodeInfoName" v-model:visible="displayNodeInfo" class="w-8" modal>
+                            <div class="flex justify-content-center">
+                                <div class="w-11 border-400 border-bottom-1 "></div>
+                            </div>
+                            <div class="py-3 px-6 flex justify-content-between">
+                                <Dropdown v-model="selectedNode" :options="parentNodesName" optionLabel="name"
+                                    placeholder="Select a node (Optional)" class="w-7" />
+                                <Button label="실시간 마이그레이션" @click="liveMigration(displayNodeInfoDetail)" />
+                            </div>
                             <div class="flex justify-content-center">
                                 <div class="w-11 border-400 border-bottom-1 "></div>
                             </div>
@@ -325,24 +515,24 @@ const httpWorking = ref(false);
                                 <div class="w-11 border-400 border-bottom-1 "></div>
                             </div>
 
-                            <!-- <div class="my-2 px-6">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <div v-if="checkELS">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <div class="flex justify-content-between align-items-center">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <div
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        class="bg-blue-50 text-blue-400 border-round inline-flex mb-1 py-1 px-2 text-sm">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        RxTx Detail : </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <Button label="Show Detail" @click="showELS(displayNodeInfoDetail.vm_id)"></Button>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <div v-if="!checkELS">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <div class="flex justify-content-end">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <Button label="Close Detail" @click="closeELS"></Button>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <div class="mt-2 flex justify-content-center">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <iframe v-bind:src="url" height="600" width="800"></iframe>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </div> -->
+                            <div class="px-6 my-2">
+                                <div v-if="checkELS">
+                                    <div class="flex justify-content-between align-items-center">
+                                        <div
+                                            class="bg-green-50 text-green-400 border-round inline-flex mb-1 py-1 px-2 text-sm">
+                                            RxTx Detail : </div>
+                                        <Button label="Show Detail" @click="showELS(selectedNodeInfo.vm_id)"></Button>
+                                    </div>
+                                </div>
+                                <div v-if="!checkELS">
+                                    <div class="flex justify-content-end">
+                                        <Button label="Close Detail" @click="closeELS"></Button>
+                                    </div>
+                                    <div class="mt-2 flex justify-content-center">
+                                        <iframe v-bind:src="url" height="600" width="800"></iframe>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="flex justify-content-center">
                                 <div class="w-11 border-400 border-bottom-1 "></div>
@@ -371,13 +561,88 @@ const httpWorking = ref(false);
                 </div>
             </div>
         </div>
-        <div class="flex flex-column w-2 surface-card surface-border border-right-2 p-4 shadow-2">
-            <div class="text-2xl font-bold mb-6">
+        <div v-if="!displayLiveInfoPanel" class="flex flex-column w-2 surface-card surface-border border-right-2 shadow-2">
+            <div class="text-2xl font-bold mb-4 m-4">
                 Detail List
             </div>
-            <div v-for="object in onlyVMInVueFlow(vueFlow)" :key="object.label" class="flex align-items-center mb-4">
-                <RadioButton v-model="selectedObject" :inputId="object.id" :value="object.label" />
-                <label :for="object.key" class="ml-2 text-700">{{ object.label }}</label>
+            <div class="flex-grow-1" style="overflow-y: scroll;">
+                <div v-for="object in onlyVMInVueFlow(vueFlow)" :key="object.label"
+                    class="flex align-items-center mb-4 ml-4">
+                    <RadioButton v-model="displayNodeInfoName" :inputId="object.id" :value="object.label"
+                        @click="clickRadioButtonForVM(object.id)" />
+                    <label :for="object.key" class="ml-2 text-700">{{ object.label }}</label>
+                </div>
+            </div>
+        </div>
+        <div v-else class="flex flex-column w-2 surface-card surface-border border-right-2 shadow-2">
+            <div class="flex flex-column" style="height: 65%;">
+                <div class="text-2xl font-bold mb-4 m-4">
+                    Detail List
+                </div>
+                <div class="ml-4" style="overflow-y: scroll;">
+                    <div v-for="object in onlyVMInVueFlow(vueFlow)" :key="object.label"
+                        class="flex align-items-center mb-4">
+                        <RadioButton v-model="displayNodeInfoName" :inputId="object.id" :value="object.label"
+                            @click="clickRadioButtonForVM(object.id)" />
+                        <label :for="object.key" class="ml-2 text-700">{{ object.label }}</label>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-column" style="height: 35%">
+                <div class=" text-2xl font-bold mx-4 my-2">
+                    Traffic summary
+                </div>
+                <div style="height: 70%;overflow-y: scroll;">
+                    <div v-for="value, key in selectedNodeMetric" :key="value" class="flex flex-column">
+                        <div class="text-700 px-4 text-xs"> [{{ key }}] </div>
+                        <div class="text-500 text-xs mt-2">
+                            <div class="px-4">
+                                총 byte 수 =
+                                {{ Number(value["network.incoming.bytes"]["datasets"][0]["data"].at(-1)) +
+                                    Number(value["network.outgoing.bytes"]["datasets"][0]["data"].at(-1)) }} byte
+                                <ProgressBar
+                                    :value="ProgressBarRate(Number(value['network.incoming.bytes']['datasets'][0]['data'].at(-1)), Number(value['network.outgoing.bytes']['datasets'][0]['data'].at(-1)))"
+                                    :showValue="false" />
+                            </div>
+                        </div>
+                        <div class="text-500 text-xs mt-2">
+                            <div class="px-4">
+                                총 packet 수 =
+                                {{ Number(value["network.incoming.packets"]["datasets"][0]["data"].at(-1)) +
+                                    Number(value["network.outgoing.packets"]["datasets"][0]["data"].at(-1)) }} byte
+                                <ProgressBar
+                                    :value="ProgressBarRate(Number(value['network.incoming.packets']['datasets'][0]['data'].at(-1)), Number(value['network.outgoing.packets']['datasets'][0]['data'].at(-1)))"
+                                    :showValue="false" />
+                            </div>
+                        </div>
+                        <div class="text-500 text-xs mt-2">
+                            <div class="px-4">
+                                총 packet drop 수 =
+                                {{ Number(value["network.incoming.packets.drop"]["datasets"][0]["data"].at(-1)) +
+                                    Number(value["network.outgoing.packets.drop"]["datasets"][0]["data"].at(-1)) }} byte
+                                <ProgressBar
+                                    :value="ProgressBarRate(Number(value['network.incoming.packets.drop']['datasets'][0]['data'].at(-1)), Number(value['network.outgoing.packets.drop']['datasets'][0]['data'].at(-1)))"
+                                    :showValue="false" />
+                            </div>
+                        </div>
+                        <div class="text-500 text-xs mt-2 mb-4">
+                            <div class="px-4">
+                                총 packet error 수 =
+                                {{ Number(value["network.incoming.packets.error"]["datasets"][0]["data"].at(-1)) +
+                                    Number(value["network.outgoing.packets.error"]["datasets"][0]["data"].at(-1)) }} byte
+                                <ProgressBar
+                                    :value="ProgressBarRate(Number(value['network.incoming.packets.error']['datasets'][0]['data'].at(-1)), Number(value['network.outgoing.packets.error']['datasets'][0]['data'].at(-1)))"
+                                    :showValue="false" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-500 text-xs mt-2 flex justify-content-end m-2">
+                    <div>
+                        <Tag value="Incoming" class="mr-2" severity="success"></Tag>
+                        <Tag value="Outgoing" severity="danger"></Tag>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -440,4 +705,15 @@ const httpWorking = ref(false);
 .p-dialog .p-dialog-content {
     background-color: #6a5454;
 }
+
+.p-progressbar {
+    background: #f0b4b4;
+}
+
+::v-deep(.p-progressbar) {
+    .p-progressbar-value {
+        background: #a7d99a;
+    }
+}
 </style>
+

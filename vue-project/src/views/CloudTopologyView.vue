@@ -79,6 +79,8 @@ const timer = (() => {
             timeForLiveUpdate.value = 20;
             httpWorking.value = true;
             clearInterval(intervalID.value);
+            // getServerMetrics(0, selectedNodeInfo.value.vm_id);
+            getServerMetricsForPanel(0, selectedNodeInfo.value.vm_id);
             await getLiveByteMetricForAllEdge(0);
             if (!displayLiveInfoForChosenVM.value) {
                 changeColorOfEdges();
@@ -94,7 +96,8 @@ const liveByte = (async () => {
     httpWorking.value = true
     if (live.value == false) {
         if (selectedNodeInfo.value) {
-            getServerMetrics(0, selectedNodeInfo.value.vm_id);
+            // getServerMetrics(0, selectedNodeInfo.value.vm_id);
+            getServerMetricsForPanel(0, selectedNodeInfo.value.vm_id);
         }
         await getLiveByteMetricForAllEdge(0);
         if (!displayLiveInfoForChosenVM.value) {
@@ -137,7 +140,7 @@ const changeColorOfEdgeForVM = ((vm_id) => {
     for (var edgeIndex in EdgeObjects) {
         var edge = EdgeObjects[edgeIndex]
         edge.animated = true;
-        edge.style = { stroke: edge.data.colorObject.color, strokeWidth: 4 };
+        edge.style = { stroke: edge.data.colorObject.color, strokeWidth: 4, 'z-index': 9999 };
         edge.label = edge.data.colorObject.value
         edge.labelBgPadding = [8, 4];
         edge.labelBgBorderRadius = 4;
@@ -166,7 +169,7 @@ const changeBackColorOfEdgeForVM = ((vm_id) => {
 })
 
 const getServerMetrics = (async (retry, ...theArgs) => {
-    console.log("getLiveByteMetric ")
+    console.log("getServerMetric")
     try {
         const response = await axios.get('/api/openstack-metric/server_detail/' + theArgs[0]) // theArgs[0] = server_id
         selectedNodeMetric.value = response.data.data[0]
@@ -197,6 +200,60 @@ const getServerMetrics = (async (retry, ...theArgs) => {
     } catch (error) {
         if (retry <= 2) {
             user.tokenErrorHandler(error, getServerMetrics, retry, theArgs);
+        }
+    }
+})
+
+const selectedNodeMetricForPanel = ref({})
+const panelData = ref({})
+const getServerMetricsForPanel = (async (retry, ...theArgs) => {
+    // console.log("getServerMetricsForPanel", '/api/openstack-metric/server_panel_detail/' + theArgs[0])
+    try {
+        const response = await axios.get('/api/openstack-metric/server_panel_detail/' + theArgs[0]) // theArgs[0] = server_id
+        selectedNodeMetricForPanel.value = response.data.data[0]
+        for (var name in selectedNodeMetricForPanel.value) {
+            panelData.value[name] = {}
+            var incoming = parseInt(selectedNodeMetricForPanel.value[name]["network.incoming.bytes"]["data"])
+            var outgoing = parseInt(selectedNodeMetricForPanel.value[name]["network.outgoing.bytes"]["data"])
+            var value = (incoming + outgoing)
+            panelData.value[name]["총 Byte 수"] = [incoming, outgoing, value]
+            if (!live.value) {
+                const splitName = name.split('-')
+                let edgeID = '';
+                for (let i = 2; i <= 8; i++) {
+                    edgeID += splitName[i];
+                    if (i < 8) {
+                        edgeID += '-';
+                    }
+                }
+                var colorObject = pickColorbyValue(value);
+                const objectForAddColorInfo = vueFlow.value.find((item) => {
+                    if (item.id.trim() == edgeID.trim()) { //vmID.trim()
+                        // console.log(item)
+                        return item
+                    }
+                })
+                if (objectForAddColorInfo) {
+                    objectForAddColorInfo.data["colorObject"] = colorObject
+                }
+            }
+            incoming = parseInt(selectedNodeMetricForPanel.value[name]["network.incoming.packets"]["data"])
+            outgoing = parseInt(selectedNodeMetricForPanel.value[name]["network.outgoing.packets"]["data"])
+            value = (incoming + outgoing)
+            panelData.value[name]["총 Packet 수"] = [incoming, outgoing, value]
+            incoming = parseInt(selectedNodeMetricForPanel.value[name]["network.incoming.packets.drop"]["data"])
+            outgoing = parseInt(selectedNodeMetricForPanel.value[name]["network.outgoing.packets.drop"]["data"])
+            value = (incoming + outgoing)
+            panelData.value[name]["총 Packet Drop 수"] = [incoming, outgoing, value]
+            incoming = parseInt(selectedNodeMetricForPanel.value[name]["network.incoming.packets.error"]["data"])
+            outgoing = parseInt(selectedNodeMetricForPanel.value[name]["network.outgoing.packets.error"]["data"])
+            value = (incoming + outgoing)
+            panelData.value[name]["총 Packet Error  수"] = [incoming, outgoing, value]
+        }
+    } catch (error) {
+        console.log(error)
+        if (retry <= 2) {
+            user.tokenErrorHandler(error, getServerMetricsForPanel, retry, theArgs);
         }
     }
 })
@@ -270,9 +327,11 @@ const selectedNodeMetric = ref()
 const openNodeInfo = (async (id) => {
     try {
         httpWorking.value = true
-        // await Promise.all([getServerDetails(0, id), getServerMetrics(0, id)]);
-        getServerDetails(0, id)
-        await getServerMetrics(0, id)
+        // getServerMetricsForPanel(0, id);
+        // getServerDetails(0, id)
+        // await getServerMetrics(0, id)
+        await Promise.all([getServerDetails(0, id), getServerMetrics(0, id), getServerMetricsForPanel(0, id)]);
+
         // displayNodeInfo.value = true;
         httpWorking.value = false
     } catch (error) {
@@ -381,11 +440,12 @@ const displayLiveInfoForChosenVMToggle = (() => {
 })
 
 const displayLiveInfoPanel = ref(false)
-const displayLiveInfoPanelToggle = (() => {
+const displayLiveInfoPanelToggle = (async () => {
     if (selectedNodeInfo.value && displayLiveInfoPanel.value == false) {
-        displayLiveInfoPanel.value = true
+        // await getServerMetricsForPanel(0, selectedNodeInfo.value.vm_id);
+        displayLiveInfoPanel.value = true;
     } else if (displayLiveInfoPanel.value == true) {
-        displayLiveInfoPanel.value = false
+        displayLiveInfoPanel.value = false;
     } else {
         alert("인스턴스를 선택 해주세요")
     }
@@ -593,45 +653,14 @@ const closeELS = () => {
                     Traffic summary
                 </div>
                 <div style="height: 70%;overflow-y: scroll;">
-                    <div v-for="value, key in selectedNodeMetric" :key="value" class="flex flex-column">
-                        <div class="text-700 px-4 text-xs"> [{{ key }}] </div>
-                        <div class="text-500 text-xs mt-2">
+                    <!-- {{ panelData }} -->
+                    <div v-for="panelDataValue, panelDataKey in panelData" :key="panelDataValue"
+                        class="flex flex-column mb-4">
+                        <div class="text-700 px-4 text-xs"> [{{ panelDataKey }}] </div>
+                        <div v-for="value, key in panelDataValue" :key="value" class="text-500 text-xs mt-2">
                             <div class="px-4">
-                                총 byte 수 =
-                                {{ Number(value["network.incoming.bytes"]["datasets"][0]["data"].at(-1)) +
-                                    Number(value["network.outgoing.bytes"]["datasets"][0]["data"].at(-1)) }} byte
-                                <ProgressBar
-                                    :value="ProgressBarRate(Number(value['network.incoming.bytes']['datasets'][0]['data'].at(-1)), Number(value['network.outgoing.bytes']['datasets'][0]['data'].at(-1)))"
-                                    :showValue="false" />
-                            </div>
-                        </div>
-                        <div class="text-500 text-xs mt-2">
-                            <div class="px-4">
-                                총 packet 수 =
-                                {{ Number(value["network.incoming.packets"]["datasets"][0]["data"].at(-1)) +
-                                    Number(value["network.outgoing.packets"]["datasets"][0]["data"].at(-1)) }} byte
-                                <ProgressBar
-                                    :value="ProgressBarRate(Number(value['network.incoming.packets']['datasets'][0]['data'].at(-1)), Number(value['network.outgoing.packets']['datasets'][0]['data'].at(-1)))"
-                                    :showValue="false" />
-                            </div>
-                        </div>
-                        <div class="text-500 text-xs mt-2">
-                            <div class="px-4">
-                                총 packet drop 수 =
-                                {{ Number(value["network.incoming.packets.drop"]["datasets"][0]["data"].at(-1)) +
-                                    Number(value["network.outgoing.packets.drop"]["datasets"][0]["data"].at(-1)) }} byte
-                                <ProgressBar
-                                    :value="ProgressBarRate(Number(value['network.incoming.packets.drop']['datasets'][0]['data'].at(-1)), Number(value['network.outgoing.packets.drop']['datasets'][0]['data'].at(-1)))"
-                                    :showValue="false" />
-                            </div>
-                        </div>
-                        <div class="text-500 text-xs mt-2 mb-4">
-                            <div class="px-4">
-                                총 packet error 수 =
-                                {{ Number(value["network.incoming.packets.error"]["datasets"][0]["data"].at(-1)) +
-                                    Number(value["network.outgoing.packets.error"]["datasets"][0]["data"].at(-1)) }} byte
-                                <ProgressBar
-                                    :value="ProgressBarRate(Number(value['network.incoming.packets.error']['datasets'][0]['data'].at(-1)), Number(value['network.outgoing.packets.error']['datasets'][0]['data'].at(-1)))"
+                                {{ key }} = {{ value[2] }} byte
+                                <ProgressBar :value="ProgressBarRate(Number(value[0]), Number(value[1]))"
                                     :showValue="false" />
                             </div>
                         </div>

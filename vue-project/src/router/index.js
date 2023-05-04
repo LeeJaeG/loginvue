@@ -55,6 +55,11 @@ const router = createRouter({
       component: () => import('../views/CloudView.vue')
     },
     {
+      path: '/cloud/instance/:id',
+      name: 'cloudInstance',
+      component: () => import('../views/CloudInstanceView.vue')
+    },
+    {
       path: '/cloud-topology',
       name: 'cloudTopology',
       component: () => import('../views/CloudTopologyView.vue')

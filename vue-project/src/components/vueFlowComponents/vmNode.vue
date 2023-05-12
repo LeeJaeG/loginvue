@@ -1,11 +1,14 @@
 <template>
-    <Handle id="0" type="source" :position="Position.Top" :style="sourceHandleStyleA" />
-    <Handle id="1" type="source" :position="Position.Top" :style="sourceHandleStyleB" />
-    <div class="border-1 border-round flex justify-content-center align-items-center " style="width: 60px; height: 200px; "
-        :style="{ 'background-color': props.data.color, 'border-color': props.data.color }">
-        <div class="text-center p-0 m-0 rotate-text">
-            {{ props.label }} <br />
-            : {{ props.data.ip }}
+    <div>
+        <Handle id="0" type="source" :position="Position.Top" :style="sourceHandleStyleA" />
+        <Handle id="1" type="source" :position="Position.Top" :style="sourceHandleStyleB" />
+        <div class="border-1 border-round flex justify-content-center align-items-center "
+            style="width: 60px; height: 200px; "
+            :style="{ 'background-color': props.data.color, 'border-color': props.data.color }">
+            <div class="text-center p-0 m-0 rotate-text">
+                {{ props.label }} <br />
+                : {{ props.data.ip }}
+            </div>
         </div>
     </div>
 </template>

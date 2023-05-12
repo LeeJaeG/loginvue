@@ -13,7 +13,14 @@
                 <DataTable v-else v-model:selection="selectedVM" :value="vmList" paginator :rows="10"
                     :rowsPerPageOptions="[10, 20, 50]" tableStyle="min-width: 50rem">
                     <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-                    <Column field="server_name" header="Name"></Column>
+                    <Column field="server_name" header="Name">
+                        <template #body="slotProps">
+                            <div class="font-medium cursor-pointer" @click="goToServerDetailView(slotProps.data.server_id)"
+                                v-ripple>
+                                {{ slotProps.data.server_name }}
+                            </div>
+                        </template>
+                    </Column>
                     <Column field="server_ip" header="IP"></Column>
                     <Column field="server_flavor" header="Flavor"></Column>
                     <Column field="server_status" header="Status"></Column>
@@ -55,6 +62,9 @@ import axios from 'axios';
 import { useUserStore } from '@/stores/user'
 import { usePathStore } from '@/stores/path'
 import { storeToRefs } from 'pinia';
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const path = usePathStore();
 const user = useUserStore();
@@ -117,4 +127,17 @@ const getNetworkListInProject = (async (retry, ...theArgs) => {
         }
     }
 })
+
+const goToServerDetailView = ((id) => {
+    const path = '/cloud/instance/' + id;
+    router.push({ path: path })
+})
 </script>
+
+<style scoped>
+.hovercolor:hover {
+    /* background-color: #0bc279; */
+    color: #0bc279;
+    font-style: bold;
+}
+</style>

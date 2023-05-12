@@ -40,6 +40,11 @@ const router = createRouter({
       component: () => import('../views/MetricView.vue')
     },
     {
+      path: '/metric-test',
+      name: 'metricTest',
+      component: () => import('../views/MetricViewTMP.vue')
+    },
+    {
       path: '/alarm',
       name: 'alarm',
       component: () => import('../views/AlarmView.vue')
@@ -73,6 +78,11 @@ const router = createRouter({
       path: '/kaloom-topology',
       name: 'kaloomTopology',
       component: () => import('../views/KaloomTopologyView.vue')
+    },
+    {
+      path: '/kaloom-topology-test',
+      name: 'kaloomTopologyTest',
+      component: () => import('../views/KaloomTopologyViewTMP.vue')
     },
   ]
 })

@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-nowrap justify-content-between backcolor text-white py-2 px-3 w-full surface-border"
+    <div class="flex flex-nowrap justify-content-between backcolor text-white px-3 w-full surface-border"
         style="height:54px">
         <router-link to="/" style="text-decoration: none; color: inherit;"
             class="flex flex-shrink-0 align-content-center w-4">
@@ -11,14 +11,26 @@
             </div>
         </router-link>
         <div class="flex flex-shrink-0 align-items-center w-4 justify-content-between">
-            <div class="w-4 text-center text-xl">
+            <div v-if="contentBarName.split(' ')[0] == 'Openstack'"
+                class="w-4 text-center text-xl selected-color h-full flex align-items-center justify-content-center">
                 Openstack
             </div>
-            <div class=" w-4  text-center text-xl selected-color">
-                Topology
+            <div v-else class="w-4 text-center text-xl">
+                Openstack
             </div>
-            <div class="w-4 text-center text-xl">
-                Cluster
+            <div v-if="contentBarName.split(' ')[0] == 'Kaloom'"
+                class="w-4 text-center text-xl selected-color h-full flex align-items-center justify-content-center">
+                Kaloom
+            </div>
+            <div v-else class="w-4 text-center text-xl">
+                Kaloom
+            </div>
+            <div v-if="contentBarName.split(' ')[0] == 'Metric'"
+                class="w-4 text-center text-xl selected-color h-full flex align-items-center justify-content-center">
+                Metric
+            </div>
+            <div v-else class="w-4 text-center text-xl">
+                Metric
             </div>
         </div>
         <div class="flex flex-grow-1 flex-nowrap flex-shrink-0 justify-content-between relative">
@@ -106,7 +118,11 @@ import axios from 'axios';
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia';
 import { useCookies } from "vue3-cookies";
+import { usePathStore } from '@/stores/path'
 // import router from '../router';
+
+const path = usePathStore();
+const { contentBarName } = storeToRefs(path);
 
 import { useRouter } from 'vue-router'
 const router = useRouter()
@@ -114,7 +130,7 @@ const router = useRouter()
 const intervalId = ref(null);
 onMounted(() => {
     getErrorsForAlarm(0, errors);
-    var ws = new WebSocket("ws://192.168.15.47:8000/api/nats/ws/"+userdata.value.id);
+    var ws = new WebSocket("ws://192.168.15.47:8000/api/nats/ws/" + userdata.value.id);
     ws.addEventListener('open', (event) => { onWebsocketOpen(event) });
     ws.addEventListener('close', () => {
         console.log('The connection has been closed');
@@ -261,6 +277,7 @@ const changeTime = ((time) => {
 
 .selected-color {
     color: #0fd977;
+    border-top: solid thick #0bc279;
 }
 
 .circle {

@@ -1,7 +1,10 @@
 <template>
-    <div class="border-1 border-round p-5 flex justify-content-center align-items-start"
-        style=" height: 200px; background-color: white; border-color: rgb(100, 100, 100);" :style="{ 'width': '200px' }">
-        {{ props.label }} {{ props.data.width }}
+    <div>
+        <div class="border-1 border-round p-5 flex justify-content-center align-items-start"
+            style=" height: 200px; background-color: white; border-color: rgb(100, 100, 100);"
+            :style="{ 'width': '200px' }">
+            {{ props.label }} {{ props.data.width }}
+        </div>
     </div>
 </template>
 

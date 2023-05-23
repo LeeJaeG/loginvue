@@ -4,14 +4,14 @@
 
     <div class="flex h-full p-5">
         <div
-            class="flex flex-column w-6 mr-3 py-3 justify-content-start align-items-center surface-card shadow-2 border-round">
+            class="flex flex-column w-6 mr-3 pt-3 justify-content-start align-items-center surface-card shadow-2 border-round">
             <div class="text-2xl font-bold mb-4">
                 VM servers
             </div>
-            <div class="flex card flex-grow-1 w-full justify-content-center">
+            <div class="flex card flex-grow-1 w-full justify-content-center overflow-x-scroll">
                 <Skeleton v-if="loadingServerList" class="mx-4" style="width:100% ; height:100%" />
                 <DataTable v-else v-model:selection="selectedVM" :value="vmList" paginator :rows="10"
-                    :rowsPerPageOptions="[10, 20, 50]" tableStyle="min-width: 50rem">
+                    :rowsPerPageOptions="[10, 20, 50]" tableStyle="">
                     <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
                     <Column field="server_name" header="Name">
                         <template #body="slotProps">
@@ -33,14 +33,14 @@
                 <div class="border-left-3 surface-border top-0 left-50 absolute h-full"></div>
             </div>
         </div> -->
-        <div class="flex flex-column w-6 py-3 justify-content-start align-items-center surface-card shadow-2 border-round">
+        <div class="flex flex-column w-6 pt-3 justify-content-start align-items-center surface-card shadow-2 border-round">
             <div class="text-2xl font-bold mb-4">
                 Networks
             </div>
-            <div class="flex card flex-grow-1 w-full justify-content-center">
+            <div class="flex card flex-grow-1 w-full justify-content-center overflow-x-scroll">
                 <Skeleton v-if="loadingNetworkList" class="mx-4" style="width:100% ; height:100%" />
                 <DataTable v-else v-model:selection="selectedNetwork" :value="networkList" paginator :rows="10"
-                    :rowsPerPageOptions="[10, 20, 50]" tableStyle="min-width: 50rem">
+                    :rowsPerPageOptions="[10, 20, 50]" tableStyle="">
                     <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
                     <Column field="network_name" header="Name"></Column>
                     <Column field="subnets" header="Subnets"></Column>

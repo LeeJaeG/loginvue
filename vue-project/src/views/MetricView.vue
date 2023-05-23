@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import axios from "axios";
 // import { useRouter, useRoute } from 'vue-router'
 // import { useConfirm } from "primevue/useconfirm";
@@ -14,8 +14,8 @@ const { contentBarName } = storeToRefs(path);
 // const { userdata } = storeToRefs(user);
 
 const viewSelection = ref('instance')
-const metricSelection = ref('b')
-const instanceSelection = ref('b')
+const metricSelection = ref('')
+const instanceSelection = ref('')
 
 const metricClickEvent = ((metricName) => {
   metricSelection.value = metricName
@@ -45,8 +45,8 @@ const viewTypeList = ref([
 onMounted(async () => {
   contentBarName.value = 'Metric'
   await setChartData(0);
-  // console.log(metricData.value['memory.usage'], metricData.value['cpu'])
 });
+const graph = ref(null)
 
 const metricData = ref()
 const getMetricLoading = ref(true)
@@ -70,7 +70,7 @@ const setChartData = (async (retry, ...theArgs) => {
 
 const graphOptions = ref(
   {
-    responsive: false,
+    responsive: true,
     plugins: {
       legend: {
         labels: {
@@ -115,8 +115,6 @@ const customeTypeButtonStyle = ref({
   'activeBorderBottom': 'solid thick #0bc279',
 })
 
-
-
 </script>
 
 <template>
@@ -154,38 +152,38 @@ const customeTypeButtonStyle = ref({
           {{ metricSelection }}
         </div>
         <div class="flex flex-wrap h-full">
-          <div class="col-6" style="height: 50%;">
+          <div ref="graph" id="graph" class="col-6" style="height: 50%;">
             <div class="surface-card p-3" style="height: 100%;">
               <div class="surface-400 p-2 font-bold">
                 물리 CPU 현황 및 VCPU 할당 개수
               </div>
             </div>
           </div>
-          <div class="col-6" style="height: 50%;">
+          <div id="graph2" class="col-6" style="height: 50%;">
             <div class="surface-card p-3" style="height: 100%;">
               <div class="surface-400 p-2 font-bold">
                 Memory 할당량
               </div>
             </div>
           </div>
-          <div class="col-6" style="height: 50%;">
+          <div id="graph3" class="col-6" style="height: 50%;">
             <div class="flex flex-column surface-card p-3" style="height: 100%;">
               <div class="surface-400 p-2 font-bold">
                 CPU utilization ()
               </div>
               <Skeleton v-if="getMetricLoading" class="flex flex-grow-1" />
-              <Chart v-else type="line" :data="metricData['cpu']" :options="graphOptions" :width=600 :height=300
-                class="flex justify-content-center" />
+              <Chart v-else type="line" :data="metricData['cpu']" :options="graphOptions" style="height:90%; width:100%"
+                class="flex justify-content-center relative" />
             </div>
           </div>
-          <div class="col-6" style="height: 50%;">
+          <div id="graph4" class="col-6" style="height: 50%;">
             <div class="flex flex-column flex-grow-0 surface-card p-3" style="height: 100%;">
               <div class="surface-400 p-2 font-bold">
                 Memory 사용량
               </div>
               <Skeleton v-if="getMetricLoading" class="flex flex-grow-1" />
-              <Chart v-else type="line" :data="metricData['memory.usage']" :options="graphOptions" :width=600 :height=300
-                class="flex justify-content-center" />
+              <Chart v-else type="line" :data="metricData['memory.usage']" :options="graphOptions"
+                style="height:90%; width:100%" class="flex justify-content-center relative" />
             </div>
           </div>
         </div>

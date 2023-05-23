@@ -75,8 +75,7 @@ const getVueFlowForKaloom = (async (retry, ...theArgs) => {
             const node_value = nodeListObject[id]["value"]
             sorting[node_key] = node_value
             nameToFullname[nodeListObject[id].value[0]] = nodeListObject[id].key;
-
-            console.log(node_value[1])
+            // console.log(node_value[1])
             switch (node_value[1]) {
                 case 'LEAF':
                     leafTotalCount += 1;

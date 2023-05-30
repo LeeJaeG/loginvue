@@ -39,7 +39,7 @@ const activeButtonId = ref(null);
 
 const handleClick = (button) => {
     const id = button.id
-    emit('buttonClick', button.label)
+    emit('buttonClick', button)
 
     // deactivate previously active button if different from current
     if (activeButtonId.value !== null && activeButtonId.value !== id) {

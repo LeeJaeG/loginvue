@@ -119,10 +119,14 @@ import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia';
 import { useCookies } from "vue3-cookies";
 import { usePathStore } from '@/stores/path'
+import { useServerStore } from '@/stores/server'
 // import router from '../router';
 
 const path = usePathStore();
+const server = useServerStore();
 const { contentBarName } = storeToRefs(path);
+const { instances } = storeToRefs(server);
+
 
 import { useRouter } from 'vue-router'
 const router = useRouter()
@@ -201,6 +205,7 @@ const logout = () => {
         cookies.remove('refreshToken');
         info.value.checkLogin = 'logout'
         info.value.checkCloud = 'notSelected'
+        instances.value = []
         router.push('/');
     }).catch((error) => {
         console.log(error);

@@ -61,6 +61,7 @@ import { onMounted, ref } from 'vue'
 import axios from 'axios';
 import { useUserStore } from '@/stores/user'
 import { usePathStore } from '@/stores/path'
+import { useServerStore } from '@/stores/server'
 import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router'
 
@@ -68,8 +69,10 @@ const router = useRouter()
 
 const path = usePathStore();
 const user = useUserStore();
+const server = useServerStore();
 const { contentBarName } = storeToRefs(path);
 const { userdata } = storeToRefs(user);
+const { instances } = storeToRefs(server);
 
 
 onMounted(() => {
@@ -88,11 +91,19 @@ const getVMListInProject = (async (retry, ...theArgs) => {
     console.log("getAllVM")
     try {
         loadingServerList.value = true
-        const response = await axios.get('/api/openstack-server/vm/' + userdata.value.id + '/' + userdata.value.selectedProject.project_id)
+        const response = await axios.get('/api/openstack-server/vm/' + userdata.value.selectedProject.project_id)
         vmList.value = response.data.data[0];
+        var servers = []
         for (const i in vmList.value) {
             vmList.value[i].server_age = moment(vmList.value[i].server_age, 'YYYY-MM-DD HH:mm:ss').fromNow();
+            servers.push(
+                {
+                    name: vmList.value[i].server_name,
+                    id: vmList.value[i].server_id,
+                }
+            )
         }
+        instances.value = servers
         loadingServerList.value = false
         // console.log(vmList.value)
     } catch (error) {

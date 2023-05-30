@@ -7,7 +7,9 @@
   <div class=" flex surface-ground" style="height: 100% ">
     <div class="flex flex-column w-12 p-4" style="overflow-x: scroll;">
       <div class="text-2xl mx-3 mb-4 font-bold "> Limit Summary </div>
-      <Skeleton v-if="getOverviewLoading" class="flex flex-grow-1" />
+      <div v-if="getOverviewLoading" class="mx-2">
+        <Skeleton class="flex h-15rem" />
+      </div>
       <div v-else class="">
         <div v-for="(overviewValue, overviewKey) in graphData" :key="overviewValue"
           class="surface-card mb-3 border-round shadow-2">

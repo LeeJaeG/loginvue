@@ -17,7 +17,7 @@ const user = useUserStore();
 const { contentBarName } = storeToRefs(path);
 const { userdata } = storeToRefs(user);
 
-const { onPaneReady, onNodeDoubleClick, findNode } = useVueFlow()
+const { onPaneReady, onNodeDoubleClick, findNode, zoomIn, zoomOut, fitView } = useVueFlow()
 
 onPaneReady(({ fitView }) => {
     fitView()
@@ -538,13 +538,29 @@ const closeELS = () => {
                     <Skeleton v-if="!loading" class="mr-2 h-full" />
                     <VueFlow v-else v-model="vueFlow" :node-types="nodeTypes" class="basicflow" :default-zoom="1.5"
                         :min-zoom="0.1" :max-zoom="2" :nodes-draggable="true" :elevate-edges-on-select="true">
-                        <MiniMap />
-                        <Controls />
                         <Background gap="50" bg-color="rgba(255, 255, 255, 0.1)" variant="lines" />
-
                         <div class="controls">
-                            <button style="background-color: #113285; color: white" @click="liveByte()">실시간 통신량
-                                ({{ timeForLiveUpdate }}초)</button>
+                            <div class="absolute" style="top:10px; left: 10px;">
+                                <Button class="mr-3"
+                                    style="height: 2.8rem; background-color: #2e3341; color: white; z-index: 99;"
+                                    @click="liveByte()">실시간 통신량
+                                    ({{ timeForLiveUpdate }}초)</Button>
+                                <Button class="border-0 border-noround"
+                                    style="height: 2.8rem; z-index: 99; color: white; background-color: #2e3341"
+                                    @click="zoomOut">
+                                    <i :class="'pi pi-minus'"></i>
+                                </Button>
+                                <Button class="border-0 border-noround"
+                                    style="height: 2.8rem; z-index: 99; color: white; background-color: #2e3341"
+                                    @click="zoomIn">
+                                    <i :class="'pi pi-plus'"></i>
+                                </Button>
+                                <Button class="border-0 border-noround"
+                                    style="height: 2.8rem; z-index: 99; color: white; background-color: #2e3341"
+                                    @click="fitView">
+                                    <i :class="'pi pi-stop'"></i>
+                                </Button>
+                            </div>
                         </div>
 
                         <Dialog v-bind:header="displayNodeInfoName" v-model:visible="displayNodeInfo" class="w-8" modal>
@@ -684,32 +700,6 @@ const closeELS = () => {
 .vue-flow__minimap {
     transform: scale(75%);
     transform-origin: bottom right;
-}
-
-.basicflow .controls {
-    position: absolute;
-    left: 10px;
-    top: 10px;
-    z-index: 4;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px
-}
-
-.basicflow .controls button {
-    padding: 5px;
-    border-radius: 5px;
-    font-weight: 500;
-    -webkit-box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, .3);
-    box-shadow: 0 5px 10px #0000004d;
-    cursor: pointer
-}
-
-.basicflow .controls button:hover {
-    opacity: .8;
-    transform: scale(105%);
-    transition: .25s all ease
 }
 
 ::-webkit-scrollbar {

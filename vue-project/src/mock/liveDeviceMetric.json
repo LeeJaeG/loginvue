@@ -1,0 +1,64 @@
+[
+    {
+    "64900cfdc318764854069a40" : 
+         {
+            "metricSummary":{
+                "cpu":{
+                    "total":0.9,
+                    "status":"ok"
+                },
+                "memory":{
+                    "total":0.21,
+                    "status":"ok"
+                },
+                "storage":{
+                    "total":0.5,
+                    "status":"err",
+                    "err_desc":{
+                        "msg":"partition sda is full"
+                    }
+                }
+            }
+        },
+    "64900d00c318764854069a41" : 
+            {
+            "metricSummary":{
+                "cpu":{
+                    "total":0.5,
+                    "status":"ok"
+                },
+                "memory":{
+                    "total":0.9,
+                    "status":"err",
+                    "err_desc":{
+                        "msg":"memory error"
+                    }
+                },
+                "storage":{
+                    "total":0.2,
+                    "status":"ok"
+                }
+            }
+        },
+    "64900d06c318764854069a42" : 
+            {
+            "metricSummary":{
+                "cpu":{
+                    "total":0.1,
+                    "status":"ok",
+                    "err_desc":{
+                        "msg":"cpu error"
+                    }
+                },
+                "memory":{
+                    "total":0.68,
+                    "status":"ok"
+                },
+                "storage":{
+                    "total":0.89,
+                    "status":"ok"
+                }
+            }
+        }
+    }
+]

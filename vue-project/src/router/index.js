@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import HomeView from '../views/site/HomeView.vue'
 import { storeToRefs } from 'pinia';
 import { useUserStore } from '@/stores/user'
 
@@ -12,82 +12,92 @@ const router = createRouter({
       component: HomeView
     },
     {
+      path: '/cloud-overview',
+      name: 'cloudOverview',
+      component: () => import('../views/cloud/CloudOverviewView.vue')
+    },
+    {
       path: '/setting',
       name: 'setting',
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import('../views/SettingView.vue')
+      component: () => import('../views/site/SettingView.vue')
+    },
+    {
+      path: '/cloud-loadbalancer',
+      name: 'cloudLoadbalancer',
+      component: () => import('../views/cloud/LoadBalancerView.vue')
     },
     {
       path: '/login',
       name: 'login',
-      component: () => import('../views/LoginView.vue')
+      component: () => import('../views/site/LoginView.vue')
     },
     {
       path: '/dashboard',
       name: 'dashboard',
-      component: () => import('../views/DashboardView.vue')
+      component: () => import('../views/site/DashboardView.vue')
     },
     {
       path: '/int',
       name: 'int',
-      component: () => import('../views/INTView.vue')
+      component: () => import('../views/service/INTView.vue')
     },
     {
-      path: '/metric',
-      name: 'metric',
-      component: () => import('../views/MetricView.vue')
+      path: '/cloud-metric',
+      name: 'cloudMetric',
+      component: () => import('../views/cloud/CloudMetricView.vue')
     },
     {
       path: '/metric-test',
       name: 'metricTest',
-      component: () => import('../views/MetricViewTMP.vue')
+      component: () => import('../views/cloud/MetricViewTMP.vue')
     },
     {
       path: '/alarm',
       name: 'alarm',
-      component: () => import('../views/AlarmView.vue')
+      component: () => import('../views/service/AlarmView.vue')
     },
     {
       path: '/users',
       name: 'userManagement',
-      component: () => import('../views/UserManagement.vue')
+      component: () => import('../views/site/UserManagement.vue')
     },
     {
       path: '/cloud',
       name: 'cloud',
-      component: () => import('../views/CloudView.vue')
+      component: () => import('../views/cloud/CloudView.vue')
     },
     {
       path: '/cloud/instance/:id',
       name: 'cloudInstance',
-      component: () => import('../views/CloudInstanceView.vue')
+      component: () => import('../views/cloud/CloudInstanceView.vue')
     },
     {
       path: '/cloud-topology',
       name: 'cloudTopology',
-      component: () => import('../views/CloudTopologyView.vue')
+      component: () => import('../views/cloud/CloudTopologyView.vue')
     },
     {
       path: '/cloud-topology-test',
       name: 'cloudTopologyTest',
-      component: () => import('../views/CloudTopologyViewTMP.vue')
+      component: () => import('../views/cloud/CloudTopologyViewTMP.vue')
     },
     {
-      path: '/kaloom-topology',
+      path: '/physical-topology',
       name: 'kaloomTopology',
-      component: () => import('../views/KaloomTopologyView.vue')
+      component: () => import('../views/physical/PhysicalTopologyView.vue')
     },
     {
-      path: '/kaloom-topology-test',
+      path: '/physical-topology-test',
       name: 'kaloomTopologyTest',
-      component: () => import('../views/KaloomTopologyViewTMP.vue')
+      component: () => import('../views/physical/KaloomTopologyViewTMP.vue')
     },
     {
       path: '/test',
       name: 'Test',
-      component: () => import('../views/TestView.vue')
+      component: () => import('../views/test/TestView.vue')
     },
   ]
 })
@@ -106,7 +116,7 @@ router.beforeEach(async (to) => {
       // console.log("First admin route checked", to.path, "=", route.path);
       // console.log("Admin role check")
       const canAccess = await canAdminAccess(to, route)
-      if (!canAccess) return '/'
+      if (!canAccess) return '/dashboard'
     }
   }
 })

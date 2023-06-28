@@ -8,7 +8,9 @@
 </template>
   
 <script setup>
-import { ref, computed, defineProps } from 'vue';
+import { ref, computed, defineProps, onMounted } from 'vue';
+
+const activeButtonId = ref(null);
 
 const emit = defineEmits(['buttonClick'])
 
@@ -35,7 +37,12 @@ const props = defineProps({
     }
 });
 
-const activeButtonId = ref(null);
+onMounted(() => {
+    const activeButton = props.buttons.find(button => button.active);
+    if (activeButton) {
+        activeButtonId.value = activeButton.id;
+    }
+})
 
 const handleClick = (button) => {
     const id = button.id
@@ -44,7 +51,9 @@ const handleClick = (button) => {
     // deactivate previously active button if different from current
     if (activeButtonId.value !== null && activeButtonId.value !== id) {
         const previouslyActiveButton = props.buttons.find(button => button.id === activeButtonId.value);
-        previouslyActiveButton.active = false;
+        if (previouslyActiveButton) {
+            previouslyActiveButton.active = false;
+        }
     }
 
     // activate or deactivate the clicked button

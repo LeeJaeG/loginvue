@@ -76,7 +76,7 @@ onMounted(() => {
     <!-- Top bar -->
     <topbar></topbar>
     <!-- below Top bar -->
-    <div class="flex relative static surface-ground" style="height: calc(100% - 54px);">
+    <div class="flex relative static surface-ground" style="height: calc(100% - 88px);">
       <!-- without sidebar 2 -->
       <div v-if="offSidebar1 == false && offSidebar2 == true">
         <sidebar1 class="min-h-full" @touch="changeSidebar"></sidebar1>
@@ -96,8 +96,67 @@ onMounted(() => {
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400&display=swap');
 
+/*     url('@/assets/font/Poppins/Poppins-Medium.ttf') format('truetype'),
+    url('@/assets/font/Poppins/Poppins-SemiBold.ttf') format('truetype'), */
+
+/*     url('@/assets/font/Pretendard-1.3.6/public/static/Pretendard-Medium.otf') format('opentype'),
+url('@/assets/font/Pretendard-1.3.6/public/static/Pretendard-Bold.otf') format('opentype'); */
+
+@font-face {
+  font-family: 'ATC';
+  src:
+    url('@/assets/font/Poppins/Poppins-Light.ttf') format('truetype');
+  unicode-range: U+0041-005A, U+0061-007A;
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: 'ATC';
+  src:
+    url('@/assets/font/Poppins/Poppins-Medium.ttf') format('truetype');
+  unicode-range: U+0041-005A, U+0061-007A;
+  font-weight: medium;
+}
+
+@font-face {
+  font-family: 'ATC';
+  src:
+    url('@/assets/font/Poppins/Poppins-SemiBold.ttf') format('truetype');
+  unicode-range: U+0041-005A, U+0061-007A;
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: 'ATC';
+  src:
+    url('@/assets/font/Poppins/Poppins-Italic.ttf') format('truetype');
+  unicode-range: U+0041-005A, U+0061-007A;
+  font-weight: italic;
+}
+
+@font-face {
+  font-family: 'ATC';
+  src:
+    url('@/assets/font/Pretendard-1.3.6/public/static/Pretendard-Light.otf') format('opentype');
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: 'ATC';
+  src:
+    url('@/assets/font/Pretendard-1.3.6/public/static/Pretendard-Medium.otf') format('opentype');
+  font-weight: medium;
+}
+
+@font-face {
+  font-family: 'ATC';
+  src:
+    url('@/assets/font/Pretendard-1.3.6/public/static/Pretendard-Bold.otf') format('opentype');
+  font-weight: bold;
+}
+
 body {
-  font-family: 'Nanum Gothic', sans-serif;
+  font-family: 'ATC';
 }
 </style>
 

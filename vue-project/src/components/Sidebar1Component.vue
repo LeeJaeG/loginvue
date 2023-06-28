@@ -8,29 +8,30 @@
         </div>
 
         <div class="font-bold mb-2 mt-6 text-sm">
-            Main
+            P Layer
         </div>
 
-        <router-link to="/" class="w-full flex justify-content-center align-items-center mt-3 font-bold hovercolor"
+        <router-link to="/physical-topology"
+            class="w-full flex justify-content-center align-items-center mb-6 font-bold hovercolor"
             style="height: 3.5rem; text-decoration: none; color: inherit;">
             <div>
-                <i class="pi pi-home " style="font-size: 1.2rem"></i>
-            </div>
-        </router-link>
-
-        <router-link to="/setting" class="w-full flex justify-content-center align-items-center mb-6 font-bold hovercolor"
-            style="height: 3.5rem; text-decoration: none; color: inherit;">
-            <div>
-                <font-awesome-icon icon="fa-solid fa-gear" style="font-size: 1.2rem" />
+                <font-awesome-icon :icon="['fas', 'diagram-project']" style="font-size: 1.2rem" />
             </div>
         </router-link>
 
         <div class="font-bold mb-2 mt-6 text-sm">
-            Cloud
+            C Layer
         </div>
 
+        <router-link to="/cloud-overview"
+            class="w-full flex justify-content-center align-items-center mt-3 font-bold hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit;">
+            <div>
+                <font-awesome-icon :icon="['fas', 'cloud']" />
+            </div>
+        </router-link>
 
-        <router-link to="/cloud" class="w-full flex justify-content-center align-items-center mt-4 font-bold hovercolor"
+        <router-link to="/cloud" class="w-full flex justify-content-center align-items-center font-bold hovercolor"
             style="height: 3.5rem; text-decoration: none; color: inherit;">
             <div>
                 <font-awesome-icon icon="fa-solid fa-layer-group" style="font-size: 1.2rem" />
@@ -40,33 +41,33 @@
         <router-link to="/cloud-topology" class="w-full flex justify-content-center align-items-center font-bold hovercolor"
             style="height: 3.5rem; text-decoration: none; color: inherit;">
             <div>
-                <i class="pi pi-th-large" style="font-size: 1.2rem"></i>
-            </div>
-        </router-link>
-
-        <router-link to="/kaloom-topology"
-            class="w-full flex justify-content-center align-items-center mb-6 font-bold hovercolor"
-            style="height: 3.5rem; text-decoration: none; color: inherit;">
-            <div>
                 <font-awesome-icon icon="fa-solid fa-circle-nodes" style="font-size: 1.2rem" />
             </div>
         </router-link>
 
+        <router-link to="/cloud-metric" class="w-full flex justify-content-center align-items-center font-bold hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit;">
+            <div>
+                <font-awesome-icon :icon="['fas', 'chart-line']" style="font-size: 1.2rem" />
+            </div>
+        </router-link>
+
+        <router-link to="/cloud-loadbalancer"
+            class="w-full flex justify-content-center align-items-center mb-6 font-bold hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit;">
+            <div>
+                <font-awesome-icon :icon="['fas', 'network-wired']" style="font-size: 1.2rem" />
+            </div>
+        </router-link>
+
         <div class="font-bold mb-2 mt-6 text-sm">
-            Metrics
+            Services
         </div>
 
         <router-link to="/int" class="w-full flex justify-content-center align-items-center mt-4  font-bold hovercolor"
             style="height: 3.5rem; text-decoration: none; color: inherit;">
             <div>
-                <font-awesome-icon icon="fa-solid fa-globe" style="font-size: 1.2rem" />
-            </div>
-        </router-link>
-
-        <router-link to="/metric" class="w-full flex justify-content-center align-items-center font-bold hovercolor"
-            style="height: 3.5rem; text-decoration: none; color: inherit;">
-            <div>
-                <i class="pi pi-chart-bar" style="font-size: 1.2rem"></i>
+                <font-awesome-icon :icon="['fas', 'magnifying-glass-chart']" style="font-size: 1.2rem" />
             </div>
         </router-link>
 

@@ -1,49 +1,44 @@
 <template>
     <div class="flex flex-nowrap justify-content-between backcolor text-white px-3 w-full surface-border"
-        style="height:54px">
+        style="height:88px">
         <router-link to="/" style="text-decoration: none; color: inherit;"
             class="flex flex-shrink-0 align-content-center w-4">
-            <div class="flex align-items-center mr-3">
-                <img src="../assets/logo.svg" />
-            </div>
-            <div class="flex flex-shrink-0 flex-grow-1 align-items-center mr-2 text-2xl namu" style="color : #0fd977">
-                Echo-e Management platform
+            <div class="flex align-items-center mr-3 w-full">
+                <img src="@/assets/BI/PNG/BI_가로형_플랫폼적용.png" style="height: 70px;" />
             </div>
         </router-link>
-        <div class="flex flex-shrink-0 align-items-center w-4 justify-content-between">
-            <div v-if="contentBarName.split(' ')[0] == 'Openstack'"
+        <div class="flex flex-shrink-0 align-items-center w-3 justify-content-between">
+            <div v-if="contentBarName.split(' ')[0] == 'Physical'"
+                class="w-4 text-center topbar-text selected-color h-full flex align-items-center justify-content-center">
+                Physical
+            </div>
+            <div v-else class="w-4 text-center topbar-text">
+                Physical
+            </div>
+            <div v-if="contentBarName.split(' ')[0] == 'Cloud'"
                 class="w-4 text-center text-xl selected-color h-full flex align-items-center justify-content-center">
-                Openstack
+                Cloud
             </div>
-            <div v-else class="w-4 text-center text-xl">
-                Openstack
+            <div v-else class="w-4 text-center topbar-text">
+                Cloud
             </div>
-            <div v-if="contentBarName.split(' ')[0] == 'Kaloom'"
-                class="w-4 text-center text-xl selected-color h-full flex align-items-center justify-content-center">
-                Kaloom
+            <div v-if="contentBarName.split(' ')[0] == 'Service'"
+                class="w-4 text-center topbar-text selected-color h-full flex align-items-center justify-content-center">
+                Service
             </div>
-            <div v-else class="w-4 text-center text-xl">
-                Kaloom
-            </div>
-            <div v-if="contentBarName.split(' ')[0] == 'Metric'"
-                class="w-4 text-center text-xl selected-color h-full flex align-items-center justify-content-center">
-                Metric
-            </div>
-            <div v-else class="w-4 text-center text-xl">
-                Metric
+            <div v-else class="w-4 text-center topbar-text">
+                Service
             </div>
         </div>
-        <div class="flex flex-grow-1 flex-nowrap flex-shrink-0 justify-content-between relative">
-            <div class="flex w-7 align-items-center justify-content-end pr-3">
+        <div class="flex flex-grow-1 flex-nowrap flex-shrink-0 justify-content-end relative">
+            <div class="flex w-7 align-items-center justify-content-end pr-3 ">
                 <div class="p-input-icon-left w-9  text-white">
                     <i class="pi pi-search  text-white"></i>
-                    <InputText type="text" class="appearance-none border-none surface-border w-full text-white h-2rem"
-                        placeholder="Search" style="background-color: #414653;" />
+                    <InputText type="text" class="appearance-none border-none surface-border w-full text-white"
+                        placeholder="Search" style="background-color: #414653; height: 48px;" />
                 </div>
             </div>
-
-            <a class="flex flex-shrink-0 flex-grow-1 justify-content-center align-items-center text-lg hover:surface-800"
-                v-ripple
+            <a class="flex flex-shrink-0 w-3 justify-content-center align-items-center text-lg hover:surface-800 " v-ripple
                 v-styleclass="{ selector: '@next', enterClass: 'hidden', enterActiveClass: 'scalein', leaveToClass: 'hidden', leaveActiveClass: 'fadeout', hideOnOutsideClick: true }">
                 {{ userdata.username }} : {{ userdata.selectedProject.project_name }}
             </a>
@@ -289,5 +284,10 @@ const changeTime = ((time) => {
     width: 10px;
     height: 10px;
     border-radius: 50%;
+}
+
+.topbar-text {
+    font-size: 20px;
+    font-weight: bold;
 }
 </style>

@@ -9,22 +9,28 @@
         </router-link>
         <div class="flex flex-shrink-0 align-items-center w-3 justify-content-between">
             <div v-if="contentBarName.split(' ')[0] == 'Physical'"
-                class="w-4 text-center topbar-text selected-color h-full flex align-items-center justify-content-center">
+                class="w-4 text-center topbar-text selected-color h-full flex align-items-center justify-content-center relative">
                 Physical
+                <div class="absolute w-full" style="border-top: solid thick #0bc279; top: 0;">
+                </div>
             </div>
             <div v-else class="w-4 text-center topbar-text">
                 Physical
             </div>
             <div v-if="contentBarName.split(' ')[0] == 'Cloud'"
-                class="w-4 text-center text-xl selected-color h-full flex align-items-center justify-content-center">
+                class="w-4 text-center topbar-text selected-color h-full flex align-items-center justify-content-center relative">
                 Cloud
+                <div class="absolute w-full" style="border-top: solid thick #0bc279; top: 0;">
+                </div>
             </div>
             <div v-else class="w-4 text-center topbar-text">
                 Cloud
             </div>
             <div v-if="contentBarName.split(' ')[0] == 'Service'"
-                class="w-4 text-center topbar-text selected-color h-full flex align-items-center justify-content-center">
+                class="w-4 text-center topbar-text selected-color h-full flex align-items-center justify-content-center relative">
                 Service
+                <div class="absolute w-full" style="border-top: solid thick #0bc279; top: 0;">
+                </div>
             </div>
             <div v-else class="w-4 text-center topbar-text">
                 Service
@@ -264,11 +270,11 @@ const changeTime = ((time) => {
 
 .note-num {
     position: absolute;
-    top: 10px;
-    right: 2px;
+    top: 20px;
+    right: 10px;
     z-index: 3;
-    height: 15px;
-    width: 15px;
+    height: 20px;
+    width: 20px;
     background-color: red;
     border-radius: 15px;
     display: inline-block;
@@ -277,17 +283,18 @@ const changeTime = ((time) => {
 
 .selected-color {
     color: #0fd977;
-    border-top: solid thick #0bc279;
+    font-weight: bold;
+    /* border-top: solid thick #0bc279; */
 }
 
 .circle {
-    width: 10px;
-    height: 10px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
 }
 
 .topbar-text {
     font-size: 20px;
-    font-weight: bold;
+    font-weight: normal;
 }
 </style>

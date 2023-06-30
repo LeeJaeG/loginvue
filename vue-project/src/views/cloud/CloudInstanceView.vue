@@ -90,7 +90,8 @@ const getServerDetails = (async (retry, ...theArgs) => {
     console.log("get Server's detail infomation ")
     try {
         getServerDetailsLoading.value = true
-        const response = await axios.get('/api/openstack-server/vm_details/' + userdata.value.id + '/' + userdata.value.selectedProject.project_id + '/' + vmID.value) // theArgs[0] = server_id
+        // + userdata.value.id + '/' + userdata.value.selectedProject.project_id + '/' 
+        const response = await axios.get('/api/openstack-server/vm_details/' + vmID.value) // theArgs[0] = server_id
         selectedNodeInfo.value = response.data.data[0][0]
         getServerDetailsLoading.value = false
         // console.log(selectedNodeInfo.value)
@@ -104,7 +105,7 @@ const getServerDetails = (async (retry, ...theArgs) => {
 
 const getServerVncUrlLoading = ref(false)
 const getServerVncUrl = (async (retry, ...theArgs) => {
-    console.log("get Server's detail infomation ")
+    console.log("get Server's noVNC infomation ")
     try {
         getServerVncUrlLoading.value = true
         const response = await axios.get('/api/openstack-server/vm_console_vnc/' + vmID.value) // theArgs[0] = server_id
@@ -122,18 +123,18 @@ const getServerVncUrl = (async (retry, ...theArgs) => {
 const serverLog = ref()
 const getServerLogLoading = ref(false)
 const getServerLog = (async (retry, ...theArgs) => {
-    console.log("get Server's detail infomation ")
+    console.log("get Server's Log infomation ")
     try {
         getServerLogLoading.value = true
         const response = await axios.get('/api/openstack-server/vm_console_log/' + vmID.value) // theArgs[0] = server_id
-        console.log(response)
+        // console.log(response)
         const cleanOutput = response.data.data[0]
         // Split the string into lines and get the last 35 lines
         const lines = cleanOutput.split('\n').slice(-35);
-        console.log(lines)
+        // console.log(lines)
         // Join the lines back together into a string
         serverLog.value = lines.join("\n");
-        console.log(serverLog.value)
+        // console.log(serverLog.value)
 
         getServerLogLoading.value = false
         // console.log(selectedNodeInfo.value)

@@ -21,13 +21,9 @@
                 <div class="flex card-container overflow-hidden">
                     <div
                         class="flex-grow-0 md:flex-grow-0 flex align-items-center justify-content-center flex-column  font-bold text-gray-900 m-3 px-2 py-1 border-round">
-
                         <!-- logo + Management platform  -->
                         <div class="flex  align-content-center  flex-column w-auto">
-                            <div class="flex align-items-center justify-content-center w-auto mr-2 py-3 text-4xl namu "
-                                style=" color : #fff; -webkit-text-stroke: 1px #014751;">
-                                Management platform
-                            </div>
+                            <img src="@/assets/BI/PNG/BI_세로형_플랫폼적용.png" alt="logo" class="h-15rem mb-3" />
                         </div>
 
                         <!-- login card -->
@@ -37,7 +33,6 @@
                                     style="height: 5rem;">
                                     로그인 하세요
                                 </div>
-
                                 <form @submit.prevent="handleSubmit(!v$.$invalid)"
                                     class="flex flex-column justify-content-between p-fluid">
                                     <div>
@@ -101,7 +96,8 @@
                                     <label for="accept" :class="{ 'p-error': v$.accept.$invalid && submitted }">자동로그인</label>
                                 </div> -->
                                     <div>
-                                        <Button type="submit" label="로그인" class="mt-4 logincolor" />
+                                        <Button type="submit" label="로그인"
+                                            class="mt-4 logincolor border-noround border-green-700 hover:bg-green-400 hover:border-green-400" />
                                     </div>
                                 </form>
 

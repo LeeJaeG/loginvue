@@ -173,7 +173,7 @@
             <div class="flex justify-content-center align-items-center border-circle bg-primary-100 w-3rem h-3rem z-1">
               <i class="pi pi-check text-xl text-primary-600"></i>
             </div>
-            <div class="hidden block absolute bg-primary-500 hidden"
+            <div class="hidden block absolute bg-primary-500"
               style="transform: rotate(90deg); height: 2px;  width: 50%; left: -16%; top:110%;"></div>
             <div class="flex flex-column align-items-center w-8">
               <h1 class="m-0 font-medium text-900 text-xl line-height-3">Step 1.</h1>
@@ -185,7 +185,7 @@
           z-1">
               <i class="pi pi-check text-xl text-primary-600"></i>
             </div>
-            <div class="hidden block absolute bg-primary-500 hidden"
+            <div class="hidden block absolute bg-primary-500"
               style="transform: rotate(90deg); height: 2px;  width: 50%; left: -16%; top:110%;"></div>
             <div class="flex flex-column align-items-center w-8">
               <h1 class="m-0 font-medium text-900 text-xl line-height-3">Step 2.</h1>

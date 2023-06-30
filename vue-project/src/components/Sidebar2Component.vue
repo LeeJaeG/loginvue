@@ -17,16 +17,15 @@
 </script>
 
 <template>
-    <div id="app-sidebar-2"
-        class="text-white backcolor py-2 block flex-shrink-0  lg:static left-0 top-0 z-1 shadow-3 w-16rem  select-none"
+    <div id="app-sidebar-2" class="text-white backcolor py-2 block flex-shrink-0 static z-1 shadow-3 w-16rem"
         style="overflow: auto">
 
-        <div class="flex justify-content-start align-items-center mb-2 pl-3 font-bold hover:text-teal-500"
-            style="height: 2rem;" @click="$emit('touch')">
+        <div class="flex justify-content-start align-items-center my-2 font-bold hover:text-teal-500"
+            style="height: 3.5rem; margin-left: 40px;" @click="$emit('touch')">
             <i class="pi pi-angle-left" style="font-size: 1.2rem"></i>
         </div>
 
-        <div class="px-5 font-bold mb-2 mt-6 text-sm">
+        <div class="px-5 font-bold mb-2 mt-4 text-sm">
             Physical Layer
         </div>
         <router-link to="/physical-topology"

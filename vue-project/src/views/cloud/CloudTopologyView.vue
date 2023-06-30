@@ -265,7 +265,7 @@ const getServerDetails = (async (retry, ...theArgs) => {
     console.log("get Server's detail infomation ")
     try {
         getServerDetailsLoading.value = true
-        const response = await axios.get('/api/openstack-server/vm_details/' + userdata.value.id + '/' + userdata.value.selectedProject.project_id + '/' + theArgs[0]) // theArgs[0] = server_id
+        const response = await axios.get('/api/openstack-server/vm_details/' + theArgs[0]) // theArgs[0] = server_id
         selectedNodeInfo.value = response.data.data[0][0]
         getServerDetailsLoading.value = false
         // console.log(selectedNodeInfo.value)

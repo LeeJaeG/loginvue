@@ -1,13 +1,13 @@
 <template>
     <div id="app-sidebar-1"
-        class="py-2 align-content-center text-white backcolor block flex-shrink-0 static left-0 top-0 z-1 shadow-3 text-center w-4rem select-none"
-        style="overflow: auto">
-        <div class="flex justify-content-end align-items-center pr-3 mb-2 font-bold hover:text-teal-500"
-            style="height: 2rem;" @click="$emit('touch')">
+        class="py-2 align-content-center text-white backcolor block flex-shrink-0 static z-1 shadow-3 text-center select-none"
+        style="overflow: auto; width: 88px;">
+        <div class="flex justify-content-center align-items-center my-2 font-bold hover:text-teal-500"
+            style="height: 3.5rem;" @click="$emit('touch')">
             <i class="pi pi-angle-right" style="font-size: 1.2rem"></i>
         </div>
 
-        <div class="font-bold mb-2 mt-6 text-sm">
+        <div class="font-bold mb-2 mt-4 text-sm">
             P Layer
         </div>
 

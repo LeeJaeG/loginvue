@@ -1,4 +1,5 @@
 <template>
+  <ConfirmDialog></ConfirmDialog>
   <div class="flex surface-ground" style="height: 100%">
     <!-- ====================================================================================== -->
     <div class="flex flex-column justify-content-between w-2 surface-card surface-border border-right-2 shadow-2 text-700"
@@ -62,8 +63,11 @@
               <div class="grid">
                 <div v-for="inputValue, inputKey in loadbalancerInputs[loadbalancerCreateMenu]" :key="inputValue"
                   class="col-6 h-8rem">
-                  <div class="mb-3 text-lg">
+                  <div class="mb-3 text-lg flex">
                     {{ inputKey }}
+                    <div v-if="inputValue.need == true" class="text-red-400 ml-1">
+                      *
+                    </div>
                   </div>
                   <div>
                     <InputText v-if="inputValue.type == 'Input text'" type="text" v-model="inputValue.value"
@@ -77,7 +81,10 @@
               </div>
             </div>
             <div class="flex justify-content-end align-items-center" style="height: 10%">
-              <Button class="mr-3"> create </Button>
+              <Button v-if="loadingLBCreating" class="w-1  bg-cyan-700 border-teal-700 mr-3" label="Progress"
+                @click="console.log('click Progress')" />
+              <Button class="w-1  bg-cyan-700 border-teal-700 mr-3" :loading="loadingLBCreating" label="Create"
+                @click="createLBConfirm()" />
               <Button class="w-1  bg-cyan-700 border-teal-700" label="Cancel" @click="cancelInput" />
             </div>
           </div>
@@ -218,6 +225,7 @@ import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia';
 import axios from 'axios';
 import ButtonGroup from '@/components/ButtonSelectionComponent.vue';
+import { useConfirm } from "primevue/useconfirm";
 
 const path = usePathStore();
 const { contentBarName } = storeToRefs(path);
@@ -323,13 +331,14 @@ const loadbalancerInputs = ref({
       'type': 'Input text',
       'value': '',
     },
-    "Flavor": {
-      'type': 'Input text',
-      'value': '',
-    },
+    // "Flavor": {
+    //   'type': 'Input text',
+    //   'value': '',
+    // },
     "Subnet": {
       'type': 'Input text',
       'value': '',
+      'need': true,
     },
     "Admin State Up": {
       'type': 'Select button',
@@ -452,6 +461,58 @@ const getLBListInProject = (async (retry, ...theArgs) => {
     loadbalancerList.value = response.data.loadbalancers;
     loadingLBList.value = false
   } catch (error) {
+    console.log(error)
+    if (retry <= 2) {
+      user.tokenErrorHandler(error, getLBListInProject, retry, theArgs);
+    }
+  }
+})
+
+const LBConfirm = useConfirm();
+const createLBConfirm = () => {
+  LBConfirm.require({
+    message: 'Are you sure you want to proceed?',
+    header: 'Confirmation',
+    icon: 'pi pi-exclamation-triangle',
+    accept: () => {
+      console.log("accept")
+      createLB(0)
+    },
+    reject: () => {
+      console.log("reject")
+    }
+  });
+}
+
+const loadingLBCreating = ref(false)
+const createLB = (async (retry, ...theArgs) => {
+  console.log("createLBs")
+  try {
+    loadingLBCreating.value = true
+    // 1. Create the Load Balancer 
+
+    const response = await axios.post('/api/openstack-loadbalancer/loadbalancers', {
+      'name': loadbalancerInputs.value['Load Balancer Details']['Name'].value,
+      'description': loadbalancerInputs.value['Load Balancer Details']['Description'].value,
+      'vip_subnet_id': loadbalancerInputs.value['Load Balancer Details']['Subnet'].value,
+      'vip_address': loadbalancerInputs.value['Load Balancer Details']['IP address'].value,
+      'admin_state_up': loadbalancerInputs.value['Load Balancer Details']['Admin State Up'].value,
+      'project_id': userdata.value.selectedProject.project_id,
+    })
+    console.log(response.data.loadbalancer_id, response.data.loadbalancer_status)
+    const lb_id = response.data.loadbalancer_id
+
+    loadbalancerList.value = response.data.loadbalancers;
+
+    // 2. Create the Listener
+
+    // 3. Create the Pool
+
+    // 4. Create Monitor Details
+
+    loadingLBCreating.value = false
+  } catch (error) {
+    loadingLBCreating.value = false
     console.log(error)
     if (retry <= 2) {
       user.tokenErrorHandler(error, getLBListInProject, retry, theArgs);

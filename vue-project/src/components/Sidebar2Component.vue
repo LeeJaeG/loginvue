@@ -17,60 +17,143 @@
 </script>
 
 <template>
-    <div id="app-sidebar-2" class="text-white backcolor py-2 block flex-shrink-0 static z-1 shadow-3 w-16rem"
-        style="overflow: auto">
-
-        <div class="flex justify-content-start align-items-center my-2 font-bold hover:text-teal-500"
+    <div id="app-sidebar-2" class="text-white backcolor py-2 block flex-shrink-0 static z-1 shadow-3 w-16rem scroll"
+        style="overflow: scroll; height: 100%;">
+        <div class="flex justify-content-start align-items-center my-2 hover:text-teal-500"
             style="height: 3.5rem; margin-left: 40px;" @click="$emit('touch')">
             <i class="pi pi-angle-left" style="font-size: 1.2rem"></i>
         </div>
 
-        <div class="px-5 font-bold mb-2 mt-4 text-sm">
-            Physical Layer
-        </div>
-        <router-link to="/physical-topology"
-            class="px-4 w-full flex justify-content-between align-items-center font-bold hovercolor"
-            style="height: 3.5rem; text-decoration: none; color: inherit;">
-            <div class="w-4 pl-3">
-                <font-awesome-icon :icon="['fas', 'diagram-project']" style="font-size: 1.2rem" />
-            </div>
-            <div class="w-5 ">
-                Topology
-            </div>
-            <div class="w-3 flex justify-content-end">
-                <!-- <i class="pi"
-                    :class="{ 'pi-angle-down': braket['topology'] === 'down', 'pi-angle-up': braket['topology'] === 'up' }"
-                    style="font-size: 1.2rem"></i> -->
-            </div>
-        </router-link>
-
-        <!-- ====================================== -->
-
-        <div class="px-5 font-bold mb-2 mt-6 text-sm">
-            Cloud Layer
+        <!-- ======================================================================================= -->
+        <!-- Group Main -->
+        <div class="px-5 font-bold mb-2 mt-4 sidebar-font ">
+            Main
         </div>
 
-        <router-link to="/cloud-overview"
-            class="px-4 w-full flex justify-content-between align-items-center  mt-3 font-bold hovercolor"
-            style="height: 3.5rem; text-decoration: none; color: inherit;">
+        <!-- Main Insight -->
+        <router-link to="/cloud-overview" class="mt-3 w-full flex justify-content-between align-items-center hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
             <div class="w-4 pl-3">
-                <font-awesome-icon :icon="['fas', 'cloud']" />
+                <font-awesome-icon :icon="['fas', 'cloud']" style="font-size: 1.2rem" />
             </div>
-            <div class="w-5">
+            <div class="w-5 sidebar-font ">
                 Overview
             </div>
             <div class="w-3 flex justify-content-end">
-
             </div>
         </router-link>
 
-        <router-link to="/cloud" class="px-4 w-full flex justify-content-between align-items-center font-bold hovercolor"
-            style="height: 3.5rem; text-decoration: none; color: inherit;">
+        <!-- Main Search -->
+        <router-link to="/" class="w-full flex justify-content-between align-items-center hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
+            <div class="w-4 pl-3">
+                <font-awesome-icon :icon="['fas', 'magnifying-glass']" style="font-size: 1.2rem" />
+            </div>
+            <div class="w-5 sidebar-font">
+                Search
+            </div>
+            <div class="w-3 flex justify-content-end">
+            </div>
+        </router-link>
+
+        <!-- Main metric & alarm -->
+        <router-link to="/" class="w-full flex justify-content-between align-items-center mb-6 hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
+            <div class="w-4 pl-3">
+                <font-awesome-icon :icon="['fas', 'chart-line']" style="font-size: 1.2rem" />
+            </div>
+            <div class="w-5 sidebar-font">
+                Metric
+            </div>
+            <div class="w-3 flex justify-content-end">
+            </div>
+        </router-link>
+
+        <!-- ======================================================================================= -->
+        <!-- Group Physical Layer -->
+        <div class="px-5 font-bold mb-2 mt-4 sidebar-font">
+            Physical Layer
+        </div>
+
+        <!-- Physical Topology -->
+        <router-link to="/physical-topology" class="mt-3 w-full flex justify-content-between align-items-center hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
+            <div class="w-4 pl-3">
+                <font-awesome-icon :icon="['fas', 'circle-nodes']" style="font-size: 1.2rem" />
+            </div>
+            <div class="w-5 sidebar-font">
+                Topology
+            </div>
+            <div class="w-3 flex justify-content-end">
+            </div>
+        </router-link>
+
+        <!-- Physical Detail -->
+        <router-link to="/" class=" w-full flex justify-content-between align-items-center hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
             <div class="w-4 pl-3">
                 <font-awesome-icon icon="fa-solid fa-layer-group" style="font-size: 1.2rem" />
             </div>
-            <div class="w-5 ">
-                Cloud Info
+            <div class="w-5 sidebar-font">
+                Detail
+            </div>
+            <div class="w-3 flex justify-content-end">
+            </div>
+        </router-link>
+
+        <!-- Physical Location -->
+        <router-link to="/" class="w-full flex justify-content-between align-items-center hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
+            <div class="w-4 pl-3">
+                <font-awesome-icon :icon="['fas', 'location-crosshairs']" style="font-size: 1.2rem" />
+            </div>
+            <div class="w-5 sidebar-font">
+                Location
+            </div>
+            <div class="w-3 flex justify-content-end">
+            </div>
+        </router-link>
+
+        <!-- Physical Metric -->
+        <router-link to="/" class="w-full flex justify-content-between align-items-center mb-6 hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
+            <div class="w-4 pl-3">
+                <font-awesome-icon :icon="['fas', 'chart-line']" style="font-size: 1.2rem" />
+            </div>
+            <div class="w-5 sidebar-font">
+                Metric
+            </div>
+            <div class="w-3 flex justify-content-end">
+            </div>
+        </router-link>
+
+        <!-- ======================================================================================= -->
+        <!-- Cloud Topology -->
+        <div class="px-5 font-bold mb-2 mt-6 sidebar-font">
+            Cloud Layer
+        </div>
+
+        <!-- Cloud Topology -->
+        <router-link to="/cloud-topology" class="mt-3 w-full flex justify-content-between align-items-center hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
+            <div class="w-4 pl-3">
+                <font-awesome-icon icon="fa-solid fa-circle-nodes" style="font-size: 1.2rem" />
+            </div>
+            <div class="w-5 sidebar-font">
+                Topology
+            </div>
+            <div class="w-3 flex justify-content-end">
+            </div>
+        </router-link>
+
+        <!--  Cloud Detail -->
+        <router-link to="/cloud" class="w-full flex justify-content-between align-items-center hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
+            <div class="w-4 pl-3">
+                <font-awesome-icon icon="fa-solid fa-layer-group" style="font-size: 1.2rem" />
+            </div>
+            <div class="w-5 sidebar-font">
+                Detail
             </div>
             <div class="w-3 flex justify-content-end">
                 <!-- <i class="pi"
@@ -79,72 +162,98 @@
             </div>
         </router-link>
 
-        <router-link to="/cloud-topology"
-            class="px-4 w-full flex justify-content-between align-items-center  font-bold hovercolor"
-            style="height: 3.5rem; text-decoration: none; color: inherit;">
+        <!-- Cloud Overview
+        <router-link to="/cloud-overview"
+            class="w-full flex justify-content-between align-items-center font-bold hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
             <div class="w-4 pl-3">
-                <font-awesome-icon icon="fa-solid fa-circle-nodes" style="font-size: 1.2rem" />
+                <font-awesome-icon :icon="['fas', 'cloud']" style="font-size: 1.2rem" />
             </div>
-            <div class="w-5 ">
-                Topology
+            <div class="w-5">
+                Overview
             </div>
             <div class="w-3 flex justify-content-end">
-                <!-- <i class="pi"
-                    :class="{ 'pi-angle-down': braket['cluster'] === 'down', 'pi-angle-up': braket['cluster'] === 'up' }"
-                    style="font-size: 1.2rem"></i> -->
             </div>
-        </router-link>
+        </router-link> -->
 
-        <router-link to="/cloud-metric"
-            class="px-4 w-full flex justify-content-between align-items-center  font-bold hovercolor"
-            style="height: 3.5rem; text-decoration: none; color: inherit;">
+        <!-- Cloud Metric -->
+        <router-link to="/cloud-metric" class="w-full flex justify-content-between align-items-center mb-6 hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
             <div class="w-4 pl-3">
                 <font-awesome-icon :icon="['fas', 'chart-line']" style="font-size: 1.2rem" />
             </div>
-            <div class="w-5 ">
+            <div class="w-5 sidebar-font">
                 Metric
             </div>
             <div class="w-3 flex justify-content-end">
             </div>
         </router-link>
 
-        <router-link to="/cloud-loadbalancer"
-            class="px-4 w-full flex justify-content-between align-items-center mb-6 font-bold hovercolor"
-            style="height: 3.5rem; text-decoration: none; color: inherit;">
+        <!-- ======================================================================================= -->
+        <!-- Group Service Layer -->
+        <div class="px-5 font-bold mb-2 mt-6 sidebar-font">
+            Services
+        </div>
+
+        <!-- Service Autoscaling -->
+        <router-link to="/cloud-loadbalancer" class="w-full flex justify-content-between align-items-center mt-4 hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
             <div class="w-4 pl-3">
                 <font-awesome-icon :icon="['fas', 'network-wired']" style="font-size: 1.2rem" />
             </div>
-            <div class="w-5">
-                Load Balancer
+            <div class="w-5 sidebar-font">
+                Autoscaling
             </div>
             <div class="w-3 flex justify-content-end">
             </div>
         </router-link>
 
-        <!-- ====================================== -->
-
-        <div class="px-5 font-bold mb-2 mt-6 text-sm">
-            Services
-        </div>
-        <router-link to="/int"
-            class="px-4 w-full flex justify-content-between align-items-center  mt-4 font-bold hovercolor"
-            style="height: 3.5rem; text-decoration: none; color: inherit;">
+        <!-- Service Telemetry -->
+        <router-link to="/int" class="w-full flex justify-content-between align-items-center hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
             <div class="w-4 pl-3">
                 <font-awesome-icon :icon="['fas', 'magnifying-glass-chart']" style="font-size: 1.2rem" />
             </div>
-            <div class="w-5 ">
-                INT
+            <div class="w-5 sidebar-font">
+                Service Telemetry
             </div>
             <div class="w-3 flex justify-content-end">
             </div>
         </router-link>
-        <router-link to="/alarm"
-            class="px-4 w-full flex justify-content-between align-items-center mb-6 font-bold hovercolor"
-            style="height: 3.5rem; text-decoration: none; color: inherit;">
+
+        <!-- Service Delay stats -->
+        <router-link to="/" class="w-full flex justify-content-between align-items-center hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
+            <div class="w-4 pl-3 ">
+                <font-awesome-icon :icon="['fas', 'stopwatch']" style="font-size: 1.2rem" />
+            </div>
+            <div class="w-5 sidebar-font">
+                Delay Stats
+            </div>
+            <div class="w-3 flex justify-content-end">
+            </div>
+        </router-link>
+
+        <!-- Service KaaS -->
+        <router-link to="/" class="w-full flex justify-content-between align-items-center hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
+            <div class="w-4 pl-3 flex ">
+                <img src="@/assets/svg/kubernetes.svg" style="width: 24px;">
+            </div>
+            <div class="w-5 sidebar-font">
+                KaaS
+            </div>
+            <div class="w-3 flex justify-content-end">
+            </div>
+        </router-link>
+
+        <!-- Service Alarm -->
+        <router-link to="/alarm" class="w-full flex justify-content-between align-items-center mb-6 hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
             <div class="w-4 pl-3">
                 <font-awesome-icon icon="fa-regular fa-bell" style="font-size: 1.2rem" />
             </div>
-            <div class="w-5 ">
+            <div class="w-5 sidebar-font">
                 Alarm
             </div>
             <div class="w-3 flex justify-content-end">
@@ -162,5 +271,13 @@
 
 .hovercolor:hover {
     background-color: #0bc279;
+}
+
+.scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.sidebar-font {
+    font-size: 18px
 }
 </style>

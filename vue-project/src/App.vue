@@ -85,7 +85,7 @@ onMounted(() => {
       <div v-else-if="offSidebar1 == true && offSidebar2 == false">
         <sidebar2 class="min-h-full" @touch="changeSidebar"></sidebar2>
       </div>
-      <div class="flex flex-column flex-auto relative overflow-x-scroll">
+      <div class="flex flex-column flex-auto relative">
         <contentbar></contentbar>
         <content></content>
       </div>

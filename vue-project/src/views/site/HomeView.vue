@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div class="px-5">
     <h1>This is a template page</h1>
-    Three card for navigating to three different pages, Physical, Cloud, and Services are displayed here.
+    Ready for your content
   </div>
 </template>
 
@@ -14,7 +14,7 @@ const path = usePathStore();
 const { contentBarName } = storeToRefs(path);
 
 onMounted(() => {
-  contentBarName.value = 'Home'
+  contentBarName.value = 'Template'
 })
 </script>
 

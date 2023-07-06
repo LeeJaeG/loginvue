@@ -24,6 +24,7 @@
     </div>
     <!-- ====================================================================================== -->
     <div class="flex flex-column relative flex-auto w-8" style="height: 100%">
+      <!-- LB ============================================ -->
       <div v-if="viewSelection == 'LB'" style="height: 95%">
         <div v-if="menuSelection == 'Load Balancer list'" style="height: 100%">
           <div class="surface-card p-5 shadow-2 border-round m-4" style="height: 100%">
@@ -82,32 +83,77 @@
             </div>
             <div class="flex justify-content-end align-items-center" style="height: 10%">
               <Button v-if="loadingLBCreating" class="w-1  bg-cyan-700 border-teal-700 mr-3" label="Progress"
-                @click="console.log('click Progress')" />
+                @click="showLBcreateDialog()" />
               <Button class="w-1  bg-cyan-700 border-teal-700 mr-3" :loading="loadingLBCreating" label="Create"
                 @click="createLBConfirm()" />
+              <Button class="w-1  bg-cyan-700 border-teal-700" label="Cancel" @click="cancelInput" />
+            </div>
+            <Dialog v-model:visible="creatingLBvisible" modal header="Creating Load Balancer" :style="{ width: '50vw' }">
+              <div class="my-3">
+                Progress
+              </div>
+              <div>
+                <ProgressBar :value="loadingPercentage" style="height: 50px;"></ProgressBar>
+              </div>
+              <div v-html="creatingLBMessage" class="mt-3 surface-800 text-white p-4 border-round" style="height: 500px;">
+              </div>
+            </Dialog>
+          </div>
+        </div>
+      </div>
+      <!-- Cluster ============================================ -->
+      <div v-else-if="viewSelection == 'Cluster'" style="height: 95%">
+        <div v-if="menuSelection == 'Cluster list'" style="height: 100%">
+          <div class="surface-card p-5 shadow-2 border-round m-4" style="height: 100%">
+            <div class="flex" style="height: 10%">
+              <button-group :buttons="clusterViewTypeList" :button-style="customeTypeButtonStyle"
+                :button-class="['hovercolor', 'flex', 'align-items-center', 'w-4', 'justify-content-center']"
+                class="flex justify-content-between w-full border-bottom-1" @button-click="clusterViewClickEvent" />
+            </div>
+            <div class="p-3 border-1" style="height: 90%">
+              {{ clusterShowMenu }}
+            </div>
+          </div>
+        </div>
+        <div v-else-if="menuSelection == 'Cluster create'" style="height: 100%">
+          <div class="surface-card p-5 shadow-2 border-round m-4" style="height: 100%">
+            <div class="flex" style="height: 10%">
+              <button-group :buttons="clusterCreateTypeList" :button-style="customeTypeButtonStyle"
+                :button-class="['hovercolor', 'flex', 'align-items-center', 'w-4', 'justify-content-center']"
+                class="flex justify-content-between w-full border-bottom-1" @button-click="clusterCreateClickEvent" />
+            </div>
+            <div class="p-3" style="height: 80%">
+              <div class="grid">
+                <div v-for="inputValue, inputKey in clusterInputs[clusterCreateMenu]" :key="inputValue"
+                  class="col-6 h-8rem">
+                  <div class="mb-3 text-lg flex">
+                    {{ inputKey }}
+                    <div v-if="inputValue.need == true" class="text-red-400 ml-1">
+                      *
+                    </div>
+                  </div>
+                  <div>
+                    <InputText v-if="inputValue.type == 'Input text'" type="text" v-model="inputValue.value"
+                      class="w-full" />
+                    <SelectButton v-else-if="inputValue.type == 'Select button'" v-model="inputValue.value"
+                      :options="inputValue['Select button']" class="w-full" />
+                    <Dropdown v-else-if="inputValue.type == 'Dropdown'" v-model="inputValue.value"
+                      :options="inputValue['Dropdown']" class="w-full" />
+                    <Textarea v-else-if="inputValue.type == 'Textarea'" v-model="inputValue.value" class="w-full" rows="1"
+                      cols="1" style="max-height: 400px;" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="flex justify-content-end align-items-center" style="height: 10%">
+              <Button class="w-1  bg-cyan-700 border-teal-700 mr-3" :loading="loadingLBCreating" label="Create"
+                @click="console.log('hi')" />
               <Button class="w-1  bg-cyan-700 border-teal-700" label="Cancel" @click="cancelInput" />
             </div>
           </div>
         </div>
       </div>
-      <div v-else-if="viewSelection == 'Cluster'" style="height: 95%">
-        this is the cluster page
-        <div v-if="menuSelection == 'Profiles'" style="height: 100%">
-          {{ menuSelection }}
-        </div>
-        <div v-else-if="menuSelection == 'Nodes'" style="height: 100%">
-          {{ menuSelection }}
-        </div>
-        <div v-else-if="menuSelection == 'Clusters'" style="height: 100%">
-          {{ menuSelection }}
-        </div>
-        <div v-else-if="menuSelection == 'Policies'" style="height: 100%">
-          {{ menuSelection }}
-        </div>
-        <div v-else-if="menuSelection == 'Receivers'" style="height: 100%">
-          {{ menuSelection }}
-        </div>
-      </div>
+      <!-- Alarm ============================================ -->
       <div v-else-if="viewSelection == 'Alarm'" style="height: 95%">
         <div v-if="menuSelection == 'Alarm list'" style="height: 100%">
           <div class="surface-card p-5 shadow-2 border-round m-4" style="height: 100%">
@@ -263,11 +309,8 @@ const viewClickEvent = ((view) => {
       ];
     } else if (viewSelection.value == 'Cluster') {
       sideMenu.value = [
-        { id: 'profiles', label: 'Profiles', active: false },
-        { id: 'nodes', label: 'Nodes', active: false },
-        { id: 'clusters', label: 'Clusters', active: false },
-        { id: 'policies', label: 'Policies', active: false },
-        { id: 'receivers', label: 'Receivers', active: false },
+        { id: 'clusterList', label: 'Cluster list', active: false },
+        { id: 'clusterCreate', label: 'Cluster create', active: false },
       ];
     } else {
       sideMenu.value = [
@@ -294,11 +337,13 @@ const menuClickEvent = ((metric) => {
 })
 
 const originLBInputs = ref()
+const originClusterInputs = ref()
 const originAlarmInputs = ref()
 onMounted(() => {
   contentBarName.value = 'Cloud Autoscaling Service'
   // 깊은 복사를 위해 JSON.parse(JSON.stringify()) 사용
   originLBInputs.value = JSON.parse(JSON.stringify(loadbalancerInputs.value))
+  originClusterInputs.value = JSON.parse(JSON.stringify(clusterInputs.value))
   originAlarmInputs.value = JSON.parse(JSON.stringify(alarmInputs.value))
 })
 
@@ -358,10 +403,12 @@ const loadbalancerInputs = ref({
     "Protocol": {
       'type': 'Input text',
       'value': '',
+      'need': true,
     },
     "Port": {
       'type': 'Input text',
       'value': '',
+      'need': true,
     },
     "Client Data Timeout": {
       'type': 'Input text',
@@ -378,6 +425,7 @@ const loadbalancerInputs = ref({
     "Member Data Timeout": {
       'type': 'Input text',
       'value': '5000',
+      'need': true,
     },
     "Connection Limit": {
       'type': 'Input text',
@@ -402,6 +450,7 @@ const loadbalancerInputs = ref({
       'type': 'Dropdown',
       'Dropdown': ['ROUND_ROBIN', 'LEAST_CONNECTIONS', 'SOURCE_IP'],
       'value': '',
+      'need': true,
     },
     "Session Persistence": {
       'type': 'Dropdown',
@@ -425,22 +474,27 @@ const loadbalancerInputs = ref({
       'type': 'Dropdown',
       'Dropdown': ['HTTP', 'HTTPS', 'PING', 'TCP', 'TLS-HELLO', 'UDP-CONNECT'],
       'value': '',
+      'need': true,
     },
     "Max Retries Down": {
       'type': 'Input text',
       'value': '3',
+      'need': true,
     },
     "Delay": {
       'type': 'Input text',
       'value': '5',
+      'need': true,
     },
     "Max Retries": {
       'type': 'Input text',
       'value': '3',
+      'need': true,
     },
     "Timeout": {
       'type': 'Input text',
       'value': '5',
+      'need': true,
     },
     "Admin State Up": {
       'type': 'Select button',
@@ -485,13 +539,17 @@ const createLBConfirm = () => {
 }
 
 const loadingLBCreating = ref(false)
+const loadingPercentage = ref(0)
+const creatingLBMessage = ref("")
 const createLB = (async (retry, ...theArgs) => {
   console.log("createLBs")
   try {
     loadingLBCreating.value = true
     // 1. Create the Load Balancer 
-
-    const response = await axios.post('/api/openstack-loadbalancer/loadbalancers', {
+    creatingLBMessage.value = ""
+    creatingLBMessage.value += "=> Autoscaling service Init ... done <br />"
+    creatingLBMessage.value += "=> Creating Load Balancer"
+    var response = await axios.post('/api/openstack-loadbalancer/loadbalancers', {
       'name': loadbalancerInputs.value['Load Balancer Details']['Name'].value,
       'description': loadbalancerInputs.value['Load Balancer Details']['Description'].value,
       'vip_subnet_id': loadbalancerInputs.value['Load Balancer Details']['Subnet'].value,
@@ -499,20 +557,73 @@ const createLB = (async (retry, ...theArgs) => {
       'admin_state_up': loadbalancerInputs.value['Load Balancer Details']['Admin State Up'].value,
       'project_id': userdata.value.selectedProject.project_id,
     })
-    console.log(response.data.loadbalancer_id, response.data.loadbalancer_status)
-    const lb_id = response.data.loadbalancer_id
 
-    loadbalancerList.value = response.data.loadbalancers;
+    console.log("create LB is done", response.data)
+    const lb_id = response.data.loadbalancer_id
+    creatingLBMessage.value += " ... done <br />"
+    creatingLBMessage.value += "=> Load Balancer id" + lb_id + " is " + response.data.loadbalancer_status + '<br />'
+    loadingPercentage.value = 25
 
     // 2. Create the Listener
+    creatingLBMessage.value += "=> Creating Listener"
+    response = await axios.post('/api/openstack-loadbalancer/listeners', {
+      'name': loadbalancerInputs.value['Listener Details']['Name'].value,
+      "loadbalancer_id": lb_id,
+      "protocol": loadbalancerInputs.value['Listener Details']['Protocol'].value,
+      "description": loadbalancerInputs.value['Listener Details']['Description'].value,
+      "admin_state_up": loadbalancerInputs.value['Listener Details']['Admin State Up'].value,
+      "connection_limit": loadbalancerInputs.value['Listener Details']['Connection Limit'].value,
+      "protocol_port": loadbalancerInputs.value['Listener Details']['Port'].value,
+      "timeout_client_data": loadbalancerInputs.value['Listener Details']['Client Data Timeout'].value,
+      "timeout_member_connect": loadbalancerInputs.value['Listener Details']['Member Connect Timeout'].value,
+      "timeout_member_data": loadbalancerInputs.value['Listener Details']['Member Data Timeout'].value,
+      "timeout_tcp_inspect": loadbalancerInputs.value['Listener Details']['TCP Inspect Timeout'].value
+    })
+    console.log("create listener is done", response.data)
+    const listener_id = response.data.listener_id
+    creatingLBMessage.value += " ... done <br />"
+    creatingLBMessage.value += "=> Listener id is " + listener_id + '<br />'
+
+    loadingPercentage.value = 50
 
     // 3. Create the Pool
+    creatingLBMessage.value += "Creating Pool"
+    response = await axios.post('/api/openstack-loadbalancer/pools/' + lb_id, {
+      'name': loadbalancerInputs.value['Pool Details']['Name'].value,
+      "lb_algorithm": loadbalancerInputs.value['Pool Details']['Algorithm'].value,
+      "protocol": loadbalancerInputs.value['Listener Details']['Protocol'].value,
+      // "session_persistence": loadbalancerInputs.value['Pool Details']['Cookie Name'].value,
+      "description": loadbalancerInputs.value['Pool Details']['Description'].value,
+      "admin_state_up": loadbalancerInputs.value['Pool Details']['Admin State Up'].value,
+      "listener_id": listener_id
+    })
+    console.log("create pool is done", response.data)
+    const pool_id = response.data.pool_id
+    loadingPercentage.value = 75
+    creatingLBMessage.value += " ... done <br />"
+    creatingLBMessage.value += "=> Pool id is " + pool_id + '<br />'
 
     // 4. Create Monitor Details
+    creatingLBMessage.value += "Creating Monitor Details"
+    response = await axios.post('/api/openstack-loadbalancer/healthmonitors/' + lb_id, {
+      'name': loadbalancerInputs.value['Monitor Details']['Name'].value,
+      "admin_state_up": loadbalancerInputs.value['Monitor Details']['Admin State Up'].value,
+      "pool_id": pool_id,
+      "delay": loadbalancerInputs.value['Monitor Details']['Delay'].value,
+      "max_retries": loadbalancerInputs.value['Monitor Details']['Max Retries'].value,
+      "timeout": loadbalancerInputs.value['Monitor Details']['Timeout'].value,
+      "type": loadbalancerInputs.value['Monitor Details']['Type'].value,
+      "max_retries_down": loadbalancerInputs.value['Monitor Details']['Max Retries Down'].value
+    })
+    console.log("create health monitor is done", response.data)
+    loadingPercentage.value = 100
+    creatingLBMessage.value += " ... done <br />"
+    creatingLBMessage.value += "=> Health Monitor id is " + response.data.healthmonitor.id + '<br />'
 
     loadingLBCreating.value = false
   } catch (error) {
-    loadingLBCreating.value = false
+    creatingLBvisible.value = false
+    creatingLBMessage.value += " ... error <br />"
     console.log(error)
     if (retry <= 2) {
       user.tokenErrorHandler(error, getLBListInProject, retry, theArgs);
@@ -530,9 +641,160 @@ const LBListkeys = ref({
   'vip_address': 'VIP Address',
 })
 
+const creatingLBvisible = ref(false)
+const showLBcreateDialog = () => {
+  creatingLBvisible.value = !creatingLBvisible.value
+}
+
 // LB 관련 끝 =================
 // Cluster 관련 ================
 
+
+const clusterViewTypeList = ref([
+  { id: 'a', label: 'Profiles', active: true },
+  { id: 'b', label: 'Nodes', active: false },
+  { id: 'c', label: 'Clusters', active: false },
+  { id: 'd', label: 'Policies', active: false },
+  { id: 'f', label: 'Receivers', active: false }
+])
+
+const clusterShowMenu = ref("Clusters")
+const clusterViewClickEvent = ((showCluster) => {
+  clusterShowMenu.value = showCluster.label
+})
+
+const clusterCreateTypeList = ref([
+  { id: 'a', label: 'Profile', active: true },
+  { id: 'b', label: 'Node', active: false },
+  { id: 'c', label: 'Cluster', active: false },
+  { id: 'd', label: 'Policy', active: false },
+  { id: 'f', label: 'Receiver', active: false }
+])
+
+const clusterCreateMenu = ref("Profile")
+const clusterCreateClickEvent = ((createCluster) => {
+  clusterCreateMenu.value = createCluster.label
+})
+
+const clusterInputs = ref({
+  "Profile": {
+    "Name": {
+      'type': 'Input text',
+      'value': '',
+      'need': true,
+    },
+    "Spec": {
+      'type': 'Textarea',
+      'value': '',
+      'need': true,
+    },
+    "Metadata": {
+      'type': 'Textarea',
+      'value': '',
+    },
+  },
+  "Node": {
+    "Name": {
+      'type': 'Input text',
+      'value': '',
+      'need': true,
+    },
+    "Profile": {
+      'type': 'Input text',
+      // 'type': 'Dropdown',
+      // 'Dropdown': [],
+      'need': true,
+      'value': '',
+    },
+    "Cluster": {
+      'type': 'Input text',
+      // 'type': 'Dropdown',
+      // 'Dropdown': [],
+      'value': '',
+    },
+    "Role": {
+      'type': 'Input text',
+      'value': '',
+    },
+    "Metadata": {
+      'type': 'Textarea',
+      'value': '',
+    },
+  },
+  "Cluster": {
+    "Cluster Name": {
+      'type': 'Input text',
+      'value': '',
+      'need': true,
+    },
+    "Profile": {
+      'type': 'Input text',
+      'value': '',
+      'need': true,
+    },
+    "Min Size": {
+      'type': 'Input text',
+      'value': '0',
+    },
+    "Max Size": {
+      'type': 'Input text',
+      'value': '-1',
+    },
+    "Desired Capacity": {
+      'type': 'Input text',
+      'value': '0',
+      'need': true,
+    },
+    "Timeout": {
+      'type': 'Input text',
+      'value': '0',
+    },
+    "Metadata": {
+      'type': 'Input text',
+      'value': '',
+    },
+  },
+  "Policy": {
+    "Name": {
+      'type': 'Input text',
+      'value': '',
+      'need': true,
+    },
+    "Spec": {
+      'type': 'Textarea',
+      'value': '',
+      'need': true,
+    },
+  },
+  "Receiver": {
+    "Name": {
+      'type': 'Input text',
+      'value': '',
+      'need': true,
+    },
+    "Type": {
+      'type': 'Dropdown',
+      'Dropdown': ['Webhook', 'Message'],
+      'value': '',
+      'need': true,
+    },
+    "Cluster": {
+      'type': 'Input text',
+      'value': '',
+      'need': true,
+    },
+    "Action": {
+      'type': 'Dropdown',
+      'Dropdown': ['Scale in the cluster', 'Scale out the cluster'],
+      'value': '',
+      'need': true,
+    },
+    "Params": {
+      'type': 'Textarea',
+      'value': '',
+    },
+  },
+})
 // Cluster 관련 끝 ==============
 // Alarm 관련 =================
 
@@ -570,7 +832,7 @@ const submitInput = () => {
       window.alert("알람 생성 완료")
     }).catch(
       (err) => {
-        window.alert(err + "알람 삭제 실패")
+        window.alert(err + "알람 생성 실패")
       }
     );
 };
@@ -595,6 +857,7 @@ const getAlarmListInProject = (async (retry, ...theArgs) => {
 const cancelInput = () => {
   window.alert("입력란을 초기화 합니다.")
   loadbalancerInputs.value = JSON.parse(JSON.stringify(originLBInputs.value))
+  clusterInputs.value = JSON.parse(JSON.stringify(originClusterInputs.value))
   alarmInputs.value = JSON.parse(JSON.stringify(originAlarmInputs.value))
 }
 
@@ -605,46 +868,46 @@ const alarmInputs = ref({
   },
   "Description": {
     "value": null,
-    "description": "Input your desired threshold",
+    "description": "Set description for the alarm"
   },
   "Metric type": {
-    "value": null,
+    "value": "cpu",
     "description": "[cpu,memory,disk,network]",
   },
   "Subject type": {
-    "value": null,
-    "description": "Select Subject type [Instance or Cluster]",
+    "value": "Instance",
+    "description": "Select Subject type [Single instance or Cluster]",
   },
   "Subject ID": {
     "value": null,
     "description": "Input ID of 'cluster' or 'instance'",
   },
   "Granularity": {
-    "value": null,
+    "value": "60",
     "description": "Input desired granularity for aggregation",
   },
   "Threshold": {
     "value": null,
-    "description": "ex) [cpu,memory,disk,network]",
+    "description": "Input your desired threshold",
   },
   "Evaluation periods": {
-    "value": null,
+    "value": '1',
     "description": "Set evaluation periods ex)1,2",
   },
   "Alarm actions": {
-    "value": null,
-    "description": "If 'log://' : save log on local directory",
+    "value": "http://localhost:8080",
+    "description": "Endpoint to send notification ex)http://localhost:8080",
   },
   "Repeat actions": {
-    "value": null,
+    "value": false,
     "description": "true or false, if true : alarm will keep sending notification",
   },
   "Aggregation method": {
-    "value": null,
-    "description": "Input aggregation method ex)[mean,rate:mean,sum,max,min]",
+    "value": "rate:mean",
+    "description": "Input aggregation method",
   },
   "Comparison operator": {
-    "value": null,
+    "value": "gt",
     "description": "Input comparison operator ex)[gt,ge,lt,le]",
   },
 })

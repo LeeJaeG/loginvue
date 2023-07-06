@@ -474,6 +474,48 @@ const showELS = (vmID) => {
 const closeELS = () => {
     checkELS.value = true;
 }
+
+const metricSummary = {
+    "cpu": {
+        "total": 0.9,
+        "status": "ok"
+    },
+    "memory": {
+        "total": 0.21,
+        "status": "ok"
+    },
+    "storage": {
+        "total": 0.5,
+        "status": "err",
+        "err_desc": {
+            "msg": "partition sda is full"
+        }
+    }
+}
+
+const handleMetricTooltip = ((key, value) => {
+    if (value.status == 'ok') {
+        return key + ' : ' + value.total.toFixed(2) + '\n' + 'healthy state'
+    }
+    else if (value.status == 'err' && value.err_desc.msg) {
+        const data = key + ' : ' + value.total.toFixed(2) + '\n' + 'error : ' + value.err_desc.msg
+        return data;
+    }
+    else {
+        return key + ' : ' + value.total.toFixed(2) + '\n' + 'error : message is not defined'
+    }
+})
+
+const metricStyleObject = ((A) => {
+    if (A < 0.4) {
+        return '#A7E521';
+    } else if (A >= 0.4 && A < 0.7) {
+        return '#FFD422';
+    } else {
+        return '#FF3333';
+    }
+});
+
 </script>
 
 <template>
@@ -482,19 +524,39 @@ const closeELS = () => {
             <ProgressSpinner />
         </Dialog>
     </template>
-    <div class=" flex surface-ground" style="height: 100% ">
-        <div class="flex flex-column w-2 surface-card surface-border border-right-2 shadow-2" style="">
+    <div class=" flex surface-ground" style="height: 100%">
+        <div class="flex flex-column w-2 surface-card surface-border border-right-2 shadow-2" style="height: 100%">
             <div class="flex flex-none text-2xl font-bold mb-1 p-4">
                 Detail Info
             </div>
             <Skeleton v-if="getServerDetailsLoading" class="flex flex-grow-1" />
-            <div v-else class="flex flex-column flex-grow-1" style="overflow-y: scroll;">
+            <div v-else class="flex flex-column flex-grow-1" style="overflow-y: scroll; height: 60%">
                 <div v-for="value, key in selectedNodeInfo" class="flex flex-column pl-2" :key='value'>
-                    <div class="text-800 border-round font-semibold text-lg mb-1">
-                        [ {{ key }} ] :
+                    <div class=" text-green-600 border-round inline-flex mb-1 py-1 px-2 text-sm">
+                        {{ key }} :
                     </div>
-                    <div class="text-600 font-medium py-1 pl-1 mb-2">
+                    <div class="text-600 font-medium  py-1 px-2 mb-2">
                         {{ value }}
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-none text-2xl font-bold mb-1 mt-3 px-4">
+                Metric overview
+            </div>
+            <div v-if="metricSummary"
+                class="h-4rem mx-4 border-round bg-white shadow-2 flex justify-content-center align-items-center">
+                <div v-for="(metricValue, metricKey) in metricSummary" :key=metricKey class="mx-3">
+                    <div class="flex justify-content-center align-items-center circle my-1 cursor-pointer"
+                        :style="{ 'backgroundColor': metricStyleObject(metricValue.total) }" @click="console.log('click')"
+                        v-tooltip="handleMetricTooltip(metricKey, metricValue)">
+                        <div v-if="metricValue.status == 'err'"
+                            class="relative flex justify-content-center align-items-center" style="font-size: 30px;">
+                            <img src="@/assets/danger.svg" alt="error" style="width: 30px; height: 30px; top: -17.6px;"
+                                class="absolute" />
+                        </div>
+                    </div>
+                    <div style="font-size: 9px;">
+                        {{ metricKey.charAt(0) }} : {{ metricValue.total.toFixed(2) }}
                     </div>
                 </div>
             </div>
@@ -732,6 +794,14 @@ const closeELS = () => {
     .p-progressbar-value {
         background: #a7d99a;
     }
+}
+
+.circle {
+    margin: 0 auto;
+    width: 20px;
+    height: 20px;
+    border: 0px solid;
+    border-radius: 50%;
 }
 </style>
 

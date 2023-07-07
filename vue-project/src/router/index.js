@@ -49,11 +49,11 @@ const router = createRouter({
       name: 'cloudMetric',
       component: () => import('../views/cloud/CloudMetricView.vue')
     },
-    {
-      path: '/metric-test',
-      name: 'metricTest',
-      component: () => import('../views/cloud/MetricViewTMP.vue')
-    },
+    // {
+    //   path: '/metric-test',
+    //   name: 'metricTest',
+    //   component: () => import('../views/cloud/MetricViewTMP.vue')
+    // },
     {
       path: '/alarm',
       name: 'alarm',
@@ -79,11 +79,11 @@ const router = createRouter({
       name: 'cloudTopology',
       component: () => import('../views/cloud/CloudTopologyView.vue')
     },
-    {
-      path: '/cloud-topology-test',
-      name: 'cloudTopologyTest',
-      component: () => import('../views/cloud/CloudTopologyViewTMP.vue')
-    },
+    // {
+    //   path: '/cloud-topology-test',
+    //   name: 'cloudTopologyTest',
+    //   component: () => import('../views/cloud/CloudTopologyViewTMP.vue')
+    // },
     {
       path: '/physical-topology',
       name: 'kaloomTopology',
@@ -111,7 +111,7 @@ const adminPath = [
 router.beforeEach(async (to) => {
   // canUserAccess() returns `true` or `false`
   // console.log(to);
-  for (const route of adminPath){
+  for (const route of adminPath) {
     if (route.path == to.path) {
       // console.log("First admin route checked", to.path, "=", route.path);
       // console.log("Admin role check")
@@ -121,10 +121,10 @@ router.beforeEach(async (to) => {
   }
 })
 
-const canAdminAccess = (async()=>{ // 나중에는 필터로 admin 경로 리스트 중에 하나에 있는지 확인하는 식으로 수정해야할듯
+const canAdminAccess = (async () => { // 나중에는 필터로 admin 경로 리스트 중에 하나에 있는지 확인하는 식으로 수정해야할듯
   const user = useUserStore();
   const { userdata } = storeToRefs(user);
-  if(userdata.value.role == 'admin'){
+  if (userdata.value.role == 'admin') {
     // console.log('1', userdata.value.role);
     return true
   } else {

@@ -242,7 +242,7 @@ const getRxTxRate = async (Mounted) => {
                             element.value[key].rxtx[tap][name].measures.aggregated = data;
                         }
                     }
-                };
+                }
                 //  console.log(element.value);
             }
         })

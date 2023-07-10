@@ -17,6 +17,11 @@ const colorMap = {
     'Kaloom Backbone': 'green',
     'Service Baremetal': 'blue',
     'Edge core switch': 'red',
+    'App servers': 'blue',
+    'VMWare Cluster': 'blue',
+    'Kaloom servers': 'blue',
+    'Openstack Cluster': 'blue',
+
 }
 const documentStyle = getComputedStyle(document.body)
 const color = documentStyle.getPropertyValue('--' + colorMap[props.label] + '-200')

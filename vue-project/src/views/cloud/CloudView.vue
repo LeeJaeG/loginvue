@@ -8,7 +8,7 @@
             <div class="text-2xl font-bold mb-4">
                 VM servers
             </div>
-            <div class="flex card flex-grow-1 w-full justify-content-center overflow-x-scroll">
+            <div class="flex card flex-grow-1 w-full px-2 justify-content-center overflow-x-scroll">
                 <Skeleton v-if="loadingServerList" class="mx-4" style="width:100% ; height:100%" />
                 <DataTable v-else v-model:selection="selectedVM" :value="vmList" paginator :rows="10"
                     :rowsPerPageOptions="[10, 20, 50]" tableStyle="">
@@ -33,7 +33,8 @@
                 <div class="border-left-3 surface-border top-0 left-50 absolute h-full"></div>
             </div>
         </div> -->
-        <div class="flex flex-column w-6 pt-3 justify-content-start align-items-center surface-card shadow-2 border-round">
+        <div
+            class="flex flex-column w-6 pt-3 px-2 justify-content-start align-items-center surface-card shadow-2 border-round">
             <div class="text-2xl font-bold mb-4">
                 Networks
             </div>

@@ -51,6 +51,7 @@
                 </div>
                 <div class="mt-3">
                     {{ props.label }}
+                    <!-- {{ props.id }} -->
                 </div>
                 <div v-for="id, i in props.data.inboundInterfaceGroup" :key="id">
                     <!-- {{ i }}, {{ id }}, {{ 200 / (props.data.inboundInterfaceGroup.length + 1) * (1 + i) }} -->
@@ -67,7 +68,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+// import { computed } from 'vue'
 import { Handle } from '@vue-flow/core'
 const props = defineProps({
     id: {
@@ -97,7 +98,31 @@ const getColor = (type) => {
             backgroundColor: '#B2DFDB', // Teal-100
             borderColor: '#00796B' // Teal-800
         },
-        openstack: {
+        'openstack': {
+            backgroundColor: '#BBDEFB', // Blue-200
+            borderColor: '#1E88E5' // Blue-700
+        },
+        'Compute': {
+            backgroundColor: '#BBDEFB', // Blue-200
+            borderColor: '#1E88E5' // Blue-700
+        },
+        'Deployer': {
+            backgroundColor: '#BBDEFB', // Blue-200
+            borderColor: '#1E88E5' // Blue-700
+        },
+        'SDN controller': {
+            backgroundColor: '#BBDEFB', // Blue-200
+            borderColor: '#1E88E5' // Blue-700
+        },
+        'AI system': {
+            backgroundColor: '#BBDEFB', // Blue-200
+            borderColor: '#1E88E5' // Blue-700
+        },
+        'Controller': {
+            backgroundColor: '#BBDEFB', // Blue-200
+            borderColor: '#1E88E5' // Blue-700
+        },
+        'ESXi': {
             backgroundColor: '#BBDEFB', // Blue-200
             borderColor: '#1E88E5' // Blue-700
         },

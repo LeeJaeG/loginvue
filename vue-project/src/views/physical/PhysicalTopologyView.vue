@@ -759,7 +759,7 @@ const att_PutData = ref(null);
 const att_handleRowClick = async (rowData) => {
     console.log(rowData);
     console.log(selectedDevice);
-    att_PutData.value = selectedDevice.value;
+    att_PutData.value = rowData.data;
     // console.log(att_deviceTypeOptions);
 };
 
@@ -1331,9 +1331,9 @@ const toggleDrag = ref(false)
                                         </DataTable>
                                     </div>
                                     <div class="ml-8">
-                                        <div v-if="att_PutData !== null" class="flex flex-column gap-2">
+                                        <div v-if="selectedDevice !== null" class="flex flex-column gap-2">
                                             <label for="att_deviceName">device Name</label>
-                                            <InputText ID="att_deviceName" v-model="att_PutData.deviceName"></InputText>
+                                            <InputText ID="att_deviceName" v-model="selectedDevice.deviceName"></InputText>
                                             <label for="att_deviceType">device Type</label>
                                             <Dropdown v-model="att_selectedType" :options="att_deviceTypeOptions"
                                                 placeholder="Select Type"></Dropdown>
@@ -1345,7 +1345,7 @@ const toggleDrag = ref(false)
                                                 placeholder="Select Role">
                                             </Dropdown>
                                             <label for="att_deviceTier">Tier</label>
-                                            <InputNumber ID="att_deviceTier" v-model="att_PutData.tier"></InputNumber>
+                                            <InputNumber ID="att_deviceTier" v-model="selectedDevice.tier"></InputNumber>
                                             <!-- <Button label="Update" text severity="success" @click="att_deviceUpdate"></Button> -->
                                         </div>
                                     </div>

@@ -1,7 +1,7 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/site/HomeView.vue'
+import { useUserStore } from '@/stores/user';
 import { storeToRefs } from 'pinia';
-import { useUserStore } from '@/stores/user'
+import { createRouter, createWebHistory } from 'vue-router';
+import HomeView from '../views/site/HomeView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -103,6 +103,11 @@ const router = createRouter({
       path: '/kaas',
       name: 'KaaS',
       component: () => import('../views/service/KaaSView.vue')
+    },
+    {
+      path: '/metricsummary',
+      name: 'Metricsummary',
+      component: () => import('../views/cloud/MetricSummary.vue')
     },
   ]
 })

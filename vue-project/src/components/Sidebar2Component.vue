@@ -57,7 +57,7 @@
         </router-link>
 
         <!-- Main metric & alarm -->
-        <router-link to="/" class="w-full flex justify-content-between align-items-center mb-6 hovercolor"
+        <router-link to="/metricsummary" class="w-full flex justify-content-between align-items-center mb-6 hovercolor"
             style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
             <div class="w-4 pl-3">
                 <font-awesome-icon :icon="['fas', 'chart-line']" style="font-size: 1.2rem" />

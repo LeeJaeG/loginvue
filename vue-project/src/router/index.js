@@ -25,9 +25,9 @@ const router = createRouter({
       component: () => import('../views/site/SettingView.vue')
     },
     {
-      path: '/cloud-loadbalancer',
-      name: 'cloudLoadbalancer',
-      component: () => import('../views/cloud/LoadBalancerView.vue')
+      path: '/autoscaling',
+      name: 'AutoScaling',
+      component: () => import('../views/service/AutoScalingView.vue')
     },
     {
       path: '/login',
@@ -98,6 +98,11 @@ const router = createRouter({
       path: '/test',
       name: 'Test',
       component: () => import('../views/test/TestView.vue')
+    },
+    {
+      path: '/kaas',
+      name: 'KaaS',
+      component: () => import('../views/service/KaaSView.vue')
     },
   ]
 })

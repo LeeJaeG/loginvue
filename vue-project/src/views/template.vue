@@ -1,6 +1,13 @@
 <template>
-  <div>
-    <h1>This is a template page</h1>
+  <div class=" flex surface-ground" style="height: 100%">
+    <div class="flex flex-column w-2 surface-card surface-border border-right-2 shadow-2" style="height: 100%">
+
+    </div>
+    <div class="flex flex-column relative flex-auto">
+    </div>
+    <div class="flex flex-column w-2 surface-card surface-border border-right-2 shadow-2" style="height: 100%">
+
+    </div>
   </div>
 </template>
 
@@ -13,7 +20,7 @@ const path = usePathStore();
 const { contentBarName } = storeToRefs(path);
 
 onMounted(() => {
-  contentBarName.value = 'Setting'
+  contentBarName.value = 'template'
 })
 </script>
 

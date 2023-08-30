@@ -516,6 +516,8 @@ const metricStyleObject = ((A) => {
     }
 });
 
+const toggleDrag = ref(false)
+
 </script>
 
 <template>
@@ -616,12 +618,17 @@ const metricStyleObject = ((A) => {
                             style="height: 2.8rem; z-index: 99; color: white; background-color: #2e3341" @click="fitView">
                             <i :class="'pi pi-stop'"></i>
                         </Button>
+                        <Button class="border-0 border-noround" style="height: 2.8rem; z-index: 99;"
+                            :style="{ 'background-color': toggleDrag ? 'white' : '#2e3341', color: toggleDrag ? '#2e3341' : 'white' }"
+                            @click="toggleDrag = !toggleDrag">
+                            <font-awesome-icon :icon="['fas', 'computer-mouse']" />
+                        </Button>
                     </div>
                 </div>
                 <div class="border-2 surface-border border-round surface-section flex-auto">
                     <Skeleton v-if="!loading" class="mr-2 h-full" />
                     <VueFlow v-else v-model="vueFlow" :node-types="nodeTypes" class="basicflow" :default-zoom="1.5"
-                        :min-zoom="0.1" :max-zoom="2" :nodes-draggable="true" :elevate-edges-on-select="true">
+                        :min-zoom="0.1" :max-zoom="2" :nodes-draggable="toggleDrag" :elevate-edges-on-select="true">
                         <Background gap="50" bg-color="rgba(255, 255, 255, 0.1)" variant="lines" />
 
                         <Dialog v-bind:header="displayNodeInfoName" v-model:visible="displayNodeInfo" class="w-8" modal>

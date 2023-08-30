@@ -196,7 +196,7 @@
         </div>
 
         <!-- Service Autoscaling -->
-        <router-link to="/cloud-loadbalancer" class="w-full flex justify-content-between align-items-center mt-4 hovercolor"
+        <router-link to="/autoscaling" class="w-full flex justify-content-between align-items-center mt-4 hovercolor"
             style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
             <div class="w-4 pl-3">
                 <font-awesome-icon :icon="['fas', 'network-wired']" style="font-size: 1.2rem" />
@@ -235,7 +235,7 @@
         </router-link>
 
         <!-- Service KaaS -->
-        <router-link to="/" class="w-full flex justify-content-between align-items-center hovercolor"
+        <router-link to="/kaas" class="w-full flex justify-content-between align-items-center hovercolor"
             style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
             <div class="w-4 pl-3 flex ">
                 <img src="@/assets/svg/kubernetes.svg" style="width: 24px;">

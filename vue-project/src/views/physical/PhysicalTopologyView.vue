@@ -139,27 +139,34 @@ const getVueFlowForKaloom = (async (retry, ...theArgs) => {
     }
 })
 
-const clickGroupCategories = (checkedValue, beforeValue) => {
-    if (checkedValue == beforeValue) {
+const clickGroupCategories = (checkedValue, previousValue) => {
+    if (checkedValue == previousValue) {
         return
     }
-    vueFlow.value.forEach((e) => {
-        // console.log(e)
-        if (e.data.type != 'edge') {
-            e.data.watched = 0
-            e.hidden = false
-        }
-    })
-    if (nodeTableForGroup.value[checkedValue]) {
-        for (let i = 0; i < vueFlow.value.length; i++) {
-            if (!Object.values(nodeTableForGroup.value[checkedValue]).map(String).includes(vueFlow.value[i].id)) {
-                if (vueFlow.value[i].type == 'baremetal') {
-                    vueFlow.value[i].hidden = 'true';
-                    vueFlow.value[i].data.watched += 1;
-                }
-            }
-        }
+    // vueFlow.value.forEach((e) => {
+    //     // console.log(e)
+    //     if (e.data.type != 'edge') {
+    //         e.data.watched = 0
+    //         e.hidden = false
+    //     }
+    // })
+    if (checkedValue != 'A') {
+        fitView({
+            nodes: [checkedValue],
+        })
+    } else {
+        fitView()
     }
+    // if (nodeTableForGroup.value[checkedValue]) {
+    //     for (let i = 0; i < vueFlow.value.length; i++) {
+    //         if (!Object.values(nodeTableForGroup.value[checkedValue]).map(String).includes(vueFlow.value[i].id)) {
+    //             if (vueFlow.value[i].type == 'baremetal') {
+    //                 vueFlow.value[i].hidden = 'true';
+    //                 vueFlow.value[i].data.watched += 1;
+    //             }
+    //         }
+    //     }
+    // }
 }
 
 const clickNodeCategories = (checkedValue, beforeValue) => {
@@ -248,6 +255,8 @@ const treeToggle = (open) => {
         }
     }
 }
+
+const toggleDrag = ref(false)
 
 </script>
 
@@ -418,18 +427,23 @@ const treeToggle = (open) => {
                             style="height: 2.8rem; z-index: 99; color: white; background-color: #2e3341" @click="fitView">
                             <i :class="'pi pi-stop'"></i>
                         </Button>
+                        <Button class="border-0 border-noround" style="height: 2.8rem; z-index: 99;"
+                            :style="{ 'background-color': toggleDrag ? 'white' : '#2e3341', color: toggleDrag ? '#2e3341' : 'white' }"
+                            @click="toggleDrag = !toggleDrag">
+                            <font-awesome-icon :icon="['fas', 'computer-mouse']" />
+                        </Button>
                     </div>
                 </div>
                 <div class="flex flex-grow-1 m-1">
                     <Skeleton v-if="!loading" class="mr-2 h-full" />
                     <VueFlow v-else v-model="vueFlow" class="basicflow" :node-types="nodeTypes" :default-zoom="1.5"
-                        :min-zoom="0.1" :max-zoom="2" :nodes-draggable="false" :elevate-edges-on-select="true">
+                        :min-zoom="0.1" :max-zoom="2" :nodes-draggable="toggleDrag" :elevate-edges-on-select="true">
                         <Background gap="50" class="surface-ground" />
                     </VueFlow>
                 </div>
             </div>
         </div>
-        <div class="flex flex-column w-2 surface-card surface-border border-right-2 shadow-2" style="">
+        <div class="flex flex-column w-2 surface-card surface-border border-right-2 shadow-2" style="height: 100%">
             <div class=" text-2xl font-bold mx-4 mt-4">
                 Toggle
             </div>

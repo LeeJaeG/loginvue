@@ -340,7 +340,7 @@ const originLBInputs = ref()
 const originClusterInputs = ref()
 const originAlarmInputs = ref()
 onMounted(() => {
-  contentBarName.value = 'Cloud Autoscaling Service'
+  contentBarName.value = 'Service : Autoscaling'
   // 깊은 복사를 위해 JSON.parse(JSON.stringify()) 사용
   originLBInputs.value = JSON.parse(JSON.stringify(loadbalancerInputs.value))
   originClusterInputs.value = JSON.parse(JSON.stringify(clusterInputs.value))

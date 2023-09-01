@@ -718,9 +718,10 @@ const createCluster = (async (retry, ...theArgs) => {
     } else if (theArgs[0] == 'node') {
       return
     } else if (theArgs[0] == 'cluster') {
+      const profile_id = clusterInputs.value['Cluster']['Profile'].value.split(' : ')[1]
       response = await axios.post('/api/openstack-autoscaling/create_cluster', {
         'name': clusterInputs.value['Cluster']['Cluster Name'].value,
-        'profile_id': clusterInputs.value['Cluster']['Profile'].value,
+        'profile_id': profile_id,
         'min_size': clusterInputs.value['Cluster']['Min Size'].value,
         'max_size': clusterInputs.value['Cluster']['Max Size'].value,
         'desired_capacity': clusterInputs.value['Cluster']['Desired Capacity'].value,
@@ -749,6 +750,7 @@ const createCluster = (async (retry, ...theArgs) => {
     loadingClusterCreating.value = false
   } catch (error) {
     console.log(error)
+    loadingClusterCreating.value = false
     if (retry <= 2) {
       user.tokenErrorHandler(error, getClusterViewListInProject, retry, theArgs);
     }
@@ -766,7 +768,23 @@ const clusterCreateTypeList = ref([
 const clusterCreateMenu = ref("Profile")
 const clusterCreateClickEvent = ((createCluster) => {
   clusterCreateMenu.value = createCluster.label
+  console.log(createCluster.label)
+  if (createCluster.label == 'Cluster') {
+    getProfileList()
+  }
 })
+
+const getProfileList = (async () => {
+  try {
+    const response = await axios.get('/api/openstack-autoscaling/profiles')
+    for (var i = 0; i < response.data.profiles.length; i++) {
+      clusterInputs.value['Cluster']['Profile'].Dropdown.push(response.data.profiles[i].name + ' : ' + response.data.profiles[i].id)
+    }
+  } catch (err) {
+    console.log(err)
+  }
+})
+
 
 const clusterInputs = ref({
   "Profile": {

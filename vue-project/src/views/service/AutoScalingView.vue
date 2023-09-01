@@ -712,7 +712,7 @@ const createCluster = (async (retry, ...theArgs) => {
       response = await axios.post('/api/openstack-autoscaling/create_profile', {
         'name': clusterInputs.value['Profile']['Name'].value,
         'spec': spec,
-        'metadata': clusterInputs.value['Profile']['Metadata'].value,
+        // 'metadata': clusterInputs.value['Profile']['Metadata'].value,
         // 'project_id': userdata.value.selectedProject.project_id,
       })
     } else if (theArgs[0] == 'node') {
@@ -746,7 +746,7 @@ const createCluster = (async (retry, ...theArgs) => {
     }
 
     console.log(response.data)
-    loadingLBCreating.value = false
+    loadingClusterCreating.value = false
   } catch (error) {
     console.log(error)
     if (retry <= 2) {
@@ -820,8 +820,9 @@ const clusterInputs = ref({
       'need': true,
     },
     "Profile": {
-      'type': 'Input text',
-      'value': '',
+      // 'type': 'Input text',
+      'type': 'Dropdown',
+      'Dropdown': [],
       'need': true,
     },
     "Min Size": {

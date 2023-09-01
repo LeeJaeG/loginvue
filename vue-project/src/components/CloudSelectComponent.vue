@@ -19,7 +19,7 @@
                             <div class="flex align-items-center font-bold mr-3" style="font-size: small;">
                                 <Avatar icon="pi pi-user" class="mr-1" shape="circle" />
                                 <div class="align-items-center">
-                                    Super manager
+                                    {{ userdata.username }}
                                 </div>
                             </div>
                             <Dialog v-model:visible="visible" modal header="Header" :style="{ width: '25vw' }">
@@ -65,15 +65,16 @@
 
                     <div class="w-full flex-grow-1 p-2">
                         <!-- tableStyle="min-width: 50rem" -->
-                        <DataTable v-ripple :value="mocks" class="shadow-1 p-ripple" v-model:selection="selectedCloud"
-                            scrollable scrollHeight="400px" selectionMode="single" @click="toggleShowCard">
-                            <Column field="no" header="No."></Column>
-                            <Column field="name" header="Name"></Column>
-                            <Column field="authority" header="Authority"></Column>
-                            <Column field="host" header="Host"></Column>
+                        <DataTable v-ripple :value="allProjectList" class="shadow-1 p-ripple"
+                            v-model:selection="selectedCloud" scrollable scrollHeight="400px" selectionMode="single"
+                            @click="toggleShowCard">
+                            <!-- <Column field="no" header="No."></Column> -->
+                            <Column field="project_name" header="Name"></Column>
+                            <Column field="project_description" header="Description"></Column>
+                            <!-- <Column field="host" header="Host"></Column> -->
                             <Column style="flex: 0 0 4rem">
-                                <template #body="{}">
-                                    <div class='pi pi-angle-right hovercolor' @click="goToDashboard" />
+                                <template #body="slotProps">
+                                    <div class='pi pi-angle-right hovercolor' @click="goToDashboard(slotProps)" />
                                 </template>
                             </Column>
                         </DataTable>
@@ -87,19 +88,18 @@
                     </div>
                     <div v-if="showCard" class="flex flex-grow-1 bg-white rounded-lg shadow-md">
                         <ul class="px-3 w-full">
-                            <li v-for="(value, key) in selectedCloud" class="flex flex-row align-items-center"
-                                style="height: 2rem;">
-                                <div class="flex font-bold w-6 text-lg">
-                                    {{ key }}
+                            <li v-for="(value, key) in selectedCloud" class="flex flex-column align-items-start"
+                                style="height: 5rem;">
+                                <div class="font-bold text-lg">
+                                    {{ key }} <br />
                                 </div>
-                                <div class="flex w-6">
+                                <div class="">
                                     {{ value }}
                                 </div>
                             </li>
                         </ul>
                     </div>
                 </div>
-
             </div>
         </template>
     </Card>
@@ -107,101 +107,38 @@
 
 <script setup>
 import {
-    ref
+    ref, onMounted
 } from "vue";
 
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia';
-// import { useToast } from "primevue/usetoast";
-// const toast = useToast();
 
+onMounted(() => {
+    // console.log(userdata.value.projects)
+    allProjectList.value = userdata.value.projects
+})
+
+const allProjectList = ref([]);
 const user = useUserStore();
-const { info } = storeToRefs(user);
+const { info, userdata } = storeToRefs(user);
 
 const visible = ref(false);
 const cloudName = ref('');
 
-// import {
-//     useCookies
-// } from "vue3-cookies";
-// import axios from 'axios'
-// const {
-//     cookies
-// } = useCookies();
 const selectedCloud = ref();
-const mocks = ref([
-    {
-        no: "01",
-        name: "Cloud A",
-        authority: "Admin",
-        host: "192.168.15.40"
-    },
-    {
-        no: "02",
-        name: "Cloud B",
-        authority: "-",
-        host: "192.168.15.41"
-    },
-    {
-        no: "03",
-        name: "Cloud C",
-        authority: "-",
-        host: "192.168.15.42"
-    },
-    {
-        no: "04",
-        name: "Cloud D",
-        authority: "-",
-        host: "192.168.15.43"
-    },
-    {
-        no: "05",
-        name: "Cloud E",
-        authority: "Admin",
-        host: "192.168.15.44"
-    },
-    {
-        no: "06",
-        name: "Cloud F",
-        authority: "-",
-        host: "192.168.15.45"
-    },
-    {
-        no: "07",
-        name: "Cloud G",
-        authority: "-",
-        host: "192.168.15.46"
-    },
-    {
-        no: "08",
-        name: "Cloud H",
-        authority: "-",
-        host: "192.168.15.47"
-    },
-]);
 
 const showCard = ref(false);
 const toggleShowCard = () => {
-    console.log("test print")
     if (!showCard.value) {
         showCard.value = true;
     }
-    // console.log(cookies.get('accessToken'))
-
-    // const res = axios.post('/openstack/open/openstack', {
-    //     "cookie": cookies.get('accessToken'),
-    // })
-    //     .then((response) => {
-    //         console.log(response);
-    //     })
-    //     .catch((error) => {
-    //         console.log(error);
-    //     });
-    // res();
 };
 
-const goToDashboard = () => {
+const goToDashboard = (list) => {
     info.value.checkCloud = 'selected';
+    console.log(list)
+    userdata.value.selectedProject = list.data;
+    // console.log(selectedCloud.value);
 }
 
 const selectedIP = ref();

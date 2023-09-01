@@ -1,0 +1,308 @@
+[
+  {
+    "id": "64903a0a8f51114f761177f9",
+    "sourceHandle": "649017c97ec82bd4acc21bc9",
+    "targetHandle": "64902c1a7ec82bd4acc21bd1",
+    "data": {
+      "type": "edge",
+      "watched": 0,
+      "interface": "Interface Group 1"
+    },
+    "style": {
+      "stroke": "grey",
+      "strokeWidth": 1,
+      "stroke-dasharray": "5,5"
+    },
+    "source": "64900dabc318764854069a48",
+    "target": "64900d6bc318764854069a44"
+  },
+  {
+    "id": "64903a138f51114f761177fa",
+    "sourceHandle": "649017d17ec82bd4acc21bca",
+    "targetHandle": "64902c287ec82bd4acc21bd3",
+    "data": {
+      "type": "edge",
+      "watched": 0,
+      "interface": "Interface Group 1"
+    },
+    "style": {
+      "stroke": "grey",
+      "strokeWidth": 1,
+      "stroke-dasharray": "5,5"
+    },
+    "source": "64900dabc318764854069a48",
+    "target": "64900d6ec318764854069a45"
+  },
+  {
+    "id": "64903a1f8f51114f761177fb",
+    "sourceHandle": "649017da7ec82bd4acc21bcb",
+    "targetHandle": "64902c357ec82bd4acc21bd5",
+    "data": {
+      "type": "edge",
+      "watched": 0,
+      "interface": "Interface Group 1"
+    },
+    "style": {
+      "stroke": "grey",
+      "strokeWidth": 1,
+      "stroke-dasharray": "5,5"
+    },
+    "source": "64900dabc318764854069a48",
+    "target": "64900d71c318764854069a46"
+  },
+  {
+    "id": "64903a2a8f51114f761177fc",
+    "sourceHandle": "649018677ec82bd4acc21bcc",
+    "targetHandle": "64902c407ec82bd4acc21bd7",
+    "data": {
+      "type": "edge",
+      "watched": 0,
+      "interface": "Interface Group 1"
+    },
+    "style": {
+      "stroke": "grey",
+      "strokeWidth": 1,
+      "stroke-dasharray": "5,5"
+    },
+    "source": "64900dabc318764854069a48",
+    "target": "64900d73c318764854069a47"
+  },
+  {
+    "id": "64903a308f51114f761177fd",
+    "sourceHandle": "649018747ec82bd4acc21bcd",
+    "targetHandle": "64902c227ec82bd4acc21bd2",
+    "data": {
+      "type": "edge",
+      "watched": 0,
+      "interface": "Interface Group 1"
+    },
+    "style": {
+      "stroke": "grey",
+      "strokeWidth": 1,
+      "stroke-dasharray": "5,5"
+    },
+    "source": "64900db1c318764854069a49",
+    "target": "64900d6bc318764854069a44"
+  },
+  {
+    "id": "64903a388f51114f761177fe",
+    "sourceHandle": "6490187d7ec82bd4acc21bce",
+    "targetHandle": "64902c2f7ec82bd4acc21bd4",
+    "data": {
+      "type": "edge",
+      "watched": 0,
+      "interface": "Interface Group 1"
+    },
+    "style": {
+      "stroke": "grey",
+      "strokeWidth": 1,
+      "stroke-dasharray": "5,5"
+    },
+    "source": "64900db1c318764854069a49",
+    "target": "64900d6ec318764854069a45"
+  },
+  {
+    "id": "64903a3f8f51114f761177ff",
+    "sourceHandle": "649018827ec82bd4acc21bcf",
+    "targetHandle": "64902c3a7ec82bd4acc21bd6",
+    "data": {
+      "type": "edge",
+      "watched": 0,
+      "interface": "Interface Group 1"
+    },
+    "style": {
+      "stroke": "grey",
+      "strokeWidth": 1,
+      "stroke-dasharray": "5,5"
+    },
+    "source": "64900db1c318764854069a49",
+    "target": "64900d71c318764854069a46"
+  },
+  {
+    "id": "64903a448f51114f76117800",
+    "sourceHandle": "6490188b7ec82bd4acc21bd0",
+    "targetHandle": "64902c467ec82bd4acc21bd8",
+    "data": {
+      "type": "edge",
+      "watched": 0,
+      "interface": "Interface Group 1"
+    },
+    "style": {
+      "stroke": "grey",
+      "strokeWidth": 1,
+      "stroke-dasharray": "5,5"
+    },
+    "source": "64900db1c318764854069a49",
+    "target": "64900d73c318764854069a47"
+  },
+  {
+    "id": "64903a4d8f51114f76117801",
+    "sourceHandle": "64902d5c7ec82bd4acc21bda",
+    "targetHandle": "64902cdf7ec82bd4acc21bd9",
+    "data": {
+      "type": "edge",
+      "watched": 0,
+      "interface": "Interface Group 2"
+    },
+    "style": {
+      "stroke": "grey",
+      "strokeWidth": 1,
+      "stroke-dasharray": "5,5"
+    },
+    "target": "64900d73c318764854069a47",
+    "source": "64900d3ac318764854069a43"
+  },
+  {
+    "id": "64903a518f51114f76117802",
+    "sourceHandle": "64902d6d7ec82bd4acc21bdb",
+    "targetHandle": "649032b97ec82bd4acc21be6",
+    "data": {
+      "type": "edge",
+      "watched": 0,
+      "interface": "Interface Group 2"
+    },
+    "style": {
+      "stroke": "grey",
+      "strokeWidth": 1,
+      "stroke-dasharray": "5,5"
+    },
+    "source": "64900d3ac318764854069a43",
+    "target": "64900d06c318764854069a42"
+  },
+  {
+    "id": "64903a578f51114f76117803",
+    "sourceHandle": "64902d727ec82bd4acc21bdc",
+    "targetHandle": "649032cc7ec82bd4acc21be9",
+    "data": {
+      "type": "edge",
+      "watched": 0,
+      "interface": "Interface Group 2"
+    },
+    "style": {
+      "stroke": "grey",
+      "strokeWidth": 1,
+      "stroke-dasharray": "5,5"
+    },
+    "source": "64900d3ac318764854069a43",
+    "target": "64900d00c318764854069a41"
+  },
+  {
+    "id": "64903a5c8f51114f76117804",
+    "sourceHandle": "64902d787ec82bd4acc21bdd",
+    "targetHandle": "649032dc7ec82bd4acc21bec",
+    "data": {
+      "type": "edge",
+      "watched": 0,
+      "interface": "Interface Group 2"
+    },
+    "style": {
+      "stroke": "grey",
+      "strokeWidth": 1,
+      "stroke-dasharray": "5,5"
+    },
+    "source": "64900d3ac318764854069a43",
+    "target": "64900cfdc318764854069a40"
+  },
+  {
+    "id": "64903a698f51114f76117805",
+    "sourceHandle": "649032867ec82bd4acc21bde",
+    "targetHandle": "649032ae7ec82bd4acc21be4",
+    "data": {
+      "type": "edge",
+      "watched": 0,
+      "interface": "Interface Group 3"
+    },
+    "style": {
+      "stroke": "grey",
+      "strokeWidth": 1,
+      "stroke-dasharray": "5,5"
+    },
+    "source": "64900d6bc318764854069a44",
+    "target": "64900d06c318764854069a42"
+  },
+  {
+    "id": "64903a6e8f51114f76117806",
+    "sourceHandle": "6490328d7ec82bd4acc21bdf",
+    "targetHandle": "649032c07ec82bd4acc21be7",
+    "data": {
+      "type": "edge",
+      "watched": 0,
+      "interface": "Interface Group 3"
+    },
+    "style": {
+      "stroke": "grey",
+      "strokeWidth": 1,
+      "stroke-dasharray": "5,5"
+    },
+    "source": "64900d6bc318764854069a44",
+    "target": "64900d00c318764854069a41"
+  },
+  {
+    "id": "64903a748f51114f76117807",
+    "sourceHandle": "649032927ec82bd4acc21be0",
+    "targetHandle": "649032d27ec82bd4acc21bea",
+    "data": {
+      "type": "edge",
+      "watched": 0,
+      "interface": "Interface Group 3"
+    },
+    "style": {
+      "stroke": "grey",
+      "strokeWidth": 1,
+      "stroke-dasharray": "5,5"
+    },
+    "source": "64900d6bc318764854069a44",
+    "target": "64900cfdc318764854069a40"
+  },
+  {
+    "id": "64903a7b8f51114f76117808",
+    "sourceHandle": "6490329b7ec82bd4acc21be1",
+    "targetHandle": "649032b37ec82bd4acc21be5",
+    "data": {
+      "type": "edge",
+      "watched": 0,
+      "interface": "Interface Group 3"
+    },
+    "style": {
+      "stroke": "grey",
+      "strokeWidth": 1,
+      "stroke-dasharray": "5,5"
+    },
+    "source": "64900d6ec318764854069a45",
+    "target": "64900d06c318764854069a42"
+  },
+  {
+    "id": "64903a808f51114f76117809",
+    "sourceHandle": "6490329f7ec82bd4acc21be2",
+    "targetHandle": "649032c67ec82bd4acc21be8",
+    "data": {
+      "type": "edge",
+      "watched": 0,
+      "interface": "Interface Group 3"
+    },
+    "style": {
+      "stroke": "grey",
+      "strokeWidth": 1,
+      "stroke-dasharray": "5,5"
+    },
+    "source": "64900d6ec318764854069a45",
+    "target": "64900d00c318764854069a41"
+  },
+  {
+    "id": "64903a848f51114f7611780a",
+    "sourceHandle": "649032a57ec82bd4acc21be3",
+    "targetHandle": "649032d77ec82bd4acc21beb",
+    "data": {
+      "type": "edge",
+      "watched": 0,
+      "interface": "Interface Group 3"
+    },
+    "style": {
+      "stroke": "grey",
+      "strokeWidth": 1,
+      "stroke-dasharray": "5,5"
+    },
+    "source": "64900d6ec318764854069a45",
+    "target": "64900cfdc318764854069a40"
+  }
+]

@@ -1,232 +1,259 @@
 <script setup>
-import {
-    ref
-} from "vue";
-
-const braket = ref({
-    openstack: 'down',
-    cluster: 'down',
-    topology: 'down'
-})
-const changeBracket = (name) => {
-    if (braket.value[name] == 'down') {
-        braket.value[name] = 'up';
-    } else {
-        braket.value[name] = 'down';
-    }
-}
+// import {
+//     ref
+// } from "vue";
+// const braket = ref({
+//     openstack: 'down',
+//     cluster: 'down',
+//     topology: 'down'
+// })
+// const changeBracket = (name) => {
+//     if (braket.value[name] == 'down') {
+//         braket.value[name] = 'up';
+//     } else {
+//         braket.value[name] = 'down';
+//     }
+// }
 </script>
 
 <template>
-    <div id="app-sidebar-2"
-        class="text-white backcolor py-2 lg:block flex-shrink-0 absolute lg:static left-0 top-0 z-1 shadow-3 w-16rem  select-none"
-        style="overflow: auto">
-
-        <div class="flex justify-content-start align-items-center mb-2 pl-3 font-bold hover:text-teal-500"
-            style="height: 2rem;" @click="$emit('touch')">
+    <div id="app-sidebar-2" class="text-white backcolor py-2 block flex-shrink-0 static z-1 shadow-3 w-16rem scroll"
+        style="overflow: scroll; height: 100%;">
+        <div class="flex justify-content-start align-items-center my-2 hover:text-teal-500"
+            style="height: 3.5rem; margin-left: 40px;" @click="$emit('touch')">
             <i class="pi pi-angle-left" style="font-size: 1.2rem"></i>
         </div>
 
-        <div class="px-5 font-bold mb-2 mt-6 text-sm">
+        <!-- ======================================================================================= -->
+        <!-- Group Main -->
+        <div class="px-5 font-bold mb-2 mt-4 sidebar-font ">
             Main
         </div>
-        <router-link to="/" class="px-4 w-full flex justify-content-between align-items-center  mt-3 font-bold hovercolor"
-            style="height: 3.5rem; text-decoration: none; color: inherit;">
-            <div class="w-4 pl-3">
-                <i class="pi pi-home" style="font-size: 1.2rem"></i>
-            </div>
-            <div class="w-5">
-                Home
-            </div>
-            <div class="w-3 flex justify-content-end">
 
-            </div>
-        </router-link>
-
-        <router-link to="/setting"
-            class="px-4 w-full flex justify-content-between align-items-center mb-6 font-bold hovercolor"
-            style="height: 3.5rem; text-decoration: none; color: inherit;">
+        <!-- Main Insight -->
+        <router-link to="/cloud-overview" class="mt-3 w-full flex justify-content-between align-items-center hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
             <div class="w-4 pl-3">
-                <font-awesome-icon icon="fa-solid fa-gear" style="font-size: 1.2rem" />
+                <font-awesome-icon :icon="['fas', 'cloud']" style="font-size: 1.2rem" />
             </div>
-            <div class="w-5">
-                Settings
+            <div class="w-5 sidebar-font ">
+                Overview
             </div>
             <div class="w-3 flex justify-content-end">
             </div>
         </router-link>
 
-        <div class="px-5 font-bold mb-2 mt-6 text-sm">
-            Cloud
-        </div>
-        <div class="px-4 w-full flex justify-content-between align-items-center  mt-4 font-bold hovercolor"
-            style="height: 3.5rem;" @click="changeBracket('openstack')"
-            v-styleclass="{ selector: '@next', enterClass: 'hidden', enterActiveClass: 'slidedown', leaveToClass: 'hidden', leaveActiveClass: 'slideup' }">
+        <!-- Main Search -->
+        <router-link to="/" class="w-full flex justify-content-between align-items-center hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
             <div class="w-4 pl-3">
-                <font-awesome-icon icon="fa-solid fa-layer-group" style="font-size: 1.2rem" />
+                <font-awesome-icon :icon="['fas', 'magnifying-glass']" style="font-size: 1.2rem" />
             </div>
-            <div class="w-5 ">
-                OpenStack
-            </div>
-            <div class="w-3 flex justify-content-end">
-                <i class="pi"
-                    :class="{ 'pi-angle-down': braket['openstack'] === 'down', 'pi-angle-up': braket['openstack'] === 'up' }"
-                    style="font-size: 1.2rem"></i>
-            </div>
-        </div>
-        <ul
-            class="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
-            <li class="">
-                <div v-ripple
-                    class="flex align-items-center cursor-pointer text-white hovercolor transition-duration-150 transition-colors p-ripple"
-                    style="height: 3.5rem;">
-                    <div class="w-4 pl-3">
-                    </div>
-                    <div class="w-5 ">
-                        Openstack 01
-                    </div>
-                    <div class="w-3 flex justify-content-end">
-                    </div>
-                </div>
-            </li>
-            <li>
-                <div v-ripple
-                    class="flex align-items-center cursor-pointer text-white hovercolor transition-duration-150 transition-colors p-ripple"
-                    style="height: 3.5rem;">
-                    <div class="w-4 pl-3">
-                    </div>
-                    <div class="w-5 ">
-                        Openstack 02
-                    </div>
-                    <div class="w-3 flex justify-content-end">
-                    </div>
-                </div>
-            </li>
-        </ul>
-
-        <div class="px-4 w-full flex justify-content-between align-items-center  font-bold hovercolor"
-            style="height: 3.5rem;" @click="changeBracket('cluster')"
-            v-styleclass="{ selector: '@next', enterClass: 'hidden', enterActiveClass: 'slidedown', leaveToClass: 'hidden', leaveActiveClass: 'slideup' }">
-            <div class="w-4 pl-3">
-                <i class="pi pi-th-large" style="font-size: 1.2rem"></i>
-            </div>
-            <div class="w-5 ">
-                Cluster
-            </div>
-            <div class="w-3 flex justify-content-end">
-                <i class="pi"
-                    :class="{ 'pi-angle-down': braket['cluster'] === 'down', 'pi-angle-up': braket['cluster'] === 'up' }"
-                    style="font-size: 1.2rem"></i>
-            </div>
-        </div>
-        <ul
-            class="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
-            <li class="">
-                <div v-ripple
-                    class="flex align-items-center cursor-pointer text-white hovercolor transition-duration-150 transition-colors p-ripple"
-                    style="height: 3.5rem;">
-                    <div class="w-4 pl-3">
-                    </div>
-                    <div class="w-5 ">
-                        Cluster 01
-                    </div>
-                    <div class="w-3 flex justify-content-end">
-                    </div>
-                </div>
-            </li>
-            <li>
-                <div v-ripple
-                    class="flex align-items-center cursor-pointer text-white hovercolor transition-duration-150 transition-colors p-ripple"
-                    style="height: 3.5rem;">
-                    <div class="w-4 pl-3">
-                    </div>
-                    <div class="w-5 ">
-                        Cluster 02
-                    </div>
-                    <div class="w-3 flex justify-content-end">
-                    </div>
-                </div>
-            </li>
-        </ul>
-
-        <div class="px-4 w-full flex justify-content-between align-items-center font-bold hovercolor"
-            @click="changeBracket('topology')" style="height: 3.5rem;"
-            v-styleclass="{ selector: '@next', enterClass: 'hidden', enterActiveClass: 'slidedown', leaveToClass: 'hidden', leaveActiveClass: 'slideup' }">
-            <div class="w-4 pl-3">
-                <font-awesome-icon icon="fa-solid fa-circle-nodes" style="font-size: 1.2rem" />
-            </div>
-            <div class="w-5 ">
-                Topology
-            </div>
-            <div class="w-3 flex justify-content-end">
-                <i class="pi"
-                    :class="{ 'pi-angle-down': braket['topology'] === 'down', 'pi-angle-up': braket['topology'] === 'up' }"
-                    style="font-size: 1.2rem"></i>
-            </div>
-        </div>
-        <ul
-            class="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
-            <li class="">
-                <div v-ripple
-                    class="flex align-items-center cursor-pointer text-white hovercolor transition-duration-150 transition-colors p-ripple"
-                    style="height: 3.5rem;">
-                    <div class="w-4 pl-3">
-                    </div>
-                    <div class="w-5 ">
-                        Topology 01
-                    </div>
-                    <div class="w-3 flex justify-content-end">
-                    </div>
-                </div>
-            </li>
-            <li>
-                <div v-ripple
-                    class="flex align-items-center cursor-pointer text-white hovercolor transition-duration-150 transition-colors p-ripple"
-                    style="height: 3.5rem;">
-                    <div class="w-4 pl-3">
-                    </div>
-                    <div class="w-5 ">
-                        Topology 02
-                    </div>
-                    <div class="w-3 flex justify-content-end">
-                    </div>
-                </div>
-            </li>
-        </ul>
-
-        <div class="px-5 font-bold mb-2 mt-6 text-sm">
-            Metrics
-        </div>
-        <router-link to="/int"
-            class="px-4 w-full flex justify-content-between align-items-center  mt-4 font-bold hovercolor"
-            style="height: 3.5rem; text-decoration: none; color: inherit;">
-            <div class="w-4 pl-3">
-                <font-awesome-icon icon="fa-solid fa-globe" style="font-size: 1.2rem" />
-            </div>
-            <div class="w-5 ">
-                INT
+            <div class="w-5 sidebar-font">
+                Search
             </div>
             <div class="w-3 flex justify-content-end">
             </div>
         </router-link>
-        <router-link to="/metric" class="px-4 w-full flex justify-content-between align-items-center  font-bold hovercolor"
-            style="height: 3.5rem; text-decoration: none; color: inherit;">
+
+        <!-- Main metric & alarm -->
+        <router-link to="/metricsummary" class="w-full flex justify-content-between align-items-center mb-6 hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
             <div class="w-4 pl-3">
-                <i class="pi pi-chart-bar" style="font-size: 1.2rem"></i>
+                <font-awesome-icon :icon="['fas', 'chart-line']" style="font-size: 1.2rem" />
             </div>
-            <div class="w-5 ">
+            <div class="w-5 sidebar-font">
                 Metric
             </div>
             <div class="w-3 flex justify-content-end">
             </div>
         </router-link>
-        <router-link to="/alarm"
-            class="px-4 w-full flex justify-content-between align-items-center mb-6 font-bold hovercolor"
-            style="height: 3.5rem; text-decoration: none; color: inherit;">
+
+        <!-- ======================================================================================= -->
+        <!-- Group Physical Layer -->
+        <div class="px-5 font-bold mb-2 mt-4 sidebar-font">
+            Physical Layer
+        </div>
+
+        <!-- Physical Topology -->
+        <router-link to="/physical-topology" class="mt-3 w-full flex justify-content-between align-items-center hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
+            <div class="w-4 pl-3">
+                <font-awesome-icon :icon="['fas', 'circle-nodes']" style="font-size: 1.2rem" />
+            </div>
+            <div class="w-5 sidebar-font">
+                Topology
+            </div>
+            <div class="w-3 flex justify-content-end">
+            </div>
+        </router-link>
+
+        <!-- Physical Detail -->
+        <router-link to="/" class=" w-full flex justify-content-between align-items-center hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
+            <div class="w-4 pl-3">
+                <font-awesome-icon icon="fa-solid fa-layer-group" style="font-size: 1.2rem" />
+            </div>
+            <div class="w-5 sidebar-font">
+                Detail
+            </div>
+            <div class="w-3 flex justify-content-end">
+            </div>
+        </router-link>
+
+        <!-- Physical Location -->
+        <router-link to="/" class="w-full flex justify-content-between align-items-center hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
+            <div class="w-4 pl-3">
+                <font-awesome-icon :icon="['fas', 'location-crosshairs']" style="font-size: 1.2rem" />
+            </div>
+            <div class="w-5 sidebar-font">
+                Location
+            </div>
+            <div class="w-3 flex justify-content-end">
+            </div>
+        </router-link>
+
+        <!-- Physical Metric -->
+        <router-link to="/" class="w-full flex justify-content-between align-items-center mb-6 hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
+            <div class="w-4 pl-3">
+                <font-awesome-icon :icon="['fas', 'chart-line']" style="font-size: 1.2rem" />
+            </div>
+            <div class="w-5 sidebar-font">
+                Metric
+            </div>
+            <div class="w-3 flex justify-content-end">
+            </div>
+        </router-link>
+
+        <!-- ======================================================================================= -->
+        <!-- Cloud Topology -->
+        <div class="px-5 font-bold mb-2 mt-6 sidebar-font">
+            Cloud Layer
+        </div>
+
+        <!-- Cloud Topology -->
+        <router-link to="/cloud-topology" class="mt-3 w-full flex justify-content-between align-items-center hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
+            <div class="w-4 pl-3">
+                <font-awesome-icon icon="fa-solid fa-circle-nodes" style="font-size: 1.2rem" />
+            </div>
+            <div class="w-5 sidebar-font">
+                Topology
+            </div>
+            <div class="w-3 flex justify-content-end">
+            </div>
+        </router-link>
+
+        <!--  Cloud Detail -->
+        <router-link to="/cloud" class="w-full flex justify-content-between align-items-center hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
+            <div class="w-4 pl-3">
+                <font-awesome-icon icon="fa-solid fa-layer-group" style="font-size: 1.2rem" />
+            </div>
+            <div class="w-5 sidebar-font">
+                Detail
+            </div>
+            <div class="w-3 flex justify-content-end">
+                <!-- <i class="pi"
+                    :class="{ 'pi-angle-down': braket['openstack'] === 'down', 'pi-angle-up': braket['openstack'] === 'up' }"
+                    style="font-size: 1.2rem"></i> -->
+            </div>
+        </router-link>
+
+        <!-- Cloud Overview
+        <router-link to="/cloud-overview"
+            class="w-full flex justify-content-between align-items-center font-bold hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
+            <div class="w-4 pl-3">
+                <font-awesome-icon :icon="['fas', 'cloud']" style="font-size: 1.2rem" />
+            </div>
+            <div class="w-5">
+                Overview
+            </div>
+            <div class="w-3 flex justify-content-end">
+            </div>
+        </router-link> -->
+
+        <!-- Cloud Metric -->
+        <router-link to="/cloud-metric" class="w-full flex justify-content-between align-items-center mb-6 hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
+            <div class="w-4 pl-3">
+                <font-awesome-icon :icon="['fas', 'chart-line']" style="font-size: 1.2rem" />
+            </div>
+            <div class="w-5 sidebar-font">
+                Metric
+            </div>
+            <div class="w-3 flex justify-content-end">
+            </div>
+        </router-link>
+
+        <!-- ======================================================================================= -->
+        <!-- Group Service Layer -->
+        <div class="px-5 font-bold mb-2 mt-6 sidebar-font">
+            Services
+        </div>
+
+        <!-- Service Autoscaling -->
+        <router-link to="/autoscaling" class="w-full flex justify-content-between align-items-center mt-4 hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
+            <div class="w-4 pl-3">
+                <font-awesome-icon :icon="['fas', 'network-wired']" style="font-size: 1.2rem" />
+            </div>
+            <div class="w-5 sidebar-font">
+                Autoscaling
+            </div>
+            <div class="w-3 flex justify-content-end">
+            </div>
+        </router-link>
+
+        <!-- Service Telemetry -->
+        <router-link to="/int" class="w-full flex justify-content-between align-items-center hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
+            <div class="w-4 pl-3">
+                <font-awesome-icon :icon="['fas', 'magnifying-glass-chart']" style="font-size: 1.2rem" />
+            </div>
+            <div class="w-5 sidebar-font">
+                Service Telemetry
+            </div>
+            <div class="w-3 flex justify-content-end">
+            </div>
+        </router-link>
+
+        <!-- Service Delay stats -->
+        <router-link to="/" class="w-full flex justify-content-between align-items-center hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
+            <div class="w-4 pl-3 ">
+                <font-awesome-icon :icon="['fas', 'stopwatch']" style="font-size: 1.2rem" />
+            </div>
+            <div class="w-5 sidebar-font">
+                Delay Stats
+            </div>
+            <div class="w-3 flex justify-content-end">
+            </div>
+        </router-link>
+
+        <!-- Service KaaS -->
+        <router-link to="/kaas" class="w-full flex justify-content-between align-items-center hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
+            <div class="w-4 pl-3 flex ">
+                <img src="@/assets/svg/kubernetes.svg" style="width: 24px;">
+            </div>
+            <div class="w-5 sidebar-font">
+                KaaS
+            </div>
+            <div class="w-3 flex justify-content-end">
+            </div>
+        </router-link>
+
+        <!-- Service Alarm -->
+        <router-link to="/alarm" class="w-full flex justify-content-between align-items-center mb-6 hovercolor"
+            style="height: 3.5rem; text-decoration: none; color: inherit; padding-left: 20px;">
             <div class="w-4 pl-3">
                 <font-awesome-icon icon="fa-regular fa-bell" style="font-size: 1.2rem" />
             </div>
-            <div class="w-5 ">
+            <div class="w-5 sidebar-font">
                 Alarm
             </div>
             <div class="w-3 flex justify-content-end">
@@ -244,4 +271,13 @@ const changeBracket = (name) => {
 
 .hovercolor:hover {
     background-color: #0bc279;
-}</style>
+}
+
+.scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.sidebar-font {
+    font-size: 18px
+}
+</style>

@@ -1,0 +1,325 @@
+[
+  {
+    "id": "64900d6bc318764854069a44",
+    "type": "baremetal",
+    "targetPosition": "top",
+    "class": "light",
+    "position": {
+      "x": 100,
+      "y": 450
+    },
+    "data": {
+      "type": "leaf",
+      "interfaceGroup": [
+        "64903a0a8f51114f761177f9",
+        "64903a308f51114f761177fd",
+        "64903a698f51114f76117805",
+        "64903a6e8f51114f76117806",
+        "64903a748f51114f76117807"
+      ],
+      "inboundInterfaceGroup": [
+        "64902c1a7ec82bd4acc21bd1",
+        "64902c227ec82bd4acc21bd2"
+      ],
+      "outboundInterfaceGroup": [
+        "649032867ec82bd4acc21bde",
+        "6490328d7ec82bd4acc21bdf",
+        "649032927ec82bd4acc21be0"
+      ]
+    },
+    "label": "leaf-1",
+    "parentNode": "6490055fc318764854069a2f",
+    "extent": "parent"
+  },
+  {
+    "id": "64900d6ec318764854069a45",
+    "type": "baremetal",
+    "targetPosition": "top",
+    "class": "light",
+    "position": {
+      "x": 350,
+      "y": 450
+    },
+    "data": {
+      "type": "leaf",
+      "interfaceGroup": [
+        "64903a138f51114f761177fa",
+        "64903a388f51114f761177fe",
+        "64903a7b8f51114f76117808",
+        "64903a808f51114f76117809",
+        "64903a848f51114f7611780a"
+      ],
+      "inboundInterfaceGroup": [
+        "64902c287ec82bd4acc21bd3",
+        "64902c2f7ec82bd4acc21bd4"
+      ],
+      "outboundInterfaceGroup": [
+        "6490329b7ec82bd4acc21be1",
+        "6490329f7ec82bd4acc21be2",
+        "649032a57ec82bd4acc21be3"
+      ]
+    },
+    "label": "leaf-2",
+    "parentNode": "6490055fc318764854069a2f",
+    "extent": "parent"
+  },
+  {
+    "id": "64900d71c318764854069a46",
+    "type": "baremetal",
+    "targetPosition": "top",
+    "class": "light",
+    "position": {
+      "x": 600,
+      "y": 450
+    },
+    "data": {
+      "type": "leaf",
+      "interfaceGroup": [
+        "64903a1f8f51114f761177fb",
+        "64903a3f8f51114f761177ff"
+      ],
+      "inboundInterfaceGroup": [
+        "64902c357ec82bd4acc21bd5",
+        "64902c3a7ec82bd4acc21bd6"
+      ],
+      "outboundInterfaceGroup": []
+    },
+    "label": "leaf-3",
+    "parentNode": "6490055fc318764854069a2f",
+    "extent": "parent"
+  },
+  {
+    "id": "64900d73c318764854069a47",
+    "type": "baremetal",
+    "targetPosition": "top",
+    "class": "light",
+    "position": {
+      "x": 850,
+      "y": 450
+    },
+    "data": {
+      "type": "leaf",
+      "interfaceGroup": [
+        "64903a2a8f51114f761177fc",
+        "64903a448f51114f76117800",
+        "64903a4d8f51114f76117801"
+      ],
+      "inboundInterfaceGroup": [
+        "64902c407ec82bd4acc21bd7",
+        "64902c467ec82bd4acc21bd8",
+        "64902cdf7ec82bd4acc21bd9"
+      ],
+      "outboundInterfaceGroup": []
+    },
+    "label": "leaf-4",
+    "parentNode": "6490055fc318764854069a2f",
+    "extent": "parent"
+  },
+  {
+    "id": "64900dabc318764854069a48",
+    "type": "baremetal",
+    "targetPosition": "top",
+    "class": "light",
+    "position": {
+      "x": 100,
+      "y": 150
+    },
+    "data": {
+      "type": "spine",
+      "interfaceGroup": [
+        "64903a0a8f51114f761177f9",
+        "64903a138f51114f761177fa",
+        "64903a1f8f51114f761177fb",
+        "64903a2a8f51114f761177fc"
+      ],
+      "inboundInterfaceGroup": [],
+      "outboundInterfaceGroup": [
+        "649017c97ec82bd4acc21bc9",
+        "649017d17ec82bd4acc21bca",
+        "649017da7ec82bd4acc21bcb",
+        "649018677ec82bd4acc21bcc"
+      ]
+    },
+    "label": "spine-1",
+    "parentNode": "6490055fc318764854069a2f",
+    "extent": "parent"
+  },
+  {
+    "id": "64900db1c318764854069a49",
+    "type": "baremetal",
+    "targetPosition": "top",
+    "class": "light",
+    "position": {
+      "x": 350,
+      "y": 150
+    },
+    "data": {
+      "type": "spine",
+      "interfaceGroup": [
+        "64903a308f51114f761177fd",
+        "64903a388f51114f761177fe",
+        "64903a3f8f51114f761177ff",
+        "64903a448f51114f76117800"
+      ],
+      "inboundInterfaceGroup": [],
+      "outboundInterfaceGroup": [
+        "649018747ec82bd4acc21bcd",
+        "6490187d7ec82bd4acc21bce",
+        "649018827ec82bd4acc21bcf",
+        "6490188b7ec82bd4acc21bd0"
+      ]
+    },
+    "label": "spine-2",
+    "parentNode": "6490055fc318764854069a2f",
+    "extent": "parent"
+  },
+  {
+    "id": "64900d3ac318764854069a43",
+    "type": "baremetal",
+    "targetPosition": "top",
+    "class": "light",
+    "position": {
+      "x": 100,
+      "y": 150
+    },
+    "data": {
+      "type": "edge_core",
+      "interfaceGroup": [
+        "64903a4d8f51114f76117801",
+        "64903a518f51114f76117802",
+        "64903a578f51114f76117803",
+        "64903a5c8f51114f76117804"
+      ],
+      "inboundInterfaceGroup": [],
+      "outboundInterfaceGroup": [
+        "64902d5c7ec82bd4acc21bda",
+        "64902d6d7ec82bd4acc21bdb",
+        "64902d727ec82bd4acc21bdc",
+        "64902d787ec82bd4acc21bdd"
+      ]
+    },
+    "label": "edge-core-1",
+    "parentNode": "6490056cc318764854069a30",
+    "extent": "parent"
+  },
+  {
+    "id": "64900cfdc318764854069a40",
+    "type": "baremetal",
+    "targetPosition": "top",
+    "class": "light",
+    "position": {
+      "x": 100,
+      "y": 150
+    },
+    "data": {
+      "type": "openstack",
+      "interfaceGroup": [
+        "64903a5c8f51114f76117804",
+        "64903a748f51114f76117807",
+        "64903a848f51114f7611780a"
+      ],
+      "inboundInterfaceGroup": [
+        "649032dc7ec82bd4acc21bec",
+        "649032d27ec82bd4acc21bea",
+        "649032d77ec82bd4acc21beb"
+      ],
+      "outboundInterfaceGroup": []
+    },
+    "label": "controller-3",
+    "parentNode": "6490057cc318764854069a31",
+    "extent": "parent"
+  },
+  {
+    "id": "64900d00c318764854069a41",
+    "type": "baremetal",
+    "targetPosition": "top",
+    "class": "light",
+    "position": {
+      "x": 350,
+      "y": 150
+    },
+    "data": {
+      "type": "openstack",
+      "interfaceGroup": [
+        "64903a578f51114f76117803",
+        "64903a6e8f51114f76117806",
+        "64903a808f51114f76117809"
+      ],
+      "inboundInterfaceGroup": [
+        "649032cc7ec82bd4acc21be9",
+        "649032c07ec82bd4acc21be7",
+        "649032c67ec82bd4acc21be8"
+      ],
+      "outboundInterfaceGroup": []
+    },
+    "label": "controller-2",
+    "parentNode": "6490057cc318764854069a31",
+    "extent": "parent"
+  },
+  {
+    "id": "64900d06c318764854069a42",
+    "type": "baremetal",
+    "targetPosition": "top",
+    "class": "light",
+    "position": {
+      "x": 600,
+      "y": 150
+    },
+    "data": {
+      "type": "openstack",
+      "interfaceGroup": [
+        "64903a518f51114f76117802",
+        "64903a698f51114f76117805",
+        "64903a7b8f51114f76117808"
+      ],
+      "inboundInterfaceGroup": [
+        "649032b97ec82bd4acc21be6",
+        "649032ae7ec82bd4acc21be4",
+        "649032b37ec82bd4acc21be5"
+      ],
+      "outboundInterfaceGroup": []
+    },
+    "label": "controller-1",
+    "parentNode": "6490057cc318764854069a31",
+    "extent": "parent"
+  },
+  {
+    "id": "6490055fc318764854069a2f",
+    "type": "group",
+    "position": {
+      "x": 0,
+      "y": 0
+    },
+    "data": {
+      "width": 1150,
+      "height": 750
+    },
+    "label": "Kaloom Backbone"
+  },
+  {
+    "id": "6490056cc318764854069a30",
+    "type": "group",
+    "position": {
+      "x": 1200,
+      "y": 0
+    },
+    "data": {
+      "width": 1150,
+      "height": 750
+    },
+    "label": "Edge core switch"
+  },
+  {
+    "id": "6490057cc318764854069a31",
+    "type": "group",
+    "position": {
+      "x": 0,
+      "y": 800
+    },
+    "data": {
+      "width": 1150,
+      "height": 750
+    },
+    "label": "Service Baremetal"
+  }
+]

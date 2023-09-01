@@ -1,0 +1,264 @@
+[
+  {"id":"group_0_0",
+    "position": {
+        "x": 0,
+        "y": 0
+    },
+    "data" : {
+        "width":"1200",
+        "height":"650" 
+    },
+    "label" : "Kaloom Backbone",
+    "type" : "group"    
+   },
+   {"id":"group_0_1",
+   "position": {
+       "x": 0,
+       "y": 750
+   },
+   "data" : {
+    "width":"1200",
+    "height":"350" 
+    },
+   "label" : "Service Baremetal",
+   "type" : "group"    
+  },
+  {"id":"group_1_0",
+    "position": {
+        "x": 1300,
+        "y": 0
+    },
+    "data" : {
+        "width":"400",
+        "height":"650" 
+    },
+    "label" : "Edge core switch",
+    "type" : "group"    
+   },
+   {
+    "id": 1,
+    "type": "baremetal",
+    "label": "compute-1",
+    "position": {
+      "x": 200,
+      "y": 100
+    },
+    "class": "light",
+    "style": {
+      "backgroundColor": "#0D567366",
+      "--vf-node-text": "white",
+      "--vf-node-color": "gray"
+    },
+    "targetPosition": "top",
+    "data": {
+      "type": "baremetal",
+      "interfaceGroup": ["e4-1", "e5-1", "e10-1"],
+      "inboundInterfaceGroup": ["e4-1", "e5-1", "e10-1"],
+      "outboundInterfaceGroup": []
+    },
+    "parentNode": "group_0_1",
+    "extent": "parent"
+  },
+  {
+    "id": 2,
+    "type": "baremetal",
+    "label": "compute-2",
+    "position": {
+      "x": 500,
+      "y": 100
+    },
+    "class": "light",
+    "style": {
+      "backgroundColor": "#0D567366",
+      "--vf-node-text": "white",
+      "--vf-node-color": "gray"
+    },
+    "targetPosition": "top",
+    "data": {
+      "type": "baremetal",
+      "interfaceGroup": ["e4-2", "e5-2", "e10-2"],
+      "inboundInterfaceGroup": ["e4-2", "e5-2", "e10-2"],
+      "outboundInterfaceGroup": []
+    },
+    "parentNode": "group_0_1",
+    "extent": "parent"
+  },
+  {
+    "id": 3,
+    "type": "baremetal",
+    "label": "compute-3",
+    "position": {
+      "x": 800,
+      "y": 100
+    },
+    "class": "light",
+    "style": {
+      "backgroundColor": "#0D567366",
+      "--vf-node-text": "white",
+      "--vf-node-color": "gray"
+    },
+    "targetPosition": "top",
+    "data": {
+      "type": "baremetal",
+      "interfaceGroup": ["e4-3", "e5-3", "e10-3"],
+      "inboundInterfaceGroup": ["e4-3", "e5-3", "e10-3"],
+      "outboundInterfaceGroup": []
+    },
+    "parentNode": "group_0_1",
+    "extent": "parent"
+  },
+  {
+    "id": 4,
+    "type": "baremetal",
+    "label": "leaf-1",
+    "position": {
+      "x": 50,
+      "y": 400
+    },
+    "style": {
+      "backgroundColor": "#BDF2F266",
+      "--vf-node-text": "gray",
+      "--vf-node-color": "gray"
+    },
+    "data": {
+      "type": "leaf",
+      "interfaceGroup": ["e4-1", "e4-2", "e4-3", "e9-4", "e8-4"],
+      "inboundInterfaceGroup": ["e9-4", "e8-4"],
+      "outboundInterfaceGroup": ["e4-1", "e4-2", "e4-3"]
+    },
+    "parentNode": "group_0_0",
+    "extent": "parent"
+  },
+  {
+    "id": 5,
+    "type": "baremetal",
+    "label": "leaf-2",
+    "position": {
+      "x": 350,
+      "y": 400
+    },
+    "style": {
+      "backgroundColor": "#BDF2F266",
+      "--vf-node-text": "gray",
+      "--vf-node-color": "gray"
+    },
+    "data": {
+      "type": "leaf",
+      "interfaceGroup": ["e5-1", "e5-2", "e5-3", "e9-5", "e8-5"],
+      "inboundInterfaceGroup": ["e9-5", "e8-5"],
+      "outboundInterfaceGroup": ["e5-1", "e5-2", "e5-3"]
+    },
+    "parentNode": "group_0_0",
+    "extent": "parent"
+  },
+  {
+    "id": 6,
+    "type": "baremetal",
+    "label": "leaf-3",
+    "position": {
+      "x": 650,
+      "y": 400
+    },
+    "style": {
+      "backgroundColor": "#BDF2F266",
+      "--vf-node-text": "gray",
+      "--vf-node-color": "gray"
+    },
+    "data": {
+      "type": "leaf",
+      "interfaceGroup": ["e9-6", "e8-6"],
+      "inboundInterfaceGroup": ["e9-6", "e8-6"],
+      "outboundInterfaceGroup": []
+    },
+    "parentNode": "group_0_0",
+    "extent": "parent"
+  },
+  {
+    "id": 7,
+    "type": "baremetal",
+    "label": "leaf-4",
+    "position": {
+      "x": 950,
+      "y": 400
+    },
+    "style": {
+      "backgroundColor": "#BDF2F266",
+      "--vf-node-text": "gray",
+      "--vf-node-color": "gray"
+    },
+    "data": {
+      "type": "leaf",
+      "interfaceGroup": ["e9-7", "e8-7"],
+      "inboundInterfaceGroup": ["e9-7", "e8-7"],
+      "outboundInterfaceGroup": []
+    },
+    "parentNode": "group_0_0",
+    "extent": "parent"
+  },
+  {
+    "id": 8,
+    "type": "baremetal",
+    "label": "spine-1",
+    "position": {
+      "x": 350,
+      "y": 100
+    },
+    "style": {
+      "backgroundColor": "#4995A666",
+      "--vf-node-text": "gray",
+      "--vf-node-color": "gray"
+    },
+    "data": {
+      "type": "spine",
+      "interfaceGroup": ["e8-4", "e8-5", "e8-6", "e8-7"],
+      "inboundInterfaceGroup": [],
+      "outboundInterfaceGroup": ["e8-4", "e8-5", "e8-6", "e8-7"]
+    },
+    "parentNode": "group_0_0",
+    "extent": "parent"
+  },
+  {
+    "id": 9,
+    "type": "baremetal",
+    "label": "spine-2",
+    "position": {
+      "x": 650,
+      "y": 100
+    },
+    "style": {
+      "backgroundColor": "#4995A666",
+      "--vf-node-text": "gray",
+      "--vf-node-color": "gray"
+    },
+    "data": {
+      "type": "spine",
+      "interfaceGroup": ["e9-4", "e9-5", "e9-6", "e9-7"],
+      "inboundInterfaceGroup": [],
+      "outboundInterfaceGroup": ["e9-4", "e9-5", "e9-6", "e9-7"]
+    },
+    "parentNode": "group_0_0",
+    "extent": "parent"
+  },
+  {
+    "id": 10,
+    "type": "baremetal",
+    "label": "edge-core-1",
+    "position": {
+      "x": 100,
+      "y": 100
+    },
+    "style": {
+      "backgroundColor": "#BDF2F266",
+      "--vf-node-text": "gray",
+      "--vf-node-color": "gray"
+    },
+    "data": {
+      "type": "edgecore",
+      "interfaceGroup": ["e10-1", "e10-2", "e10-3", "e10-7"],
+      "inboundInterfaceGroup": [],
+      "outboundInterfaceGroup": ["e10-1", "e10-2", "e10-3", "e10-7"]
+    },
+    "parentNode": "group_1_0",
+    "extent": "parent"
+  }
+]

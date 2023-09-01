@@ -46,10 +46,10 @@ const changeSidebar = () => {
 }
 
 onMounted(() => {
-  console.log("onMounted")
-  if (cookies.get('refreshToken')) {
+  if (cookies.get('refreshToken') != null) {
+    console.log(cookies.get('refreshToken'));
     info.value.checkLogin = 'login'
-    console.log("onMounted")
+    // console.log("onMounted", info.value.checkLogin)
   }
 })
 
@@ -70,32 +70,93 @@ onMounted(() => {
     </div>
   </div>
   <!-- After login -->
-  <div v-else class="border-round-xl surface-border overflow-x-scroll" style="min-width: 1800px;">
+  <!-- <div v-else class="border-round-xl surface-border" style="width: 1800px;"> -->
+  <div v-else class="border-round-xl surface-border"
+    style="width: 100%; height: 100vh; min-width: 1440px;  min-height: 900px;">
     <!-- Top bar -->
     <topbar></topbar>
     <!-- below Top bar -->
-    <div>
+    <div class="flex relative static surface-ground" style="height: calc(100% - 88px);">
       <!-- without sidebar 2 -->
-      <div v-if="offSidebar1 == false && offSidebar2 == true" class="flex relative lg:static surface-ground"
-        style="height:93vh">
-        <sidebar1 @touch="changeSidebar"></sidebar1>
-        <div class="flex flex-column relative flex-auto">
-          <contentbar></contentbar>
-          <content></content>
-        </div>
+      <div v-if="offSidebar1 == false && offSidebar2 == true">
+        <sidebar1 class="min-h-full" @touch="changeSidebar"></sidebar1>
       </div>
       <!-- without sidebar 1 -->
-      <div v-else-if="offSidebar1 == true && offSidebar2 == false" class="flex relative lg:static surface-ground"
-        style="height:93vh">
-        <sidebar2 @touch="changeSidebar"></sidebar2>
-        <div class="flex flex-column relative flex-auto">
-          <contentbar></contentbar>
-          <content></content>
-        </div>
+      <div v-else-if="offSidebar1 == true && offSidebar2 == false">
+        <sidebar2 class="min-h-full" @touch="changeSidebar"></sidebar2>
+      </div>
+      <div class="flex flex-column flex-auto relative">
+        <contentbar></contentbar>
+        <content></content>
       </div>
     </div>
   </div>
 </template>
 
-<style scoped></style>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400&display=swap');
+
+/*     url('@/assets/font/Poppins/Poppins-Medium.ttf') format('truetype'),
+    url('@/assets/font/Poppins/Poppins-SemiBold.ttf') format('truetype'), */
+
+/*     url('@/assets/font/Pretendard-1.3.6/public/static/Pretendard-Medium.otf') format('opentype'),
+url('@/assets/font/Pretendard-1.3.6/public/static/Pretendard-Bold.otf') format('opentype'); */
+
+@font-face {
+  font-family: 'ATC';
+  src:
+    url('@/assets/font/Poppins/Poppins-Light.ttf') format('truetype');
+  unicode-range: U+0041-005A, U+0061-007A;
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: 'ATC';
+  src:
+    url('@/assets/font/Poppins/Poppins-Medium.ttf') format('truetype');
+  unicode-range: U+0041-005A, U+0061-007A;
+  font-weight: medium;
+}
+
+@font-face {
+  font-family: 'ATC';
+  src:
+    url('@/assets/font/Poppins/Poppins-SemiBold.ttf') format('truetype');
+  unicode-range: U+0041-005A, U+0061-007A;
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: 'ATC';
+  src:
+    url('@/assets/font/Poppins/Poppins-Italic.ttf') format('truetype');
+  unicode-range: U+0041-005A, U+0061-007A;
+  font-weight: italic;
+}
+
+@font-face {
+  font-family: 'ATC';
+  src:
+    url('@/assets/font/Pretendard-1.3.6/public/static/Pretendard-Light.otf') format('opentype');
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: 'ATC';
+  src:
+    url('@/assets/font/Pretendard-1.3.6/public/static/Pretendard-Medium.otf') format('opentype');
+  font-weight: medium;
+}
+
+@font-face {
+  font-family: 'ATC';
+  src:
+    url('@/assets/font/Pretendard-1.3.6/public/static/Pretendard-Bold.otf') format('opentype');
+  font-weight: bold;
+}
+
+body {
+  font-family: 'ATC';
+}
+</style>
 

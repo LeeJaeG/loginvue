@@ -1,7 +1,7 @@
 import { fileURLToPath, URL } from 'node:url'
 
-import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { defineConfig } from 'vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -18,6 +18,10 @@ export default defineConfig({
         changeOrigin: true,
         // secure: false,
         // ws: true
+      },
+      '/test': {
+        target: 'http://192.168.15.50:7000',
+        changeOrigin: true,
       },
     }
   }

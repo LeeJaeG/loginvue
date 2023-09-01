@@ -21,13 +21,9 @@
                 <div class="flex card-container overflow-hidden">
                     <div
                         class="flex-grow-0 md:flex-grow-0 flex align-items-center justify-content-center flex-column  font-bold text-gray-900 m-3 px-2 py-1 border-round">
-
                         <!-- logo + Management platform  -->
                         <div class="flex  align-content-center  flex-column w-auto">
-                            <div class="flex align-items-center justify-content-center w-auto mr-2 py-3 text-4xl namu "
-                                style=" color : #0fd977; -webkit-text-stroke: 1px #014751;">
-                                Management platform
-                            </div>
+                            <img src="@/assets/BI/PNG/BI_세로형_플랫폼적용.png" alt="logo" class="h-15rem mb-3" />
                         </div>
 
                         <!-- login card -->
@@ -37,7 +33,6 @@
                                     style="height: 5rem;">
                                     로그인 하세요
                                 </div>
-
                                 <form @submit.prevent="handleSubmit(!v$.$invalid)"
                                     class="flex flex-column justify-content-between p-fluid">
                                     <div>
@@ -101,7 +96,8 @@
                                     <label for="accept" :class="{ 'p-error': v$.accept.$invalid && submitted }">자동로그인</label>
                                 </div> -->
                                     <div>
-                                        <Button type="submit" label="로그인" class="mt-4 logincolor" />
+                                        <Button type="submit" label="로그인"
+                                            class="mt-4 logincolor border-noround border-green-700 hover:bg-green-400 hover:border-green-400" />
                                     </div>
                                 </form>
 
@@ -127,7 +123,7 @@
 
 <script>
 import { reactive, ref, onMounted } from 'vue';
-import { email, required } from "@vuelidate/validators";
+import { required } from "@vuelidate/validators";
 import { useVuelidate } from "@vuelidate/core";
 import axios from 'axios'
 
@@ -146,7 +142,7 @@ export default {
         const rules = {
             email: {
                 required,
-                email
+                // email
             },
             password: {
                 required
@@ -170,53 +166,62 @@ export default {
         const showMessage = ref(false);
 
         const user = useUserStore();
-        const { info } = storeToRefs(user);
+        const { info, userdata } = storeToRefs(user);
         const { cookies } = useCookies();
 
 
         const v$ = useVuelidate(rules, state);
 
-        const handleSubmit = (isFormValid) => {
+        const handleSubmit = (async (isFormValid) => {
             submitted.value = true;
 
             if (!isFormValid) {
                 return;
             }
 
-            const res = axios.post('/api/user/token', {
-                "username": state.email,
-                "password": state.password,
-            })
-                .then(function (response) {
-                    console.log(response);
-                    // get token from server's 200 response result data
-                    // const access_token = atob(response.data.access_token); // string to binary 변환 
-                    // const parsedAccess_Token = JSON.parse(access_token) // 이를 parse
+            try {
+                const result = await getToken()
+                userdata.value = await getUserData(0, state.email)  // email = username ...
+                // console.log('after get login : ', userdata.value);
+                cookies.set('accessToken', result.data.access_token);
+                cookies.set('accessRefresh', result.data.refresh_token);
+                // change pinia user info value
+                info.value.checkLogin = 'login'
+                if (checked.value == 'true') {
+                    localStorage.setItem("autoLogin", state.email);
+                } else {
+                    localStorage.removeItem("autoLogin");
+                }
+            }
+            catch {
+                console.log("login is not completed")
+            }
+        })
 
-                    // const refresh_token = atob(response.data.refresh_token); // string to binary 변환 
-                    // const parsedRefresh_Token = JSON.parse(refresh_token) // 이를 parse
-
-                    // save token as cookies
-                    cookies.set('accessToken', response.data.access_token);
-                    cookies.set('accessRefresh', response.data.refresh_token);
-                    // change pinia user info value
-                    info.value.checkLogin = 'login'
-
-                    if (checked.value == 'true') {
-                        localStorage.setItem("autoLogin", state.email);
-                    } else {
-                        localStorage.removeItem("autoLogin");
-                    }
-
-                    // save user data(game server, user info) all
-                    // 구현 안 됨
-                    // redirect to dashboard
+        const getToken = (async () => {
+            try {
+                const result = await axios.post('/api/user/token', {
+                    "username": state.email,
+                    "password": state.password,
                 })
-                .catch(function (error) {
-                    console.log(error);
-                });
-            console.log(res)
-        }
+                return result
+            }
+            catch (error) {
+                console.log(error)
+            }
+        })
+
+        const getUserData = (async (retry, ...theArgs) => {
+            try {
+                const result = await axios.get('/api/user/find_user/{id}?username=' + theArgs[0],)
+                return result.data.data[0]
+            }
+            catch (error) {
+                if (retry <= 2) {
+                    user.tokenErrorHandler(error, getUserData, retry, theArgs);
+                }
+            }
+        })
 
         const toggleDialog = () => {
             showMessage.value = !showMessage.value;

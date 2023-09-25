@@ -110,8 +110,23 @@
                 :button-class="['hovercolor', 'flex', 'align-items-center', 'w-4', 'justify-content-center']"
                 class="flex justify-content-between w-full border-bottom-1" @button-click="clusterViewClickEvent" />
             </div>
-            <div class="p-3 border-1" style="height: 90%">
-              {{ clusterShowMenu }}
+            <div class="m-3 flex overflow-y-auto" style="height: 90%">
+              <div v-if="clusterShowMenu">
+                <Skeleton v-if="loadingClusterViewList == true" class="mr-2 h-full" />
+                <div v-for="list in clusterViewDataList" v-bind:key="list"
+                  class="border-0 border-round p-4 shadow-2 mb-3">
+                  <!-- {{ list }} -->
+                  <div v-for="value, key in list" :key="value" class="flex mt-1">
+                    <div
+                      class="flex w-1 mr-2 align-items-center bg-green-50 text-green-400 border-round inline-flex mb-1 py-1 px-2 text-sm font-bold">
+                      {{ key }}
+                    </div>
+                    <div>
+                      {{ value }}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -146,8 +161,8 @@
               </div>
             </div>
             <div class="flex justify-content-end align-items-center" style="height: 10%">
-              <Button class="w-1  bg-cyan-700 border-teal-700 mr-3" :loading="loadingLBCreating" label="Create"
-                @click="console.log('hi')" />
+              <Button class="w-1  bg-cyan-700 border-teal-700 mr-3" :loading="loadingClusterCreating" label="Create"
+                @click="createCluster(0, clusterCreateMenu.toLowerCase())" />
               <Button class="w-1  bg-cyan-700 border-teal-700" label="Cancel" @click="cancelInput" />
             </div>
           </div>
@@ -272,6 +287,7 @@ import { storeToRefs } from 'pinia';
 import axios from 'axios';
 import ButtonGroup from '@/components/ButtonSelectionComponent.vue';
 import { useConfirm } from "primevue/useconfirm";
+import yaml from 'js-yaml'
 
 const path = usePathStore();
 const { contentBarName } = storeToRefs(path);
@@ -659,8 +675,86 @@ const clusterViewTypeList = ref([
 ])
 
 const clusterShowMenu = ref("Clusters")
-const clusterViewClickEvent = ((showCluster) => {
+const clusterViewClickEvent = (async (showCluster) => {
   clusterShowMenu.value = showCluster.label
+  await getClusterViewListInProject(0, showCluster.label.toLowerCase())
+})
+
+const clusterViewDataList = ref()
+const loadingClusterViewList = ref()
+const getClusterViewListInProject = (async (retry, ...theArgs) => {
+  console.log("getAllClusterView")
+  try {
+    loadingClusterViewList.value = true
+    // const response = await axios.get('/api/openstack-autoscaling/clusters/' + userdata.value.selectedProject.project_id)
+    const response = await axios.get('/api/openstack-autoscaling/' + theArgs[0])
+    console.log(response.data)
+    clusterViewDataList.value = response.data[theArgs[0]];
+    loadingClusterViewList.value = false
+  } catch (error) {
+    console.log(error)
+    if (retry <= 2) {
+      user.tokenErrorHandler(error, getClusterViewListInProject, retry, theArgs);
+    }
+  }
+})
+
+const loadingClusterCreating = ref(false)
+const createCluster = (async (retry, ...theArgs) => {
+  console.log("createCluster")
+  try {
+    loadingClusterCreating.value = true
+    var response
+
+    if (theArgs[0] == 'profile') {
+      var spec = yaml.load(clusterInputs.value['Profile']['Spec'].value)
+      console.log(JSON.stringify(spec))
+      response = await axios.post('/api/openstack-autoscaling/create_profile', {
+        'name': clusterInputs.value['Profile']['Name'].value,
+        'spec': spec,
+        // 'metadata': clusterInputs.value['Profile']['Metadata'].value,
+        // 'project_id': userdata.value.selectedProject.project_id,
+      })
+    } else if (theArgs[0] == 'node') {
+      return
+    } else if (theArgs[0] == 'cluster') {
+      const profile_id = clusterInputs.value['Cluster']['Profile'].value.split(' : ')[1]
+      response = await axios.post('/api/openstack-autoscaling/create_cluster', {
+        'name': clusterInputs.value['Cluster']['Cluster Name'].value,
+        'profile_id': profile_id,
+        'min_size': clusterInputs.value['Cluster']['Min Size'].value,
+        'max_size': clusterInputs.value['Cluster']['Max Size'].value,
+        'desired_capacity': clusterInputs.value['Cluster']['Desired Capacity'].value,
+        'timeout': clusterInputs.value['Cluster']['Timeout'].value,
+        'metadata': clusterInputs.value['Cluster']['Metadata'].value,
+        // 'project_id': userdata.value.selectedProject.project_id,
+      })
+    } else if (theArgs[0] == 'policy') {
+      response = await axios.post('/api/openstack-autoscaling/create_policy', {
+        'name': clusterInputs.value['Policy']['Name'].value,
+        'spec': clusterInputs.value['Policy']['Spec'].value,
+        // 'project_id': userdata.value.selectedProject.project_id,
+      })
+    } else if (theArgs[0] == 'receiver') {
+      response = await axios.post('/api/openstack-autoscaling/create_receiver', {
+        'name': clusterInputs.value['Receiver']['Name'].value,
+        'type': clusterInputs.value['Receiver']['Type'].value,
+        'cluster_id': clusterInputs.value['Receiver']['Cluster'].value,
+        'action': clusterInputs.value['Receiver']['Action'].value,
+        'params': clusterInputs.value['Receiver']['Params'].value,
+        // 'project_id': userdata.value.selectedProject.project_id,
+      })
+    }
+
+    console.log(response.data)
+    loadingClusterCreating.value = false
+  } catch (error) {
+    console.log(error)
+    loadingClusterCreating.value = false
+    if (retry <= 2) {
+      user.tokenErrorHandler(error, getClusterViewListInProject, retry, theArgs);
+    }
+  }
 })
 
 const clusterCreateTypeList = ref([
@@ -674,7 +768,23 @@ const clusterCreateTypeList = ref([
 const clusterCreateMenu = ref("Profile")
 const clusterCreateClickEvent = ((createCluster) => {
   clusterCreateMenu.value = createCluster.label
+  console.log(createCluster.label)
+  if (createCluster.label == 'Cluster') {
+    getProfileList()
+  }
 })
+
+const getProfileList = (async () => {
+  try {
+    const response = await axios.get('/api/openstack-autoscaling/profiles')
+    for (var i = 0; i < response.data.profiles.length; i++) {
+      clusterInputs.value['Cluster']['Profile'].Dropdown.push(response.data.profiles[i].name + ' : ' + response.data.profiles[i].id)
+    }
+  } catch (err) {
+    console.log(err)
+  }
+})
+
 
 const clusterInputs = ref({
   "Profile": {
@@ -728,8 +838,9 @@ const clusterInputs = ref({
       'need': true,
     },
     "Profile": {
-      'type': 'Input text',
-      'value': '',
+      // 'type': 'Input text',
+      'type': 'Dropdown',
+      'Dropdown': [],
       'need': true,
     },
     "Min Size": {

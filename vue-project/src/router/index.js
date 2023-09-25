@@ -95,11 +95,6 @@ const router = createRouter({
       component: () => import('../views/physical/KaloomTopologyViewTMP.vue')
     },
     {
-      path: '/test',
-      name: 'Test',
-      component: () => import('../views/test/TestView.vue')
-    },
-    {
       path: '/kaas',
       name: 'KaaS',
       component: () => import('../views/service/KaaSView.vue')
@@ -108,7 +103,7 @@ const router = createRouter({
       path: '/metricsummary',
       name: 'Metricsummary',
       component: () => import('../views/cloud/MetricSummary.vue')
-    },
+    }
   ]
 })
 

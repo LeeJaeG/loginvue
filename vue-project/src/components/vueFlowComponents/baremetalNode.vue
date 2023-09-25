@@ -69,7 +69,7 @@
 
 <script setup>
 // import { computed } from 'vue'
-import { Handle } from '@vue-flow/core'
+import { Handle } from '@vue-flow/core';
 const props = defineProps({
     id: {
         type: String,
@@ -147,9 +147,9 @@ const getColor = (type) => {
 const handleList = ['leaf', 'spine', 'edge_core'];
 
 const metricStyleObject = ((A) => {
-    if (A < 0.4) {
+    if (A < 40) {
         return '#A7E521';
-    } else if (A >= 0.4 && A < 0.7) {
+    } else if (A >= 40 && A < 70) {
         return '#FFD422';
     } else {
         return '#FF3333';

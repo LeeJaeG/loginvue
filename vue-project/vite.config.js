@@ -20,7 +20,7 @@ export default defineConfig({
         // ws: true
       },
       '/test': {
-        target: 'http://192.168.15.50:7000',
+        target: 'http://192.168.15.50:7001',
         changeOrigin: true,
       },
     }

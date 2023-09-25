@@ -1,6 +1,6 @@
 [
     {
-    "64900cfdc318764854069a40" : 
+    "64900cfdc318764854069a40" :
          {
             "metricSummary":{
                 "cpu":{
@@ -260,6 +260,23 @@
         },
         "storage":{
             "total":0.1,
+            "status":"ok"
+        }
+    }
+    },
+    "64a8c136ac692e18c1ce56dee" : 
+    {
+    "metricSummary":{
+        "cpu":{
+            "total":0.11,
+            "status":"ok"
+        },
+        "memory":{
+            "total":0.12,
+            "status":"ok"
+        },
+        "storage":{
+            "total":0.13,
             "status":"ok"
         }
     }

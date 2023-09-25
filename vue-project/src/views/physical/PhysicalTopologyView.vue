@@ -2,6 +2,8 @@
 // import mockNodeData from "@/mock/physicalNode.json"
 // import mockEdgeData from "@/mock/physicalEdge.json"
 // import PopUpView from '@/components/DeviceaddpopComponent.vue'
+import Locationlist from '@/components/Location1Component.vue'
+import LocationCRUD from '@/components/Location2Component.vue'
 import baremetalNode from '@/components/vueFlowComponents/baremetalNode.vue'
 import physicalGroupNode from '@/components/vueFlowComponents/physicalGroupNode.vue'
 import liveDeviceMetric from "@/mock/liveDeviceMetric.json"
@@ -14,7 +16,7 @@ import { storeToRefs } from 'pinia'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import { useConfirm } from "primevue/useconfirm"
-import { markRaw, onMounted, ref, watch } from 'vue'
+import { markRaw, nextTick, onMounted, ref, watch } from 'vue'
 
 const vueFlow = ref()
 const loading = ref(false)
@@ -35,10 +37,11 @@ onPaneReady(({ fitView }) => {
     fitView()
 })
 
-onMounted(() => {
+onMounted(async () => {
     contentBarName.value = 'Physical Topology'
+    await get_VueFlow_metricdata()
     // console.log(userdata.value, info.value)
-    getVueFlowForKaloom(0)
+    await getVueFlowForKaloom(0)
 })
 
 const nodeTableForGroup = ref({})
@@ -51,6 +54,61 @@ const nodeCategoryChecked = ref('All')
 const originEdgeData = ref()
 const originNodeData = ref()
 const originInterfaceData = ref()
+const ids_metric = ref([])
+const normalized_metric = ref({})
+const get_VueFlow_metricdata = async () => {
+    const get_metric = await axios.get('/test/zabbix-metric/zabbixmetric_forvueflow');
+    // console.log(metric_data.data[0], "data")
+    const metric_data = get_metric.data;
+
+    for (let i = 0; i < metric_data.length; i++) {
+        // console.log(metric_data[i]["host_name"], "data host name");
+        const id = await axios.get('/api/physical_layer/devices/devicename/' + metric_data[i]["host_name"]);
+        ids_metric.value.push(id.data["_id"]);
+        if (metric_data[i]) {
+            const metricSummary = {
+                "cpu": {
+                    "total": metric_data[i]["cpu"],
+                    "status": "ok"
+                },
+                "memory": {
+                    "total": metric_data[i]["memory"],
+                    "status": "ok"
+                },
+                "storage": {
+                    "total": metric_data[i]["storage"],
+                    "status": "ok"
+                }
+            };
+            // console.log(normalized_metric_entry)
+            normalized_metric.value[ids_metric.value[i]] = {
+                "metricSummary": metricSummary
+            };
+        }
+        else {
+            const metricSummary = {
+                "cpu": {
+                    "total": "none",
+                    "status": "err"
+                },
+                "memory": {
+                    "total": "none",
+                    "status": "err"
+                },
+                "storage": {
+                    "total": "none",
+                    "status": "err"
+                }
+            };
+            normalized_metric.value[ids_metric.value[i]] = {
+                "metricSummary": metricSummary
+            };
+        }
+    }
+    // console.log(normalized_metric)
+    // console.log(ids_metric)
+    // console.log(metric_data)
+}
 const getVueFlowForKaloom = (async (retry, ...theArgs) => {
     console.log("getKaloomTopology")
     try {
@@ -123,16 +181,34 @@ const getVueFlowForKaloom = (async (retry, ...theArgs) => {
         vueFlow.value.forEach((e) => (e.data.watched = 0))
 
         // inject live Device Metric data to vueFlow data inside 'data' key 
-        for (const deviceMetric in liveDeviceMetric[0]) {
-            // Found deviceMetric in VueFlow 
-            const foundDeviceMetric = vueFlow.value.find((e) => e.id == deviceMetric);
+        // for (const deviceMetric in liveDeviceMetric[0]) {
+        //     // Found deviceMetric in VueFlow 
+        //     const foundDeviceMetric = vueFlow.value.find((e) => e.id == deviceMetric);
+        //     if (foundDeviceMetric) {
+        //         foundDeviceMetric.data = {
+        //             ...foundDeviceMetric.data,
+        //             ...liveDeviceMetric[0][deviceMetric]
+        //         }
+        //         // console.log(foundDeviceMetric, 'foundDeviceMetric')
+        //         // console.log(liveDeviceMetric[0][deviceMetric], 'liveDeviceMetric[0][deviceMetric]')
+        //     }
+        // }
+        for (const deviceMetricKey of Object.keys(normalized_metric.value)) {
+            // Found deviceMetric in VueFlow
+            // console.log(normalized_metric.value[deviceMetricKey], "wtf")
+            const foundDeviceMetric = vueFlow.value.find((e) => e.id == deviceMetricKey);
             if (foundDeviceMetric) {
+                console.log(foundDeviceMetric, "found")
                 foundDeviceMetric.data = {
                     ...foundDeviceMetric.data,
-                    ...liveDeviceMetric[0][deviceMetric]
+                    ...normalized_metric.value[deviceMetricKey]
                 }
+                console.log(foundDeviceMetric, "found after")
+                // console.log(foundDeviceMetric, 'foundDeviceMetric')
+                // console.log(liveDeviceMetric[0][deviceMetric], 'liveDeviceMetric[0][deviceMetric]')
             }
         }
+        // console.log(vueFlow)
         liveDeviceMetric
         loading.value = true;
     } catch (error) {
@@ -268,11 +344,19 @@ const zabbixdevice = ref([]);
 const DBdevice = ref([]);
 const expandedRowGroupsList = ref();
 
-//// Lookup Maps 생성 (id <-> 항목 명 변환 map)
+//// Lookup Maps 생성 함수 (id <-> 항목 명 변환 map)
 const generateLookupMap = (dataArray) => {
     const lookupMap = new Map();
     Array.from(dataArray).forEach(item => {
         lookupMap.set(item._id, item.group);
+    });
+    return lookupMap;
+};
+
+const generateLookIDMap = (dataArray) => {
+    const lookupMap = new Map();
+    Array.from(dataArray).forEach(item => {
+        lookupMap.set(item.group, item._id);
     });
     return lookupMap;
 };
@@ -285,10 +369,26 @@ const generateLookupMapType = (dataArray) => {
     return lookupMap;
 };
 
+const generateLookIDMapType = (dataArray) => {
+    const lookupMap = new Map();
+    Array.from(dataArray).forEach(item => {
+        lookupMap.set(item.type, item._id)
+    });
+    return lookupMap;
+};
+
 const generateLookupMapRole = (dataArray) => {
     const lookupMap = new Map();
     Array.from(dataArray).forEach(item => {
         lookupMap.set(item._id, item.role)
+    });
+    return lookupMap;
+};
+
+const generateLookIDMapRole = (dataArray) => {
+    const lookupMap = new Map();
+    Array.from(dataArray).forEach(item => {
+        lookupMap.set(item.role, item._id)
     });
     return lookupMap;
 };
@@ -301,8 +401,17 @@ const generateLookupMapIG = (dataArray) => {
     return lookupMap;
 }
 
-const groupnameIDConvertMap = ref(new Map());
+const generateLookIDMapIG = (dataArray) => {
+    const lookupMap = new Map();
+    Array.from(dataArray).forEach(item => {
+        lookupMap.set(item.interfacegroup, item._id)
+    });
+    return lookupMap;
+}
 
+
+
+const groupnameIDConvertMap = ref(new Map());
 const openPopup = async () => {
     const db_group_id = await axios.get('/api/physical_layer/device_groups');
     groupnameIDConvertMap.value = generateLookupMap(db_group_id.data);
@@ -315,10 +424,10 @@ const openPopup = async () => {
         const DBdevicedata = getDBdevice.data;
 
         // Extract the deviceName values from the response and create a new array
-        zabbixdevice.value = zabbixdevicedata.map(item => ({ deviceName: item.deviceName, interfaces: item.interfaces, deviceID: item.deviceID }));
+        zabbixdevice.value = zabbixdevicedata.map(item => ({ deviceName: item.deviceName, interfaces: item.interfaces_name, MAC: item.interfaces_MAC, deviceID: item.deviceID, iplist: item.ip }));
         DBdevice.value = DBdevicedata.map(item => ({ deviceName: item.deviceName, deviceGroup: groupnameIDConvertMap.value.get(item.deviceGroupId), deviceID: item._id }))
 
-        console.log(DBdevice);
+        console.log('DB data loaded!', DBdevice);
     } catch (error) {
         console.error('Cannot get zabbix device list', error);
     }
@@ -331,21 +440,46 @@ const closePopAdd = async () => {
 // Device List의 Add 버튼 클릭 시 팝업 및 데이터 저장,표시
 const popAdd = ref(false);
 const rowDeviceName = ref("");
-const rowDeviceInterfaces = ref([]);
+const rowDeviceInterfaces_name = ref([]);
 const rowDeviceZID = ref("");
+const rowDeviceInterfaces_MAC = ref([]);
+const rowDeviceIplist = ref([]);
 
 //// Dropdown 옵션
 const Groups = ref([]);
 const Roles = ref([]);
 const Types = ref([]);
-// const Locations = ref([]);
 const IGroups = ref([]);
 
 //// Dropdown v-model 및 입력 데이터 (Device)
 const selectedGroup = ref();
 const selectedRole = ref();
 const selectedType = ref();
-// const selectedLocation = ref();
+
+
+//////////////// Zabbix add - location 파트
+const popLlist = ref(false);
+const openpopLlist = async () => {
+    popLlist.value = true;
+};
+
+
+
+const Building = ref();
+const Floor = ref();
+const Room = ref();
+const Rack = ref();
+const selectedLocation = ref();
+
+const absorbValue = (value1, value2, value3, value4) => {
+    Building.value = value1;
+    Floor.value = value2;
+    Room.value = value3;
+    Rack.value = value4;
+    selectedLocation.value = Building.value + ',' + Floor.value + ',' + Room.value + ',' + Rack.value;
+    popLlist.value = false;
+};
+
 const selectedMonitorType = ref("Zabbix");
 const selectedinterfaceGroup = ref([]);
 const selectedstatus = ref(null);
@@ -353,19 +487,19 @@ const selectedtier = ref(null);
 
 //// Dropdown v-model 및 입력 데이터 (Interface)
 const selectedDeviceInterface = ref([]);
-const macAddress = ref([]);
 const subNet = ref([]);
 const bandWidth = ref([]);
 const PrimaryIP = ref([]);
 const SecondaryIP = ref([]);
-watch(rowDeviceInterfaces, (newRowDeviceInterfaces) => {
+watch(rowDeviceInterfaces_name, (newRowDeviceInterfaces) => {
     SecondaryIP.value = new Array(newRowDeviceInterfaces.length).fill('none');
 });
-const interfaceStatus = ref([]);
 
-const openPopAdd = async (deviceName, deviceInterfaces, deviceID) => {
+const openPopAdd = async (deviceName, deviceInterfaces_name, deviceInterfaces_MAC, deviceID, deviceIPlist) => {
     rowDeviceName.value = deviceName;
-    rowDeviceInterfaces.value = deviceInterfaces;
+    rowDeviceInterfaces_name.value = deviceInterfaces_name;
+    rowDeviceInterfaces_MAC.value = deviceInterfaces_MAC;
+    rowDeviceIplist.value = deviceIPlist;
     rowDeviceZID.value = deviceID;
     popAdd.value = true;
 
@@ -394,7 +528,24 @@ const submitAddClicked = async () => {
         deviceTypeId: (selectedType.value['id']),
         deviceGroupId: (selectedGroup.value['id']),
         deviceRoleId: (selectedRole.value['id']),
-        // locationId: (selectedLocation.value['id']),
+        location: {
+            "building": Building.value,
+            "floor": [
+                {
+                    "name": Floor.value,
+                    "room": [
+                        {
+                            "name": Room.value,
+                            "rack": [
+                                {
+                                    "name": Rack.value
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
         activeMonitorType: selectedMonitorType.value,
         zabbixHostId: rowDeviceZID.value,
         tier: selectedtier.value
@@ -402,6 +553,7 @@ const submitAddClicked = async () => {
     await axios.post('/api/physical_layer/devices', devicepostData)
         .then(() => {
             window.alert("Device DB 등록 완료")
+            selectedLocation.value = null;
         }).catch(
             (err) => {
                 window.alert(err + "Device DB 등록 실패")
@@ -412,18 +564,18 @@ const submitAddClicked = async () => {
     // console.log(temp_deviceinfo.data._id)
     // console.log(selectedinterfaceGroup.value)
 
-    for (let index = 0; index < rowDeviceInterfaces.value.length; index++) {
+    for (let index = 0; index < rowDeviceInterfaces_name.value.length; index++) {
         const interfacepostData = {
             interfaceName: selectedDeviceInterface.value[index],
-            zabbixInterfaceName: rowDeviceInterfaces.value[index],
-            macaddress: macAddress.value[index],
+            zabbixInterfaceName: rowDeviceInterfaces_name.value[index],
+            macaddress: rowDeviceInterfaces_MAC.value[index],
             subnet: subNet.value[index],
             bandwidth: bandWidth.value[index],
             primaryIP: PrimaryIP.value[index],
             secondaryIP: SecondaryIP.value[index],
             deviceId: temp_deviceinfo.data._id,
             interfacegroupid: selectedinterfaceGroup.value[index].id,
-            status: interfaceStatus.value[index]
+            status: 'Active'
         };
         console.log(interfacepostData);
         await axios.post('/api/physical_layer/interfaces', interfacepostData)
@@ -500,21 +652,28 @@ const popAttManager = ref(false);
 const att_deviceGroups = ref([]);
 const att_deviceTypes = ref([]);
 const att_deviceRoles = ref([]);
-const att_deviceLocations = ref([]);
 const att_interfaceGroups = ref([]);
 const att_devices = ref([]);
 const att_interfaces = ref([]);
 const activeButton_Manages = ref(null);
 const activeButton_Attributes = ref(null);
 
+// ID to property MAP
 const att_groupNameIDconvertMap = ref(new Map());
 const att_TypeIDconvertMap = ref(new Map());
 const att_RoleIDconvertMap = ref(new Map());
 const att_interfaceGroupIDconvertMap = ref(new Map());
 
+// property to ID MAP
+const att_IDgroupNameconvertMap = ref(new Map());
+const att_IDTypeconvertMap = ref(new Map());
+const att_IDRoleconvertMap = ref(new Map());
+const att_IDinterfaceGroupconvertMap = ref(new Map());
+
 const att_deviceGroupOptions = ref([]);
 const att_deviceTypeOptions = ref([]);
 const att_deviceRoleOptions = ref([]);
+const att_IGOptions = ref([]);
 
 // const att_InterfaceGroupOptions = ref([]);
 
@@ -524,16 +683,19 @@ const openAttManager = async () => {
     try {
         const get_deviceGroups = await axios.get('/api/physical_layer/device_groups');
         att_groupNameIDconvertMap.value = generateLookupMap(get_deviceGroups.data);
+        att_IDgroupNameconvertMap.value = generateLookIDMap(get_deviceGroups.data);
         att_deviceGroups.value = get_deviceGroups.data;
         att_deviceGroupOptions.value = att_deviceGroups.value.map(deviceGroup => deviceGroup.group);
 
         const get_deviceTypes = await axios.get('/api/physical_layer/device_types');
         att_TypeIDconvertMap.value = generateLookupMapType(get_deviceTypes.data);
+        att_IDTypeconvertMap.value = generateLookIDMapType(get_deviceTypes.data);
         att_deviceTypes.value = get_deviceTypes.data;
         att_deviceTypeOptions.value = att_deviceTypes.value.map(deviceType => deviceType.type);
 
         const get_deviceRoles = await axios.get('/api/physical_layer/device_roles');
         att_RoleIDconvertMap.value = generateLookupMapRole(get_deviceRoles.data);
+        att_IDRoleconvertMap.value = generateLookIDMapRole(get_deviceRoles.data);
         att_deviceRoles.value = get_deviceRoles.data;
         att_deviceRoleOptions.value = att_deviceRoles.value.map(deviceRole => deviceRole.role);
 
@@ -542,7 +704,9 @@ const openAttManager = async () => {
 
         const get_interfaceGroups = await axios.get('/api/physical_layer/interface_groups');
         att_interfaceGroupIDconvertMap.value = generateLookupMapIG(get_interfaceGroups.data);
+        att_IDinterfaceGroupconvertMap.value = generateLookIDMapIG(get_interfaceGroups.data);
         att_interfaceGroups.value = get_interfaceGroups.data;
+        att_IGOptions.value = att_interfaceGroups.value.map(IG => IG.interfacegroup);
 
         const get_devices = await axios.get('/api/physical_layer/devices');
         att_devices.value = get_devices.data;
@@ -691,6 +855,13 @@ const DeviceRoleAdd_att = async () => {
     }
 };
 
+//// Device Location CRUD 관련
+const open_Location = ref(false);
+const open_Location_clicked = async () => {
+    open_Location.value = true;
+};
+
+
 //// Interface Group Manage 관련
 const confirm_IG = useConfirm();
 const confirm_igroupdelete = (IGID) => {
@@ -735,43 +906,185 @@ const setTarget = async (target) => {
     selectedTarget.value = target;
 };
 
+//// location modal 컴포넌트 준비
+const popLlist2 = ref(false);
+const openpopLlist2 = async () => {
+    popLlist2.value = true;
+};
+
+const att_deviceLocations = ref();
+const Building_device = ref();
+const Floor_device = ref();
+const Room_device = ref();
+const Rack_device = ref();
+
+const absorbValue_device = (value1, value2, value3, value4) => {
+    Building_device.value = value1;
+    Floor_device.value = value2;
+    Room_device.value = value3;
+    Rack_device.value = value4;
+    att_selectedDeviceLocation.value = Building_device.value + ',' + Floor_device.value + ',' + Room_device.value + ',' + Rack_device.value;
+    popLlist2.value = false;
+};
+
+
+//// ID->Attribute명 변환 함수
 const att_TypeIDconvert = (typeid) => {
     const reply = att_TypeIDconvertMap.value.get(typeid)
     return reply
 };
-
 const att_RoleIDconvert = (roleid) => {
     const reply = att_RoleIDconvertMap.value.get(roleid)
     return reply
 };
-
 const att_groupNameIDconvert = (groupid) => {
     const reply = att_groupNameIDconvertMap.value.get(groupid)
     return reply
 };
-
-
-
-
-const selectedDevice = ref(null); // device list에서 선택한 device의 정보를 저장하는 변수
-const att_PutData = ref(null);
-
-const att_handleRowClick = async (rowData) => {
-    console.log(rowData);
-    console.log(selectedDevice);
-    att_PutData.value = rowData.data;
-    // console.log(att_deviceTypeOptions);
+const att_interfacegroupIDconvert = (groupid) => {
+    const reply = att_interfaceGroupIDconvertMap.value.get(groupid)
+    return reply
 };
 
+//// DataTable 값 저장용 변수
+const selectedDevice = ref(null); // device list에서 선택한 device의 정보를 저장하는 변수
+const att_rowData = ref(null);
+const att_PutData = ref(null);
+const att_selectedDeviceName = ref();
 const att_selectedType = ref();
 const att_selectedGroup = ref();
 const att_selectedRole = ref();
+const att_selectedDeviceLocation = ref();
+const att_selectedTier = ref();
 
-// const att_deviceUpdate = async() => {
-//     try{
-//         console.log att_PutData
-//     }
-// };
+const att_handleRowClick = async (rowData) => {
+    // console.log(rowData);
+    // console.log(selectedDevice);
+    att_rowData.value = { ...rowData.data };
+    // console.log(att_deviceTypeOptions);
+    console.log(att_rowData, 'rowData after click');
+};
+
+const att_deviceUpdate = async () => {
+    try {
+        att_rowData.value.deviceName = await att_selectedDeviceName.value;
+        att_rowData.value.deviceGroupId = await att_IDgroupNameconvertMap.value.get(att_selectedGroup.value);
+        att_rowData.value.deviceTypeId = await att_IDTypeconvertMap.value.get(att_selectedType.value);
+        att_rowData.value.deviceRoleId = await att_IDRoleconvertMap.value.get(att_selectedRole.value);
+        att_rowData.value.tier = await att_selectedTier.value;
+        att_rowData.value.location = {
+            "building": Building_device.value,
+            "floor": [
+                {
+                    "name": Floor_device.value,
+                    "room": [
+                        {
+                            "name": Room_device.value,
+                            "rack": [
+                                {
+                                    "name": Rack_device.value
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+        console.log(att_rowData, 'rowData after input&update');
+        att_PutData.value = { ...att_rowData.value };
+        delete att_PutData.value._id;
+        console.log(att_PutData, 'putData, after executed update');
+
+        try {
+            await axios.put('/api/physical_layer/devices/' + selectedDevice.value._id, att_PutData.value)
+            window.alert('장치 정보 업데이트 완료')
+            att_selectedDeviceLocation.value = null;
+            popAttManager.value = false;
+            await nextTick();
+        } catch (err) {
+            console.error(err + ' 장치 정보 업데이트 실패');
+        }
+    } catch (dataError) {
+        console.error(dataError + ' 장치 데이터 준비 실패');
+    }
+};
+
+const confirm_device = useConfirm();
+const confirm_devicedelete = (DID) => {
+    confirm_device.require({
+        message: 'Do you REALLY want to delete this Device?',
+        icon: 'pi pi-info-circle',
+        header: 'Delete Confirmation',
+        acceptClass: 'p-button-danger',
+        accept: async () => {
+            try {
+                await axios.delete('/api/physical_layer/devices/' + DID);
+                window.alert("Successfully deleted");
+                popAttManager.value = false;
+            } catch (error) {
+                console.log(error + ' 삭제 실패');
+            }
+        }
+    });
+};
+
+//// Interface Member
+
+
+const selectedInterface = ref(null); // dataTable에서 선택한 인터페이스의 정보를 저장하는 변수
+const att_IGrowData = ref(null); // dataTable에서 선택한 인터페이스의 정보를 저장하여 Put data 준비에 활용되는 변수
+const att_IGPutData = ref(null); // Put data
+const att_selectedInterfaceName = ref(); // 인터페이스 이름 input 받는 변수
+const att_selectedSubnet = ref(); // 서브넷 input 받는 변수
+const att_selectedInterfaceGroup = ref(); // 인터페이스 그룹 input 받는 변수
+
+
+const att_handleRowClickIG = async (rowData) => {
+    att_IGrowData.value = { ...rowData.data };
+    console.log(att_IGrowData, 'IGrowData 1');
+};
+
+const att_IGUpdate = async () => {
+    try {
+        att_IGrowData.value.interfaceName = await att_selectedInterfaceName.value;
+        att_IGrowData.value.subnet = await att_selectedSubnet.value;
+        att_IGrowData.value.interfacegroupid = await att_IDinterfaceGroupconvertMap.value.get(att_selectedInterfaceGroup.value);
+        console.log(att_IGrowData, 'IGrowData 2');
+        att_IGPutData.value = { ...att_IGrowData.value };
+        delete att_IGPutData.value._id;
+        console.log(att_IGPutData, 'IG putData');
+
+        try {
+            await axios.put('/api/physical_layer/interfaces/' + selectedInterface.value._id, att_IGPutData.value)
+            window.alert('인터페이스 정보 업데이트 완료')
+            popAttManager.value = false;
+            await nextTick();
+        } catch (err) {
+            console.error(err + ' 인터페이스 정보 업데이트 실패')
+        }
+    } catch (dataError) {
+        console.error(dataError + ' 인터페이스 데이터 준비 실패');
+    }
+};
+
+const confirm_Interface = useConfirm();
+const confirm_interfacedelete = (IID) => {
+    confirm_Interface.require({
+        message: 'Do you REALLY want to delete this Interface?',
+        icon: 'pi pi-info-circle',
+        header: 'Delete Confirmation',
+        acceptClass: 'p-button-danger',
+        accept: async () => {
+            try {
+                await axios.delete('/api/physical_layer/interfaces/' + IID);
+                window.alert("Successfully deleted");
+                popAttManager.value = false;
+            } catch (error) {
+                console.log(error + ' 삭제 실패');
+            }
+        }
+    });
+};
 
 // const att_selectedRole = ref();
 // const att_selectedGroup = ref();
@@ -948,6 +1261,11 @@ const toggleDrag = ref(false)
                             style="height: 2.8rem; z-index: 99; color: white; background-color: #2e3341" @click="fitView">
                             <i :class="'pi pi-stop'"></i>
                         </Button>
+                        <Button class="border-0 border-noround" style="height: 2.8rem; z-index: 99;"
+                            :style="{ 'background-color': toggleDrag ? 'white' : '#2e3341', color: toggleDrag ? '#2e3341' : 'white' }"
+                            @click="toggleDrag = !toggleDrag">
+                            <font-awesome-icon :icon="['fas', 'computer-mouse']" />
+                        </Button>
                         <Button class="border-0 border-noround ml-4"
                             style="height: 2.8rem; z-index: 99; color: white; background-color: #2e3341" @click="openPopup">
                             <i :class="'pi pi-database'"></i>
@@ -957,7 +1275,7 @@ const toggleDrag = ref(false)
                             @click="openAttManager">
                             <i :class="'pi pi-filter'"></i>
                         </Button>
-                        <Dialog v-model:visible="popList" modal header="Device list" :style="{ width: '80%' }">
+                        <Dialog v-model:visible="popList" modal header="Zabbix & DB Link Manager" :style="{ width: '80%' }">
                             <div class="flex" style="height: 100%">
                                 <div class="w-6 p-4">
                                     <div class="ml-2 mb-5 text-xl font-bold"> Zabbix Device </div>
@@ -970,7 +1288,7 @@ const toggleDrag = ref(false)
                                                     <!-- {{ console.log(rowData) }} -->
                                                     <div>
                                                         <Button label="Add" severity="success" class="mr-2"
-                                                            @click="openPopAdd(rowData.data.deviceName, rowData.data.interfaces, rowData.data.deviceID)" />
+                                                            @click="openPopAdd(rowData.data.deviceName, rowData.data.interfaces, rowData.data.MAC, rowData.data.deviceID, rowData.data.iplist)" />
                                                         <Button label="Attach" severity="success"
                                                             @click="openAttach(rowData.data.interfaces)" />
                                                     </div>
@@ -1035,8 +1353,13 @@ const toggleDrag = ref(false)
                                 </div>
                                 <div class="card flex flex-column gap-2 mb-4">
                                     <label for="deviceLocation">Device Location</label>
-                                    <Button label="Set Location" text raised severity="success" />
+                                    <InputText id="devicelocation" v-model="selectedLocation" disabled
+                                        placeholder="Use button below"></InputText>
+                                    <Button label="Set Location" text raised severity="success" @click="openpopLlist" />
                                 </div>
+                                <Dialog v-model:visible="popLlist" modal :style="{ width: '50%' }">
+                                    <Locationlist :emitValue="absorbValue"></Locationlist>
+                                </Dialog>
                                 <div class="card flex flex-column gap-2 mb-4">
                                     <label for="Monitor">Monitor type</label>
                                     <InputText id="monitor" v-model="selectedMonitorType" disabled />
@@ -1047,33 +1370,35 @@ const toggleDrag = ref(false)
                                 <div class="card flex flex-column gap-2 mb-4">
                                     <div class="mb-4 text-xl font-bold"> Fill out Interface info </div>
                                 </div>
-                                <div v-for="(_, index) in rowDeviceInterfaces" :key="index">
+                                <div v-for="(_, index) in rowDeviceInterfaces_name" :key="index">
                                     <div class="card flex flex-column gap-2 mb-4">
                                         <label for="zabbixinterfaceName">Zabbix Interface Name</label>
-                                        <InputText id="zabbixinterfaceName" v-model="rowDeviceInterfaces[index]" disabled>
+                                        <InputText id="zabbixinterfaceName" v-model="rowDeviceInterfaces_name[index]"
+                                            disabled>
                                         </InputText>
 
                                         <label for="interfacename">Interface Name</label>
-                                        <InputText id="interfaceName" v-model=selectedDeviceInterface[index]></InputText>
+                                        <InputText id="interfaceName" v-model="selectedDeviceInterface[index]"></InputText>
 
                                         <label for="MAC address">MAC address</label>
-                                        <InputText id="macaddress" v-model=macAddress[index]></InputText>
+                                        <InputText id="macaddress" v-model="rowDeviceInterfaces_MAC[index]" disabled>
+                                        </InputText>
 
                                         <label for="subnet">Subnet</label>
-                                        <InputText id="Subnet" v-model=subNet[index]></InputText>
+                                        <InputText id="Subnet" v-model="subNet[index]"></InputText>
 
                                         <label for="Bandwidth">Bandwidth</label>
-                                        <InputNumber id="bandwidth" v-model=bandWidth[index]></InputNumber>
+                                        <InputNumber id="bandwidth" v-model="bandWidth[index]"></InputNumber>
 
                                         <label for="PrimaryIP">Primary IP</label>
-                                        <InputText id="primaryip" v-model=PrimaryIP[index]></InputText>
+                                        <Dropdown v-model="PrimaryIP[index]" :options="rowDeviceIplist"
+                                            placeholder="Select Primary IP"></Dropdown>
 
                                         <label for="SecondaryIP">Secondary IP(optional)</label>
-                                        <InputText id="secondaryip" v-model=SecondaryIP[index]></InputText>
-
+                                        <InputText id="secondaryip" v-model="SecondaryIP[index]"></InputText>
 
                                         <label for="Interface Status">Interface Status</label>
-                                        <InputText id="interfacestatus" v-model=interfaceStatus[index]></InputText>
+                                        <InputText id="interfacestatus" disabled placeholder="Active"></InputText>
 
                                         <label for="Interface Group">Interface Group</label>
                                         <Dropdown v-model="selectedinterfaceGroup[index]" :options="IGroups"
@@ -1092,7 +1417,7 @@ const toggleDrag = ref(false)
                             <div class="flex" style="height: 100% overflow-x: auto;">
                                 <div class="w-6 p-4">
                                     <div class="ml-2 mb-5 text-xl font-bold"> Zabbix-detected-Interfaces </div>
-                                    <DataTable :value="rowDeviceInterfacesAttach" scrollable scrollHeight="flex"
+                                    <DataTable :value="rowDeviceInterfacesAttach" scrollable scrollHeight="500px"
                                         tableStyle="width= 100%" v-model:selection="selectedInterfaceAttach"
                                         selectionMode="single">
                                         <!-- {{ console.log(rowDeviceInterfacesAttach) }} -->
@@ -1107,7 +1432,8 @@ const toggleDrag = ref(false)
                                         v-model:selection="selectedECHOEdeviceAttach" selectionMode="single"
                                         :value="DBdevice" tableStyle="width= 100%" expandableRowGroups
                                         rowGroupMode="subheader" groupRowsBy="deviceGroup" sortMode="single"
-                                        sortField="deviceGroup" :sortOrder="1" @row-click="handleRowClick">
+                                        sortField="deviceGroup" :sortOrder="1" @row-click="handleRowClick" scrollable
+                                        scrollHeight="500px">
                                         <template #groupheader="slotProps">
                                             <span class="veritical-align-middle ml-2 font-bold line-height-3">{{
                                                 slotProps.data.deviceGroup }}</span>
@@ -1118,9 +1444,10 @@ const toggleDrag = ref(false)
                                 </div>
                                 <Divider layout="vertical"></Divider>
                                 <div class="w-6 p-4">
-                                    <div class="ml-2 mb-5 text-xl font-bold"> Selected Device's Interface list</div>
+                                    <div class="ml-2 mb-5 text-xl font-bold"> Target Device's Interface list</div>
                                     <DataTable v-model:selection="selectedECHOEInterfaceAttach" selectionMode="single"
-                                        :value="Related_Interfaces" tableStyle="width= 100%">
+                                        :value="Related_Interfaces" tableStyle="width= 100%" scrollable
+                                        scrollHeight="500px">
                                         <Column field="interfaceName" header="Interface Name"></Column>
                                     </DataTable>
                                     <Button label="Attach" severity="success" class="absolute bottom-0 right-0 mb-6 mr-6"
@@ -1128,8 +1455,8 @@ const toggleDrag = ref(false)
                                 </div>
                             </div>
                         </Dialog>
-                        <Dialog v-model:visible="popAttManager" modal header="Welcome to Attribute Manager"
-                            :style="{ width: '65%' }">
+                        <Dialog v-model:visible="popAttManager" modal header="Welcome to DB Manager"
+                            :style="{ width: '70%' }">
                             <div class="mt-3 w-12 card-container d-flex justify-content-center">
                                 <Button label="Manage Attribute" severity="success" text
                                     class="justify-content-center inline mr-5" size="large" @click="setPage('Attribute')"
@@ -1149,7 +1476,7 @@ const toggleDrag = ref(false)
                                     class="justify-content-center inline ml-5" @click="setAttribute('Role')"
                                     v-model="activeButton_Attributes" />
                                 <Button label="Device Location" severity="success" text
-                                    class="justify-content-center inline ml-5" @click="setAttribute('Location')"
+                                    class="justify-content-center inline ml-5" @click="open_Location_clicked"
                                     v-model="activeButton_Attributes" />
                                 <Divider layout="vertical"></Divider>
                                 <Button label="Interface Group" severity="success" text
@@ -1160,7 +1487,8 @@ const toggleDrag = ref(false)
                                 <div class="mt-3 flex d-flex justify-content-center align-items-center relative">
                                     <div class="mr-8">
                                         <ConfirmDialog></ConfirmDialog>
-                                        <DataTable :value="att_deviceGroups" tableStyle="width= 100%">
+                                        <DataTable :value="att_deviceGroups" tableStyle="width= 100%" scrollable
+                                            scrollHeight="500px">
                                             <Column field="group" header="Group name"></Column>
                                             <Column field="grouptier" header="Group tier"></Column>
                                             <Column field="_id" header="ID">
@@ -1194,7 +1522,8 @@ const toggleDrag = ref(false)
                                 <div class="mt-3 flex d-flex justify-content-center align-items-center relative">
                                     <div class="mr-8">
                                         <ConfirmDialog></ConfirmDialog>
-                                        <DataTable :value="att_deviceTypes" tableStyle="width= 100%">
+                                        <DataTable :value="att_deviceTypes" tableStyle="width= 100%" scrollable
+                                            scrollHeight="500px">
                                             <Column field="type" header="Type name"></Column>
                                             <Column field="model" header="Model"></Column>
                                             <Column field="_id" header="ID">
@@ -1228,7 +1557,8 @@ const toggleDrag = ref(false)
                                 <div class="mt-3 flex d-flex justify-content-center align-items-center relative">
                                     <div class="mr-8">
                                         <ConfirmDialog></ConfirmDialog>
-                                        <DataTable :value="att_deviceRoles" tableStyle="width= 100%">
+                                        <DataTable :value="att_deviceRoles" tableStyle="width= 100%" scrollable
+                                            scrollHeight="500px">
                                             <Column field="role" header="Role"></Column>
                                             <Column field="_id" header="ID">
                                                 <template #body="rowData">
@@ -1254,11 +1584,15 @@ const toggleDrag = ref(false)
                                     </div>
                                 </div>
                             </div>
+                            <Dialog v-model:visible="open_Location" modal :style="{ width: '50%' }">
+                                <LocationCRUD></LocationCRUD>
+                            </Dialog>
                             <div v-if="selectedAttribute === 'IGroup'" class="inline mt-3 w-10">
                                 <div class="mt-3 flex d-flex justify-content-center align-items-center relative">
                                     <div class="mr-8">
                                         <ConfirmDialog></ConfirmDialog>
-                                        <DataTable :value="att_interfaceGroups" tableStyle="width= 100%">
+                                        <DataTable :value="att_interfaceGroups" tableStyle="width= 100%" scrollable
+                                            scrollHeight="500px">
                                             <Column field="interfacegroup" header="Interface Group"></Column>
                                             <Column field="interfacetier" header="Group Tier"></Column>
                                             <Column field="_id" header="ID">
@@ -1290,18 +1624,18 @@ const toggleDrag = ref(false)
                             </div>
                             <div v-if="selectedButton === 'Member'"
                                 class="mt-3 w-12 card-container d-flex justify-content-center">
-                                <Button label="Device" severity="success" text class="justify-content-center inline"
+                                <Button label="Update Device" severity="success" text class="justify-content-center inline"
                                     @click="setTarget('Device')" />
-                                <Button label="Interface" severity="success" text class="justify-content-center inline ml-5"
-                                    @click="setTarget('Interface')" />
+                                <Button label="Update Interface" severity="success" text
+                                    class="justify-content-center inline ml-5" @click="setTarget('Interface')" />
                             </div>
                             <div v-if="selectedTarget === 'Device'" class="inline mt-3 w-10">
                                 <div class="mt-3 flex d-flex justify-content-center align-items-center relative">
                                     <div class="mr-8">
+                                        <ConfirmDialog></ConfirmDialog>
                                         <DataTable :value="att_devices" tableStyle="width = 100%"
                                             v-model:selection="selectedDevice" selectionMode="single"
-                                            @row-click="att_handleRowClick">
-                                            <Column field="_id" header="id"></Column>
+                                            @row-click="att_handleRowClick" scrollable scrollHeight="500px">
                                             <Column field="deviceName" header="Device Name"></Column>
                                             <Column field="deviceTypeId" header="Device Type">
                                                 <template #body="rowData">
@@ -1328,39 +1662,114 @@ const toggleDrag = ref(false)
                                                 </template>
                                             </Column>
                                             <Column field="tier" header="Tier"></Column>
+                                            <Column field="_id" header="ID">
+                                                <template #body="rowData">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div>{{ rowData.data._id }}</div>
+                                                        <div>
+                                                            <Button icon="pi pi-times" severity="danger" size="small" text
+                                                                rounded @click="confirm_devicedelete(rowData.data._id)" />
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                            </Column>
+                                            <Column header="Location">
+                                                <template #body="rowData">
+                                                    <div class="d-flex flex-column">
+                                                        <div><strong>Building:</strong> {{ rowData.data.location.building }}
+                                                        </div>
+                                                        <div><strong>Floor:</strong> {{ rowData.data.location.floor[0].name
+                                                        }}</div>
+                                                        <div><strong>Room:</strong> {{
+                                                            rowData.data.location.floor[0].room[0].name }}</div>
+                                                        <div><strong>Rack:</strong> {{
+                                                            rowData.data.location.floor[0].room[0].rack[0].name }}</div>
+                                                    </div>
+                                                </template>
+                                            </Column>
                                         </DataTable>
                                     </div>
                                     <div class="ml-8">
                                         <div v-if="selectedDevice !== null" class="flex flex-column gap-2">
-                                            <label for="att_deviceName">device Name</label>
-                                            <InputText ID="att_deviceName" v-model="selectedDevice.deviceName"></InputText>
-                                            <label for="att_deviceType">device Type</label>
+                                            <label for="att_deviceName">Device Name</label>
+                                            <InputText ID="att_deviceName" v-model="att_selectedDeviceName"></InputText>
+                                            <label for="att_deviceType">Device Type</label>
                                             <Dropdown v-model="att_selectedType" :options="att_deviceTypeOptions"
                                                 placeholder="Select Type"></Dropdown>
-                                            <label for="att_deviceGroup">device Group</label>
+                                            <label for="att_deviceGroup">Device Group</label>
                                             <Dropdown v-model="att_selectedGroup" :options="att_deviceGroupOptions"
                                                 placeholder="Select Group"></Dropdown>
-                                            <label for="att_deviceRole">device Role</label>
+                                            <label for="att_deviceRole">Device Role</label>
                                             <Dropdown v-model="att_selectedRole" :options="att_deviceRoleOptions"
                                                 placeholder="Select Role">
                                             </Dropdown>
                                             <label for="att_deviceTier">Tier</label>
-                                            <InputNumber ID="att_deviceTier" v-model="selectedDevice.tier"></InputNumber>
-                                            <!-- <Button label="Update" text severity="success" @click="att_deviceUpdate"></Button> -->
+                                            <InputNumber ID="att_deviceTier" v-model="att_selectedTier"></InputNumber>
+                                            <label for="att_deviceLocation">Device Location</label>
+                                            <InputText ID="att_deviceLocation" v-model="att_selectedDeviceLocation"
+                                                disabled></InputText>
+                                            <Button label="Set Location" text raised severity="success"
+                                                @click="openpopLlist2"></Button>
+                                            <Dialog v-model:visible="popLlist2" modal :style="{ width: '50%' }">
+                                                <Locationlist :emitValue="absorbValue_device"></Locationlist>
+                                            </Dialog>
+                                            <Divider></Divider>
+                                            <Button class="mt-5" label="Update" severity="success"
+                                                @click="att_deviceUpdate"></Button>
                                         </div>
                                     </div>
                                 </div>
 
                             </div>
                             <div v-if="selectedTarget === 'Interface'">
-
+                                <div class="mt-3 flex d-flex justify-content-center align-items-center relative">
+                                    <div class="mr-8">
+                                        <ConfirmDialog></ConfirmDialog>
+                                        <DataTable :value="att_interfaces" tableStyle="width = 100%"
+                                            v-model:selection="selectedInterface" selectionMode="single"
+                                            @row-click="att_handleRowClickIG" scrollable scrollHeight="500px">
+                                            <Column field="interfaceName" header="Name"></Column>
+                                            <Column field="subnet" header="Subnet"></Column>
+                                            <Column field="interfacegroupid" header="Interface Group">
+                                                <template #body="rowData">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div>{{ att_interfacegroupIDconvert(rowData.data.interfacegroupid)
+                                                        }}
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                            </Column>
+                                            <Column field="_id" header="ID">
+                                                <template #body="rowData">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div>{{ rowData.data._id }}</div>
+                                                        <div>
+                                                            <Button icon="pi pi-times" severity="danger" size="small" text
+                                                                rounded
+                                                                @click="confirm_interfacedelete(rowData.data._id)" />
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                            </Column>
+                                        </DataTable>
+                                    </div>
+                                    <div class="ml-8">
+                                        <div v-if="selectedInterface !== null" class="flex flex-column gap-2">
+                                            <label for="att_interfaceName">Interface Name</label>
+                                            <InputText ID="att_interfaceName" v-model="att_selectedInterfaceName">
+                                            </InputText>
+                                            <label for="att_subnet">Subnet</label>
+                                            <InputText ID="att_subnet" v-model="att_selectedSubnet"></InputText>
+                                            <label for="att_interfacegroup">Interface Group</label>
+                                            <Dropdown v-model="att_selectedInterfaceGroup" :options="att_IGOptions"
+                                                placeholder="Select group"></Dropdown>
+                                            <Button class="mt-5" label="Update" severity="success"
+                                                @click="att_IGUpdate"></Button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </Dialog>
-                        <Button class="border-0 border-noround" style="height: 2.8rem; z-index: 99;"
-                            :style="{ 'background-color': toggleDrag ? 'white' : '#2e3341', color: toggleDrag ? '#2e3341' : 'white' }"
-                            @click="toggleDrag = !toggleDrag">
-                            <font-awesome-icon :icon="['fas', 'computer-mouse']" />
-                        </Button>
                     </div>
                 </div>
                 <div class="flex flex-grow-1 m-1">

@@ -8,11 +8,11 @@
                 'width': '200px', 'height': '200px',
                 'backgroundColor': getColor(props.data.type).backgroundColor,
                 'borderColor': getColor(props.data.type).borderColor
-            }">
+            }" @dblclick="handleNodeDblClick(props.id, props.label, props.data)">
                 <div class="">
                     <img src="@/assets/switch.svg" alt="switch" style="width: 80px; height: 80px;" />
                 </div>
-                <div class="mt-3">
+                <div class="mt-3" style="font-size: 25px;">
                     {{ props.label }}
                 </div>
             </div>
@@ -20,14 +20,14 @@
 
         <div v-else class="flex flex-column justify-content-center align-items-center "
             style="background-color: white; border-color: rgb(100, 100, 100);"
-            :style="{ 'width': '200px', 'height': '200px' }">
+            :style="{ 'width': '300px', 'height': '200px' }">
             <div class="relative flex flex-column justify-content-center align-items-center border-round border-2" :style="{
                 'width': '200px', 'height': '200px',
                 'backgroundColor': getColor(props.data.type).backgroundColor,
-                'borderColor': getColor(props.data.type).borderColor
+                'borderColor': getColor(props.data.type).borderColor,
             }">
                 <div class="absolute border-round bg-white shadow-2"
-                    style="top:20px; left:25px; height: 40px; width: 150px;">
+                    style="top:20px; left:8px; height: 40px; width: 180px;">
                     <div class="flex justify-content-center">
                         <div v-for="(metricValue, metricKey) in props.data.metricSummary" :key=metricKey class="mx-2">
                             <div class="flex justify-content-center align-items-center circle my-1 cursor-pointer"
@@ -40,8 +40,8 @@
                                         style="width: 30px; height: 30px; top: -17.6px;" class="absolute" />
                                 </div>
                             </div>
-                            <div style="font-size: 9px;">
-                                {{ metricKey.charAt(0) }} : {{ metricValue.total.toFixed(2) }}
+                            <div style="font-size: 5px;">
+                                {{ metricKey.charAt(0) }} : {{ metricValue.total.toFixed(1) }}%
                             </div>
                         </div>
                     </div>
@@ -49,7 +49,7 @@
                 <div class="mt-7">
                     <img src="@/assets/server.svg" alt="switch" style="width: 80px; height: 80px;" />
                 </div>
-                <div class="mt-3">
+                <div style="font-size: 25px;">
                     {{ props.label }}
                     <!-- {{ props.id }} -->
                 </div>
@@ -58,7 +58,7 @@
                     <Handle :id="id" class="border-noround w-1rem h-1rem bg-primary" :style="{
                         'left': (200 / (props.data.inboundInterfaceGroup.length + 1) * (1 + i)) + 'px',
                         'top': '-5px'
-                    }" @click="console.log(id)" v-tooltip="id">
+                    }" @click="onHandleClick(id)" v-tooltip="id">
                     </Handle>
                 </div>
 
@@ -84,6 +84,13 @@ const props = defineProps({
         required: true,
     }
 })
+
+const emit = defineEmits(['handleClick']);
+
+const onHandleClick = (id) => {
+    console.log(id)
+    // emit('handleClick', id);
+}
 
 // spine, leaf, node에서 타입이 더 다양하게 늘어남에 따라서
 // 지금은 타입을 분기처리로 셋을 나누고 있지만, 랜덤 컬러나 색상표를 만들어야 함.

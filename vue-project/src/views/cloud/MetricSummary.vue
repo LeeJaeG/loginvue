@@ -140,7 +140,7 @@ onMounted(async () => {
 
 
     // Current status onMounted
-    const current = await axios.get('/test/zabbix-metric/zabbixmetric_linuxhosts')
+    const current = await axios.get('/api/zabbix-metric/zabbixmetric_linuxhosts')
     const [totalNodes, nodesDetail] = current.data;
     const totalNodesValue = parseInt(totalNodes.split(':')[1].trim(), 10);
     const parsedNodesDetail = nodesDetail.map((node) => {
@@ -163,7 +163,7 @@ onMounted(async () => {
         const { name } = node;
 
         try {
-            const responseLatest = await axios.get('/test/zabbix-metric/zabbixmetric_current/' + name);
+            const responseLatest = await axios.get('/api/zabbix-metric/zabbixmetric_current/' + name);
             const dataLatest = responseLatest.data;
             latestMetrics.value[index] = {
                 node: name,
@@ -245,16 +245,16 @@ const load = async (index) => {
         var endpoint = '';
 
         if (metrics.value[index] === 'CPU usage-' + index) {
-            endpoint = '/test/zabbix-metric/zabbixmetric_history_cpu/' + linux_nodes_detail.value[index].name + '/' + formatted_dates.value[index];
+            endpoint = '/api/zabbix-metric/zabbixmetric_history_cpu/' + linux_nodes_detail.value[index].name + '/' + formatted_dates.value[index];
         }
         else if (metrics.value[index] === 'Memory usage-' + index) {
-            endpoint = '/test/zabbix-metric/zabbixmetric_history_memory/' + linux_nodes_detail.value[index].name + '/' + formatted_dates.value[index];
+            endpoint = '/api/zabbix-metric/zabbixmetric_history_memory/' + linux_nodes_detail.value[index].name + '/' + formatted_dates.value[index];
         }
         else if (metrics.value[index] === 'Network-' + index) {
-            endpoint = '/test/zabbix-metric/zabbixmetric_history_network/' + linux_nodes_detail.value[index].name + '/' + formatted_dates.value[index];
+            endpoint = '/api/zabbix-metric/zabbixmetric_history_network/' + linux_nodes_detail.value[index].name + '/' + formatted_dates.value[index];
         }
         else if (metrics.value[index] === 'Disk-' + index) {
-            endpoint = '/test/zabbix-metric/zabbixmetric_history_disk/' + linux_nodes_detail.value[index].name + '/' + formatted_dates.value[index];
+            endpoint = '/api/zabbix-metric/zabbixmetric_history_disk/' + linux_nodes_detail.value[index].name + '/' + formatted_dates.value[index];
         }
         const history_response = await axios.get(endpoint);
         history.value[index] = history_response.data;

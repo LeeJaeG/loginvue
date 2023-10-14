@@ -57,7 +57,7 @@ const originInterfaceData = ref()
 const ids_metric = ref([])
 const normalized_metric = ref({})
 const get_VueFlow_metricdata = async () => {
-    const get_metric = await axios.get('/test/zabbix-metric/zabbixmetric_forvueflow');
+    const get_metric = await axios.get('/api/zabbix-metric/zabbixmetric_forvueflow');
     // console.log(metric_data.data[0], "data")
     const metric_data = get_metric.data;
 
@@ -109,6 +109,37 @@ const get_VueFlow_metricdata = async () => {
     // console.log(ids_metric)
     // console.log(metric_data)
 }
+
+
+const addClickEventsToBaremetalNodes = () => {
+    vueFlow.value.forEach((node) => {
+        if (node.type === "baremetal") {
+            node.events = {
+                click: () => {
+                    const node_detail = {
+                        "name": node.label,
+                        "key": node.id,
+                        "parent": node.parentNode,
+                        "interfaces": node.data.interfaceGroup
+                    };
+                    selectedNodeInNavbar.value = node_detail;
+                    selectedInterfaceInNavbar.value = null;
+                },
+                ...(node.events || {}),
+            };
+
+        }
+    });
+};
+
+// const handleClickHandler = (id) => {
+//     for (const item of originInterfaceData) {
+//         if (item['_id'] == id) {
+//             selectedInterfaceInNavbar.value == item
+//         }
+//     }
+// }
+
 const getVueFlowForKaloom = (async (retry, ...theArgs) => {
     console.log("getKaloomTopology")
     try {
@@ -119,6 +150,8 @@ const getVueFlowForKaloom = (async (retry, ...theArgs) => {
         originInterfaceData.value = response.data.interfaces
         originEdgeData.value = mockEdgeData
         originNodeData.value = mockNodeData
+        // console.log(mockNodeData)
+        // console.log(mockEdgeData)
 
         // group 별 toggle list 만들기 (그룹을 제외한 다른 노드와 엣지를 안 보이게 하는 용도)
         for (const item of mockNodeData) {
@@ -136,7 +169,7 @@ const getVueFlowForKaloom = (async (retry, ...theArgs) => {
                 }
             }
         }
-
+        // console.log(originNodeData)
         // node 별 toggle list 만들기
         for (const item of mockNodeData) {
             // group 별 node list 만들기
@@ -174,7 +207,7 @@ const getVueFlowForKaloom = (async (retry, ...theArgs) => {
                 }
             }
         }
-
+        console.log(originEdgeData.value);
         vueFlow.value.push(...originNodeData.value);
         vueFlow.value.push(...originEdgeData.value);
         // console.log(JSON.stringify(vueFlow.value))
@@ -198,17 +231,18 @@ const getVueFlowForKaloom = (async (retry, ...theArgs) => {
             // console.log(normalized_metric.value[deviceMetricKey], "wtf")
             const foundDeviceMetric = vueFlow.value.find((e) => e.id == deviceMetricKey);
             if (foundDeviceMetric) {
-                console.log(foundDeviceMetric, "found")
+                // console.log(foundDeviceMetric, "found")
                 foundDeviceMetric.data = {
                     ...foundDeviceMetric.data,
                     ...normalized_metric.value[deviceMetricKey]
                 }
-                console.log(foundDeviceMetric, "found after")
+                // console.log(foundDeviceMetric, "found after")
                 // console.log(foundDeviceMetric, 'foundDeviceMetric')
                 // console.log(liveDeviceMetric[0][deviceMetric], 'liveDeviceMetric[0][deviceMetric]')
             }
         }
-        // console.log(vueFlow)
+        console.log(vueFlow.value)
+        addClickEventsToBaremetalNodes();
         liveDeviceMetric
         loading.value = true;
     } catch (error) {
@@ -337,7 +371,6 @@ const treeToggle = (open) => {
 }
 
 
-
 // 버튼 클릭 시 Device List 팝업 및 데이터 저장,표시
 const popList = ref(false);
 const zabbixdevice = ref([]);
@@ -417,7 +450,7 @@ const openPopup = async () => {
     groupnameIDConvertMap.value = generateLookupMap(db_group_id.data);
     popList.value = true;
     try {
-        const getZabbixdevice = await axios.get('/test/zabbix-metric/zabbixmetric_inquiry');
+        const getZabbixdevice = await axios.get('/api/zabbix-metric/zabbixmetric_inquiry');
         const zabbixdevicedata = getZabbixdevice.data;
 
         const getDBdevice = await axios.get('/api/physical_layer/devices');
@@ -1103,7 +1136,7 @@ const toggleDrag = ref(false)
         <div class="flex flex-column w-2 surface-card surface-border border-right-2 shadow-2" style="height: 100%">
             <div class="flex flex-column flex-grow-0" style="height: 25%;">
                 <div class="text-2xl font-bold mx-2 mt-4 ">
-                    Select
+                    Manual Select
                 </div>
                 <!-- Make tree navigation bar as like 'Device Group > Node > Interface' sequence -->
                 <div class="mx-3 mt-4 mb-2 flex">
@@ -1202,7 +1235,7 @@ const toggleDrag = ref(false)
                 </ul>
             </div>
 
-            <div class="flex flex-column mx-2" style="height: 73%;">
+            <div class="flex flex-column mx-2 mt-3" style="height: 73%;">
                 <div style="height: 5%;">
                     <div class="text-2xl mb-1 font-bold">
                         Details
@@ -1775,7 +1808,8 @@ const toggleDrag = ref(false)
                 <div class="flex flex-grow-1 m-1">
                     <Skeleton v-if="!loading" class="mr-2 h-full" />
                     <VueFlow v-else v-model="vueFlow" class="basicflow" :node-types="nodeTypes" :default-zoom="1.5"
-                        :min-zoom="0.1" :max-zoom="2" :nodes-draggable="toggleDrag" :elevate-edges-on-select="true">
+                        :min-zoom="0.1" :max-zoom="2" :nodes-draggable="toggleDrag" :elevate-edges-on-select="true"
+                        :zoom-on-double-click="false">
                         <Background gap="50" class="surface-ground" />
                     </VueFlow>
                 </div>

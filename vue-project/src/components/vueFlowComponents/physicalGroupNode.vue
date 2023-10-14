@@ -3,7 +3,7 @@
         <div class="border-round flex justify-content-center align-items-start "
             style="height: 300px; background-color: white; border-color: rgb(100, 100, 100);"
             :style="{ 'width': props.data.width + 'px', 'height': props.data.height + 'px' }">
-            <div class="flex w-full justify-content-center h-3rem align-items-center" :style="{ 'backgroundColor': color }">
+            <div class="flex w-full justify-content-center h-3rem align-items-center" style="font-size: 40px;" :style="{ 'backgroundColor': color }">
                 {{ props.label }}
             </div>
         </div>

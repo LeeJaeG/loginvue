@@ -31,11 +31,12 @@
             <Skeleton v-if="loadingLBList == true" class="mr-2 h-full" />
             <div v-else style="height: 100%">
               <div class="flex justify-content-end mb-2">
-                <Button class="bg-cyan-700 border-teal-700">delete</Button>
+                <Button class="bg-cyan-700 border-teal-700" @click="deleteLoadbalance()">delete</Button>
               </div>
               <div class="flex flex-column flex-nowrap overflow-y-scroll pr-3" style="height: 95%">
                 <div v-for="lb in loadbalancerList" :key="lb" class="w-full my-3 border-0 border-round p-4 shadow-2">
                   <div class="text-xl text-900 font-medium font-bold mb-3">
+                    <Checkbox v-model="lb.checked" :binary="true" />
                     {{ lb["name"] }}
                   </div>
                   <div v-for="value, key in LBListkeys" :key="value" class="flex mt-1">
@@ -112,16 +113,26 @@
             </div>
             <div class="m-3 flex overflow-y-auto" style="height: 90%">
               <div v-if="clusterShowMenu">
+                <div class="flex justify-content-end mb-2">
+                  <Button class="bg-cyan-700 border-teal-700" @click="deleteClusterData()">delete</Button>
+                </div>
                 <Skeleton v-if="loadingClusterViewList == true" class="mr-2 h-full" />
                 <div v-for="list in clusterViewDataList" v-bind:key="list"
                   class="border-0 border-round p-4 shadow-2 mb-3">
+
+                  <div class="text-xl text-900 font-medium font-bold mb-3">
+                    <Checkbox v-model="list.checked" :binary="true" />
+                    {{ list["name"] }}
+                  </div>
                   <!-- {{ list }} -->
                   <div v-for="value, key in list" :key="value" class="flex mt-1">
                     <div
-                      class="flex w-1 mr-2 align-items-center bg-green-50 text-green-400 border-round inline-flex mb-1 py-1 px-2 text-sm font-bold">
+                      class="flex w-1 mr-2 align-items-center bg-green-50 text-green-400 border-round inline-flex mb-1 py-1 px-2 text-sm font-bold"
+                      v-if="key !== 'checked'">
                       {{ key }}
                     </div>
-                    <div>
+                    <div v-if="key !== 'checked'">
+                      <!-- <div v-if="key !== 'checked'"> -->
                       {{ value }}
                     </div>
                   </div>
@@ -365,6 +376,7 @@ onMounted(() => {
 
 // LB 관련 ===================
 
+
 const loadbalancerViewTypeList = ref([
   { id: 'a', label: 'Load Balancer Details', active: true },
   { id: 'b', label: 'Listener Details', active: false },
@@ -396,8 +408,10 @@ const loadbalancerInputs = ref({
     //   'type': 'Input text',
     //   'value': '',
     // },
+    // subnet 에 대한 정보를 getSubnetList() 에서 가져옴
     "Subnet": {
-      'type': 'Input text',
+      'type': 'Dropdown',
+      'Dropdown': [],
       'value': '',
       'need': true,
     },
@@ -417,7 +431,8 @@ const loadbalancerInputs = ref({
       value: '',
     },
     "Protocol": {
-      'type': 'Input text',
+      'type': 'Dropdown',
+      'Dropdown': ['HTTP', 'HTTPS', 'TCP', 'UDP'],
       'value': '',
       'need': true,
     },
@@ -520,6 +535,30 @@ const loadbalancerInputs = ref({
   },
 })
 
+//subnet 정보를 가져오는 api 호출
+const getSubnetList = (async (retry, ...theArgs) => {
+  console.log("getSubnetList")
+  try {
+    const response = await axios.get('/api/openstack-network/subnets')
+    const subnetList = response.data.data
+    const subnetDropdown = []
+    // subnetList[0]에서 subnet 정보를 가져오는데 보이는것은 name, id, cidr 한번에 보이게 해줘야함
+
+
+    for (var i = 0; i < subnetList[0].length; i++) {
+      subnetDropdown.push({name : subnetList[0][i].name, id : subnetList[0][i].id, cidr : subnetList[0][i].cidr})
+    }
+    loadbalancerInputs.value['Load Balancer Details']['Subnet']['Dropdown'] = subnetDropdown
+    loadbalancerInputs.value['Load Balancer Details']['Subnet']['value'] = subnetDropdown[0]
+  } catch (error) {
+    console.log(error)
+    if (retry <= 2) {
+      user.tokenErrorHandler(error, getSubnetList, retry, theArgs);
+    }
+  }
+})
+getSubnetList()
+
 const loadbalancerList = ref()
 const loadingLBList = ref(false)
 const getLBListInProject = (async (retry, ...theArgs) => {
@@ -565,10 +604,11 @@ const createLB = (async (retry, ...theArgs) => {
     creatingLBMessage.value = ""
     creatingLBMessage.value += "=> Autoscaling service Init ... done <br />"
     creatingLBMessage.value += "=> Creating Load Balancer"
+    console.log(loadbalancerInputs.value['Load Balancer Details']['Subnet']['value'].id)
     var response = await axios.post('/api/openstack-loadbalancer/loadbalancers', {
       'name': loadbalancerInputs.value['Load Balancer Details']['Name'].value,
       'description': loadbalancerInputs.value['Load Balancer Details']['Description'].value,
-      'vip_subnet_id': loadbalancerInputs.value['Load Balancer Details']['Subnet'].value,
+      'vip_subnet_id': loadbalancerInputs.value['Load Balancer Details']['Subnet']['value'].id,
       'vip_address': loadbalancerInputs.value['Load Balancer Details']['IP address'].value,
       'admin_state_up': loadbalancerInputs.value['Load Balancer Details']['Admin State Up'].value,
       'project_id': userdata.value.selectedProject.project_id,
@@ -662,9 +702,48 @@ const showLBcreateDialog = () => {
   creatingLBvisible.value = !creatingLBvisible.value
 }
 
+const deleteLoadbalance = () => (
+  LBConfirm.require({
+    message: 'Are you sure you want to proceed?',
+    header: 'Confirmation',
+    icon: 'pi pi-exclamation-triangle',
+    accept: async (retry, ...theArgs) => {
+      console.log("accept")
+      try {
+
+        // print loadbalancerList.value
+        console.log(loadbalancerList.value)
+
+        // Iterate over the `loadbalancerList` array and check if each element is checked.
+        // If it is checked, add the ID of the load balancer to the `checkedIds` array.
+        const checkedIds = [];
+
+        for (const lb of loadbalancerList.value) {
+          if (lb.checked) {
+            checkedIds.push(lb.id);
+          }
+        }
+
+        // Delete the load balancers.
+        for (const id of checkedIds) {
+          await axios.delete('/api/openstack-loadbalancer/loadbalancers/' + id);
+        }
+        // 새로고침
+        getLBListInProject(0)
+
+      } catch (error) {
+        console.log(error)
+        if (retry <= 2) {
+          user.tokenErrorHandler(error, deleteLoadbalance, retry, theArgs);
+        }
+      }
+    },
+    reject: () => {
+      console.log("reject")
+    }
+  }))
 // LB 관련 끝 =================
 // Cluster 관련 ================
-
 
 const clusterViewTypeList = ref([
   { id: 'a', label: 'Profiles', active: true },
@@ -729,10 +808,10 @@ const createCluster = (async (retry, ...theArgs) => {
         'metadata': clusterInputs.value['Cluster']['Metadata'].value,
         // 'project_id': userdata.value.selectedProject.project_id,
       })
-    } else if (theArgs[0] == 'policy') {
+    } else if (theArgs[0] == 'policy') {console.log()
       response = await axios.post('/api/openstack-autoscaling/create_policy', {
         'name': clusterInputs.value['Policy']['Name'].value,
-        'spec': clusterInputs.value['Policy']['Spec'].value,
+        'spec': yaml.load(clusterInputs.value['Policy']['Spec'].value),
         // 'project_id': userdata.value.selectedProject.project_id,
       })
     } else if (theArgs[0] == 'receiver') {
@@ -741,7 +820,7 @@ const createCluster = (async (retry, ...theArgs) => {
         'type': clusterInputs.value['Receiver']['Type'].value,
         'cluster_id': clusterInputs.value['Receiver']['Cluster'].value,
         'action': clusterInputs.value['Receiver']['Action'].value,
-        'params': clusterInputs.value['Receiver']['Params'].value,
+        'params': yaml.load(clusterInputs.value['Receiver']['Params'].value),
         // 'project_id': userdata.value.selectedProject.project_id,
       })
     }
@@ -906,6 +985,54 @@ const clusterInputs = ref({
     },
   },
 })
+
+const deleteClusterData = () => (
+  LBConfirm.require({
+    message: 'Are you sure you want to proceed?',
+    header: 'Confirmation',
+    icon: 'pi pi-exclamation-triangle',
+    accept: async (retry, ...theArgs) => {
+      console.log("accept")
+      try {
+
+        //print clusterViewDataList.value
+        console.log(clusterViewDataList.value)
+        console.log(clusterShowMenu.value)
+        const addr = clusterShowMenu.value
+        const address = addr.toLowerCase()
+
+        // Iterate over the `loadbalancerList` array and check if each element is checked.
+        // If it is checked, add the ID of the load balancer to the `checkedIds` array.
+        const checkedIds = [];
+
+        for (const datalist of clusterViewDataList.value) {
+          if (datalist.checked) {
+            checkedIds.push(datalist.id);
+          }
+        }
+
+        console.log(checkedIds)
+
+        // Delete the load balancers.
+        for (const id of checkedIds) {
+          await axios.delete('/api/openstack-autoscaling/' + address + '/' + id);
+        }
+
+        getClusterViewListInProject(0, address)
+
+
+      } catch (error) {
+        console.log(error)
+        if (retry <= 2) {
+          user.tokenErrorHandler(error, deleteLoadbalance, retry, theArgs);
+        }
+      }
+    },
+    reject: () => {
+      console.log("reject")
+    }
+  }))
+
 // Cluster 관련 끝 ==============
 // Alarm 관련 =================
 
